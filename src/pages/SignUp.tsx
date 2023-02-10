@@ -2,25 +2,27 @@ import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   FormControl,
   FormLabel,
-  Image,
+  HStack,
   Input,
+  Image,
   InputGroup,
   InputRightElement,
   Link,
   Stack,
+  Text,
   useColorModeValue,
 } from '@chakra-ui/react';
+import LogoWhite from '../assets/logoWhite.png';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LogoWhite from '../assets/logoWhite.png';
 
-export default function Signin() {
-  const navigate = useNavigate();
+export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
   return (
     <Flex
       minH={'100vh'}
@@ -36,11 +38,25 @@ export default function Signin() {
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Box rounded={'lg'} bg={useColorModeValue('white', 'gray.700')} boxShadow={'lg'} p={8}>
           <Stack spacing={4}>
-            <FormControl id="email">
+            <HStack>
+              <Box>
+                <FormControl id="firstName" isRequired>
+                  <FormLabel>Primeiro Nome</FormLabel>
+                  <Input type="text" />
+                </FormControl>
+              </Box>
+              <Box>
+                <FormControl id="lastName">
+                  <FormLabel>Sobrenome</FormLabel>
+                  <Input type="text" />
+                </FormControl>
+              </Box>
+            </HStack>
+            <FormControl id="email" isRequired>
               <FormLabel>Email</FormLabel>
               <Input type="email" />
             </FormControl>
-            <FormControl id="password">
+            <FormControl id="password" isRequired>
               <FormLabel>Senha</FormLabel>
               <InputGroup>
                 <Input type={showPassword ? 'text' : 'password'} />
@@ -54,25 +70,26 @@ export default function Signin() {
                 </InputRightElement>
               </InputGroup>
             </FormControl>
-            <Stack spacing={10}>
-              <Stack
-                direction={{ base: 'column', sm: 'row' }}
-                align={'start'}
-                justify={'space-between'}
-              >
-                <Checkbox>Lembrar de mim</Checkbox>
-                <Link color={'blue.400'}>Esqueceu a senha?</Link>
-              </Stack>
+            <Stack spacing={10} pt={2}>
               <Button
-                onClick={() => navigate('/')}
+                loadingText="Submitting"
+                size="lg"
                 bg={'blue.400'}
                 color={'white'}
                 _hover={{
                   bg: 'blue.500',
                 }}
               >
-                Entrar
+                Criar conta
               </Button>
+            </Stack>
+            <Stack pt={6}>
+              <Text align={'center'}>
+                Já é um usuário?{' '}
+                <Link onClick={() => navigate(`/signin`)} color={'blue.400'}>
+                  Entrar
+                </Link>
+              </Text>
             </Stack>
           </Stack>
         </Box>
