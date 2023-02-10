@@ -4,7 +4,7 @@ import HeaderSideBar from '../components/HeaderSideBar';
 export default function Demanda() {
   return (
     <HeaderSideBar>
-      <div>oi</div>
+      <div>demanda</div>
     </HeaderSideBar>
   );
 }

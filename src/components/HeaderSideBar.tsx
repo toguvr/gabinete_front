@@ -10,6 +10,7 @@ import {
   HStack,
   Icon,
   IconButton,
+  Image,
   Link,
   Menu,
   MenuButton,
@@ -23,27 +24,30 @@ import {
 } from '@chakra-ui/react';
 import { ReactNode, ReactText } from 'react';
 import { IconType } from 'react-icons';
-import { Image } from '@chakra-ui/react';
-import { BiTask } from 'react-icons/bi';
+import { BiArrowBack, BiTask } from 'react-icons/bi';
 import { BsListTask } from 'react-icons/bs';
-import { FiBell, FiChevronDown, FiHome, FiMenu } from 'react-icons/fi';
+import { FiChevronDown, FiHome, FiMenu } from 'react-icons/fi';
 import { RiTeamLine } from 'react-icons/ri';
 import { SiMicrosoftteams } from 'react-icons/si';
+import { useNavigate } from 'react-router-dom';
 import Logo from '../assets/logo.png';
+import LogoWhite from '../assets/logoWhite.png';
 interface LinkItemProps {
   name: string;
+  route: string;
   icon: IconType;
 }
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', icon: FiHome },
-  { name: 'Cadastro Equipe', icon: RiTeamLine },
-  { name: 'Cadastro Eleitor', icon: SiMicrosoftteams },
-  { name: 'Demandas', icon: BsListTask },
-  { name: 'Tarefas', icon: BiTask },
+  { name: 'Home', route: '/', icon: FiHome },
+  { name: 'Cadastro Equipe', route: '/equipe', icon: RiTeamLine },
+  { name: 'Cadastro Eleitor', route: '/eleitor', icon: SiMicrosoftteams },
+  { name: 'Demandas', route: '/demanda', icon: BsListTask },
+  { name: 'Tarefas', route: '/tarefa', icon: BiTask },
 ];
 
 export default function SidebarWithHeader({ children }: { children: ReactNode }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
       <SidebarContent onClose={() => onClose} display={{ base: 'none', md: 'block' }} />
@@ -74,6 +78,7 @@ interface SidebarProps extends BoxProps {
 }
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+  const navigate = useNavigate();
   return (
     <Box
       transition="3s ease"
@@ -93,7 +98,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       </Flex>
 
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon}>
+        <NavItem onClick={() => navigate(`${link.route}`)} key={link.name} icon={link.icon}>
           {link.name}
         </NavItem>
       ))}
@@ -150,28 +155,31 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       background="#0066AA"
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={{ base: 'space-between', md: 'flex-end' }}
+      justifyContent={{ base: 'space-between', md: 'space-between' }}
       {...rest}
     >
       <IconButton
+        display={{ base: 'none', md: 'flex' }}
+        size="lg"
+        variant="ghost"
+        height="40px"
+        width="40px"
+        color="white"
+        aria-label="open menu"
+        icon={<BiArrowBack />}
+      />
+      <IconButton
         display={{ base: 'flex', md: 'none' }}
         onClick={onOpen}
-        variant="outline"
         aria-label="open menu"
         icon={<FiMenu />}
       />
 
-      <Text
-        display={{ base: 'flex', md: 'none' }}
-        fontSize="2xl"
-        fontFamily="monospace"
-        fontWeight="bold"
-      >
-        Logo
-      </Text>
+      <Box height="40px" display={{ base: 'flex', md: 'none' }}>
+        <Image src={LogoWhite} alt="Logo" />
+      </Box>
 
       <HStack spacing={{ base: '0', md: '6' }}>
-        <IconButton size="lg" variant="ghost" aria-label="open menu" icon={<FiBell />} />
         <Flex alignItems={'center'}>
           <Menu>
             <MenuButton py={2} transition="all 0.3s" _focus={{ boxShadow: 'none' }}>
@@ -187,14 +195,13 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                   alignItems="flex-start"
                   spacing="1px"
                   ml="2"
+                  color="white"
                 >
                   <Text fontSize="sm">Justina Clark</Text>
-                  <Text fontSize="xs" color="gray.600">
-                    Admin
-                  </Text>
+                  <Text fontSize="xs">Admin</Text>
                 </VStack>
                 <Box display={{ base: 'none', md: 'flex' }}>
-                  <FiChevronDown />
+                  <FiChevronDown color="white" />
                 </Box>
               </HStack>
             </MenuButton>

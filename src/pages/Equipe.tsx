@@ -4,7 +4,7 @@ import HeaderSideBar from '../components/HeaderSideBar';
 export default function Equipe() {
   return (
     <HeaderSideBar>
-      <div>oi</div>
+      <div>equipe</div>
     </HeaderSideBar>
   );
 }

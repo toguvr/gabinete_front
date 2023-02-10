@@ -4,7 +4,7 @@ import HeaderSideBar from '../components/HeaderSideBar';
 export default function Home() {
   return (
     <HeaderSideBar>
-      <div>oi</div>
+      <div>home</div>
     </HeaderSideBar>
   );
 }

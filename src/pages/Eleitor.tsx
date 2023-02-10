@@ -4,7 +4,7 @@ import HeaderSideBar from '../components/HeaderSideBar';
 export default function Eleitor() {
   return (
     <HeaderSideBar>
-      <div>oi</div>
+      <div>eleitor</div>
     </HeaderSideBar>
   );
 }
