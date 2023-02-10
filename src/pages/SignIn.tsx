@@ -1,4 +1,4 @@
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -6,69 +6,113 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  Icon,
   Image,
-  Input,
   InputGroup,
+  InputLeftAddon,
   InputRightElement,
   Link,
   Stack,
   useColorModeValue,
-} from '@chakra-ui/react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import LogoWhite from '../assets/logoWhite.png';
+  Input as InputChakra,
+  InputLeftElement,
+} from "@chakra-ui/react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import LogoWhite from "../assets/logoWhite.png";
+import {
+  IoEyeOffOutline,
+  IoEyeOutline,
+  IoLockClosedOutline,
+  IoMailOutline,
+} from "react-icons/io5";
+import Input from "../components/Form/Input";
+import { StateProps } from "../dtos";
+
+type SignInFormData = {
+  email: string;
+  password: string;
+};
 
 export default function Signin() {
   const navigate = useNavigate();
+  const [values, setValues] = useState<SignInFormData>({} as SignInFormData);
+  const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleViewPassword = () => setShowPassword(!showPassword);
+
   return (
     <Flex
-      minH={'100vh'}
-      align={'center'}
-      justify={'center'}
-      padding={'0 0 40px 0'}
-      flexDirection={'column'}
+      minH={"100vh"}
+      align={"center"}
+      justify={"center"}
+      padding={"0 0 40px 0"}
+      flexDirection={"column"}
       bg="linear-gradient(180deg, #0084DE 0%, #004279 100%)"
     >
-      <Box height="40px" margin={'0 4px 40px 0'}>
+      <Box height="40px" margin={"0 4px 40px 0"}>
         <Image src={LogoWhite} alt="Logo" />
       </Box>
-      <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Box rounded={'lg'} bg={useColorModeValue('white', 'gray.700')} boxShadow={'lg'} p={8}>
+      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+        <Box rounded={"lg"} bg="white" boxShadow={"lg"} p="104px 80px 88px">
           <Stack spacing={4}>
-            <FormControl id="email">
-              <FormLabel>Email</FormLabel>
-              <Input type="email" />
-            </FormControl>
-            <FormControl id="password">
-              <FormLabel>Senha</FormLabel>
-              <InputGroup>
-                <Input type={showPassword ? 'text' : 'password'} />
-                <InputRightElement h={'full'}>
-                  <Button
-                    variant={'ghost'}
-                    onClick={() => setShowPassword((showPassword) => !showPassword)}
-                  >
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-            </FormControl>
+            <Input
+              name="email"
+              type="email"
+              error={errors?.email}
+              value={values.email}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+              leftIcon={<Icon as={IoMailOutline} />}
+              placeholder="E-mail"
+            />
+            <Input
+              mt="6"
+              mb="2"
+              name="password"
+              value={values.password}
+              error={errors?.password}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+              type={showPassword ? "text" : "password"}
+              leftIcon={<Icon as={IoLockClosedOutline} />}
+              rightIcon={
+                <Button
+                  _focus={{ outline: "none" }}
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleViewPassword}
+                >
+                  {showPassword ? (
+                    <Icon
+                      color="blue.600"
+                      fontSize="20px"
+                      as={IoEyeOffOutline}
+                    />
+                  ) : (
+                    <Icon color="blue.600" fontSize="20px" as={IoEyeOutline} />
+                  )}
+                </Button>
+              }
+              placeholder="Senha"
+            />
             <Stack spacing={10}>
               <Stack
-                direction={{ base: 'column', sm: 'row' }}
-                align={'start'}
-                justify={'space-between'}
+                direction={{ base: "column", sm: "row" }}
+                align={"start"}
+                justify={"space-between"}
               >
-                <Checkbox>Lembrar de mim</Checkbox>
-                <Link color={'blue.400'}>Esqueceu a senha?</Link>
+                <Link color={"blue.600"}>Esqueceu a senha?</Link>
               </Stack>
               <Button
-                onClick={() => navigate('/')}
-                bg={'blue.400'}
-                color={'white'}
+                onClick={() => navigate("/")}
+                bg={"blue.600"}
+                color={"white"}
                 _hover={{
-                  bg: 'blue.500',
+                  bg: "blue.500",
                 }}
               >
                 Entrar
