@@ -76,10 +76,9 @@ export default function SidebarWithHeader({ children }: { children: ReactNode })
         ml={{ base: 0, md: 60 }}
         p="26px"
         bg="gray.100"
-        h="calc(100vh - 60px)"
-        w={{ base: '26px', md: 'calc(100vw - 240px)' }}
+        max-h="100%"
       >
-        <Box bgColor="white" h="100%" borderRadius="8px">
+        <Box w='100%' bgColor="white" h="100%" borderRadius="8px">
           {children}
         </Box>
       </Box>

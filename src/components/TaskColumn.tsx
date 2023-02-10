@@ -2,7 +2,8 @@ import { AddIcon } from '@chakra-ui/icons';
 import { Badge, Box, Heading, IconButton, Stack } from '@chakra-ui/react';
 
 import Task from './Task';
-import { KanbanColumns } from './utils/enums';
+import { KanbanColumns } from '../utils/enums';
+import useColumnTasks from '../hooks/useColumnTask';
 
 const mockTasks = [
   {
@@ -38,8 +39,9 @@ const mockTasks = [
 ];
 
 export default function TaskColumn({ column }: { column: KanbanColumns }) {
-  const ColumnTasks = mockTasks.map((task, index) => (
-    <Task key={task.id} index={index} task={task} />
+  const { tasks, addEmptyTask, updateTask, deleteTask } = useColumnTasks(column);
+  const ColumnTasks = tasks.map((task, index) => (
+    <Task key={task.id} index={index} task={task} onDelete={deleteTask} onUpdate={updateTask} />
   ));
   return (
     <Box bg="gray.100" as="div" borderRadius="md" boxShadow="md" padding="20px" margin="10px">
@@ -57,6 +59,7 @@ export default function TaskColumn({ column }: { column: KanbanColumns }) {
         variant="solid"
         aria-label="add_task"
         icon={<AddIcon />}
+        onClick={addEmptyTask}
       />
       <Stack
         direction={{ base: 'row', md: 'column' }}
