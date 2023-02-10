@@ -8,7 +8,6 @@ export function useTaskDragAndDrop<T extends HTMLElement>(
   handleDropHover: (i: number, j: number) => void
 ) {
   const ref = useRef<T>(null);
-
   const [{ isDragging }, drag] = useDrag<DragItem, void, { isDragging: boolean }>({
     item: { from: task.column, id: task.id, index },
     type: ItemType.TASK,
@@ -17,9 +16,8 @@ export function useTaskDragAndDrop<T extends HTMLElement>(
     }),
   });
 
-  
   drag(ref);
-  
+
   return {
     ref,
     isDragging,
