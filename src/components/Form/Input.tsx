@@ -67,6 +67,7 @@ export default function Input({
           type={type}
           placeholder={placeholder}
           id={name}
+          _placeholder={{ color: "gray.400" }}
         />
         {rightIcon && <InputRightElement>{rightIcon}</InputRightElement>}
       </InputGroup>
