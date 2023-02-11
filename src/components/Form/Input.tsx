@@ -56,6 +56,7 @@ export default function Input({
         )}
         <ChakraInput
           bgColor="gray.50"
+          borderColor={borderColor}
           name={name}
           disabled={disabled}
           value={value}

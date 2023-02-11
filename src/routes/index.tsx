@@ -5,6 +5,8 @@ import Equipe from "../pages/Equipe";
 import Home from "../pages/Home";
 import Signin from "../pages/SignIn";
 import Tarefa from "../pages/Tarefa";
+import ForgetPassword from "../pages/ForgetPassword";
+import RedefinePassword from "../pages/RedefinePassword";
 
 export default function AppRoutes() {
   // const AuthenticatedRoutes = () => {
@@ -25,6 +27,8 @@ export default function AppRoutes() {
         <Route path="/tarefa" element={<Tarefa />} />
       </Route>
       <Route path="/signin" element={<Signin />} />
+      <Route path="/esqueci-senha" element={<ForgetPassword />} />
+      <Route path="/redefinir-senha" element={<RedefinePassword />} />
     </Routes>
   );
 }

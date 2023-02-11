@@ -1,54 +1,44 @@
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
-  Box,
   Button,
-  Checkbox,
-  Flex,
   FormControl,
-  FormLabel,
-  Icon,
-  Image,
-  InputGroup,
-  InputLeftAddon,
-  InputRightElement,
-  Link,
+  Flex,
+  Heading,
   Stack,
+  Text,
   useColorModeValue,
-  Input as InputChakra,
-  InputLeftElement,
+  Box,
+  Image,
+  Icon,
   useToast,
   Spinner,
 } from "@chakra-ui/react";
 import { FormEvent, useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import LogoWhite from "../assets/logoWhite.png";
 import {
   IoEyeOffOutline,
   IoEyeOutline,
   IoLockClosedOutline,
   IoMailOutline,
 } from "react-icons/io5";
-import Input from "../components/Form/Input";
+import LogoWhite from "../assets/logoWhite.png";
 import { StateProps } from "../dtos";
 import * as Yup from "yup";
 import getValidationErrors from "../utils/validationError";
+import Input from "../components/Form/Input";
 
-type SignInFormData = {
-  email: string;
+type RedefineFormInputs = {
   password: string;
 };
 
-export default function Signin() {
-  const navigate = useNavigate();
-  const [values, setValues] = useState<SignInFormData>({} as SignInFormData);
+export default function RedefinePassword() {
+  const [values, setValues] = useState<RedefineFormInputs>(
+    {} as RedefineFormInputs
+  );
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
-  const [showPassword, setShowPassword] = useState(false);
-  const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleViewPassword = () => setShowPassword(!showPassword);
-
-  const handleSignIn = useCallback(
+  const handleResetPassword = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
       setErrors({});
@@ -56,10 +46,9 @@ export default function Signin() {
       setLoading(true);
       try {
         const schema = Yup.object().shape({
-          email: Yup.string()
-            .email("Email inválido")
-            .required("Email obrigatório"),
-          password: Yup.string().required("Senha obrigatória"),
+          password: Yup.string()
+            .required("Senha obrigatória")
+            .min(6, "Mínimo de 6 dígitos"),
         });
 
         await schema.validate(values, {
@@ -68,11 +57,10 @@ export default function Signin() {
 
         // await signIn(values);
         console.log("values", values);
-        localStorage.setItem("loginGabinete", JSON.stringify(values));
 
         return toast({
-          title: "Autenticado com sucesso",
-          description: "Você conseguiu se autenticar.",
+          title: "Senha redefinida com sucesso",
+          description: "Você inseriu uma nova senha.",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -88,7 +76,7 @@ export default function Signin() {
           return toast({
             title:
               err.response.data.message ||
-              "Ocorreu um erro ao fazer login, cheque as credenciais",
+              "Ocorreu um erro ao redefinir senha, cheque as credenciais",
 
             status: "error",
             position: "top-right",
@@ -97,7 +85,7 @@ export default function Signin() {
           });
         }
         return toast({
-          title: "Ocorreu um erro ao fazer login, cheque os credenciais",
+          title: "Ocorreu um erro ao redefinir senha, cheque as credenciais",
 
           status: "error",
           position: "top-right",
@@ -111,6 +99,8 @@ export default function Signin() {
     // [signIn, values]
     [values]
   );
+
+  const handleViewPassword = () => setShowPassword(!showPassword);
 
   return (
     <Flex
@@ -131,18 +121,14 @@ export default function Signin() {
           boxShadow={"lg"}
           p={["20px", "104px 80px 88px"]}
         >
-          <Stack spacing={4}>
-            <Input
-              name="email"
-              type="email"
-              error={errors?.email}
-              value={values.email}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
-              leftIcon={<Icon as={IoMailOutline} />}
-              placeholder="E-mail"
-            />
+          <Heading color="gray.600" size="md">
+            Insira uma nova senha
+          </Heading>
+          <Text color="gray.600" mt="16px" fontSize="sm">
+            Digite uma nova senha e clique em confirmar para redefinição de
+            senha.
+          </Text>
+          <Stack spacing={6} mt="24px">
             <Input
               mt="6"
               mb="2"
@@ -174,27 +160,16 @@ export default function Signin() {
               }
               placeholder="Senha"
             />
-            <Stack spacing={6}>
-              <Stack
-                direction={{ base: "column", sm: "row" }}
-                align={"start"}
-                justify={"space-between"}
-              >
-                <Link href="/esqueci-senha" color={"blue.600"}>
-                  Esqueci senha
-                </Link>
-              </Stack>
-              <Button
-                onClick={handleSignIn}
-                bg={"blue.600"}
-                color={"white"}
-                _hover={{
-                  bg: "blue.700",
-                }}
-              >
-                {loading ? <Spinner color="white" /> : "Entrar"}
-              </Button>
-            </Stack>
+            <Button
+              onClick={handleResetPassword}
+              bg={"blue.600"}
+              color={"white"}
+              _hover={{
+                bg: "blue.700",
+              }}
+            >
+              {loading ? <Spinner color="white" /> : "Confirmar"}
+            </Button>
           </Stack>
         </Box>
       </Stack>

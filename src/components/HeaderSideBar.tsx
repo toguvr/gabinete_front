@@ -82,7 +82,7 @@ export default function SidebarWithHeader({
       <Box ml={{ base: 0, md: 60 }} p="26px" bg="gray.100" h={screenHeight}>
         <Box
           bgColor="white"
-          h={`calc(100vh - 112px)`}
+          h={["100%", `calc(100vh - 112px)`]}
           borderRadius="8px"
           px="52px"
           py="40px"
@@ -140,9 +140,12 @@ interface NavItemProps extends FlexProps {
 const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
   return (
     <Link
-      href="#"
       style={{ textDecoration: "none" }}
       _focus={{ boxShadow: "none" }}
+      _activeLink={{
+        color: "gray.50",
+        background: "blue.600",
+      }}
     >
       <Flex
         align="center"
