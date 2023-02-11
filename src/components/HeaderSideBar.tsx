@@ -80,7 +80,13 @@ export default function SidebarWithHeader({
       {/* mobilenav */}
       <MobileNav onOpen={onOpen} />
       <Box ml={{ base: 0, md: 60 }} p="26px" bg="gray.100" h={screenHeight}>
-        <Box bgColor="white" h="100%" borderRadius="8px">
+        <Box
+          bgColor="white"
+          h={`calc(100vh - 112px)`}
+          borderRadius="8px"
+          px="52px"
+          py="40px"
+        >
           {children}
         </Box>
       </Box>
