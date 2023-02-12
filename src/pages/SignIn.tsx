@@ -1,26 +1,15 @@
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
-  FormControl,
-  FormLabel,
   Icon,
   Image,
-  InputGroup,
-  InputLeftAddon,
-  InputRightElement,
   Link,
   Stack,
-  useColorModeValue,
-  Input as InputChakra,
-  InputLeftElement,
   useToast,
   Spinner,
 } from "@chakra-ui/react";
 import { FormEvent, useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import LogoWhite from "../assets/logoWhite.png";
 import {
   IoEyeOffOutline,
@@ -39,7 +28,6 @@ type SignInFormData = {
 };
 
 export default function Signin() {
-  const navigate = useNavigate();
   const [values, setValues] = useState<SignInFormData>({} as SignInFormData);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [showPassword, setShowPassword] = useState(false);

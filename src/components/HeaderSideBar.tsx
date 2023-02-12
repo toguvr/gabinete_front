@@ -20,13 +20,12 @@ import {
   Text,
   useColorModeValue,
   useDisclosure,
-  VStack,
 } from "@chakra-ui/react";
 import { ReactNode, ReactText, useEffect, useState } from "react";
 import { IconType } from "react-icons";
 import { BiArrowBack, BiTask } from "react-icons/bi";
 import { BsListTask } from "react-icons/bs";
-import { FiChevronDown, FiHome, FiMenu } from "react-icons/fi";
+import { FiHome, FiMenu } from "react-icons/fi";
 import { RiTeamLine } from "react-icons/ri";
 import { SiMicrosoftteams } from "react-icons/si";
 import { useNavigate } from "react-router-dom";

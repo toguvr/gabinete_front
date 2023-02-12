@@ -1,11 +1,9 @@
 import {
   Button,
-  FormControl,
   Flex,
   Heading,
   Stack,
   Text,
-  useColorModeValue,
   Box,
   Image,
   Icon,
@@ -17,7 +15,6 @@ import {
   IoEyeOffOutline,
   IoEyeOutline,
   IoLockClosedOutline,
-  IoMailOutline,
 } from "react-icons/io5";
 import LogoWhite from "../assets/logoWhite.png";
 import { StateProps } from "../dtos";

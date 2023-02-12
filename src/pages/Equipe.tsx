@@ -30,7 +30,6 @@ type RegisterFormData = {
 };
 
 export default function Equipe() {
-  const [checkedItems, setCheckedItems] = useState([false, false]);
   const [values, setValues] = useState<RegisterFormData>(
     {} as RegisterFormData
   );
