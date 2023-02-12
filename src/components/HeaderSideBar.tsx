@@ -52,6 +52,7 @@ export default function SidebarWithHeader({
   children: ReactNode;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [screenHeight, setScreenHeight] = useState(`calc(100vh - 60px)`);
 
   useEffect(() => {
@@ -84,8 +85,7 @@ export default function SidebarWithHeader({
           bgColor="white"
           h={["100%", `calc(100vh - 112px)`]}
           borderRadius="8px"
-          px="52px"
-          py="40px"
+          p={[2, 2, 12, 8]}
         >
           {children}
         </Box>
@@ -205,7 +205,6 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
           aria-label="open menu"
           icon={<BiArrowBack />}
         />
-        <Text>Voltar</Text>
       </Flex>
       <IconButton
         display={{ base: "flex", md: "none" }}

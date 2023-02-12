@@ -33,3 +33,19 @@ export interface User {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface TaskProps {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  deadline: string;
+  doneDate: string;
+  status: string;
+  priority: string;
+  responsible: string;
+  creator: string;
+  office: string;
+  files: string;
+  voterId: string;
+}
