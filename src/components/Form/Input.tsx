@@ -41,7 +41,7 @@ export default function Input({
   return (
     <FormControl {...rest} isInvalid={!!error}>
       {label && (
-        <FormLabel color="gray.700" fontWeight="400" mb="1" htmlFor={name}>
+        <FormLabel color="gray.500" fontWeight="400" htmlFor={name} margin="0">
           {label}
         </FormLabel>
       )}

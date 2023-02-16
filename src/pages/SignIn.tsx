@@ -21,6 +21,9 @@ import Input from "../components/Form/Input";
 import { StateProps } from "../dtos";
 import * as Yup from "yup";
 import getValidationErrors from "../utils/validationError";
+import { useNavigate } from "react-router-dom";
+import { key } from "../config/key";
+import { useAuth } from "../contexts/AuthContext";
 
 type SignInFormData = {
   email: string;
@@ -33,6 +36,8 @@ export default function Signin() {
   const [showPassword, setShowPassword] = useState(false);
   const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { signIn } = useAuth();
 
   const handleViewPassword = () => setShowPassword(!showPassword);
 
@@ -54,9 +59,7 @@ export default function Signin() {
           abortEarly: false,
         });
 
-        // await signIn(values);
-        console.log("values", values);
-        localStorage.setItem("loginGabinete", JSON.stringify(values));
+        await signIn(values);
 
         return toast({
           title: "Autenticado com sucesso",

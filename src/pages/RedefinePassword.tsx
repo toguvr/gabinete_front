@@ -24,6 +24,7 @@ import Input from "../components/Form/Input";
 
 type RedefineFormInputs = {
   password: string;
+  confirmationPassword: string;
 };
 
 export default function RedefinePassword() {
@@ -118,7 +119,12 @@ export default function RedefinePassword() {
           boxShadow={"lg"}
           p={["20px", "104px 80px 88px"]}
         >
-          <Heading color="gray.600" size="md">
+          <Heading
+            color="gray.600"
+            size="md"
+            display={"flex"}
+            justifyContent="center"
+          >
             Insira uma nova senha
           </Heading>
           <Text color="gray.600" mt="16px" fontSize="sm">
@@ -128,7 +134,6 @@ export default function RedefinePassword() {
           <Stack spacing={6} mt="24px">
             <Input
               mt="6"
-              mb="2"
               name="password"
               value={values.password}
               error={errors?.password}
@@ -157,8 +162,39 @@ export default function RedefinePassword() {
               }
               placeholder="Senha"
             />
+            <Input
+              mt="6"
+              name="confirmationPassword"
+              value={values.confirmationPassword}
+              error={errors?.confirmationPassword}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+              type={showPassword ? "text" : "password"}
+              leftIcon={<Icon as={IoLockClosedOutline} />}
+              rightIcon={
+                <Button
+                  _focus={{ outline: "none" }}
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleViewPassword}
+                >
+                  {showPassword ? (
+                    <Icon
+                      color="blue.600"
+                      fontSize="20px"
+                      as={IoEyeOffOutline}
+                    />
+                  ) : (
+                    <Icon color="blue.600" fontSize="20px" as={IoEyeOutline} />
+                  )}
+                </Button>
+              }
+              placeholder="Confirmar Senha"
+            />
             <Button
               onClick={handleResetPassword}
+              mt="6"
               bg={"blue.600"}
               color={"white"}
               _hover={{

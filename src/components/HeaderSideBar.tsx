@@ -28,9 +28,10 @@ import { BsListTask } from "react-icons/bs";
 import { FiHome, FiMenu } from "react-icons/fi";
 import { RiTeamLine } from "react-icons/ri";
 import { SiMicrosoftteams } from "react-icons/si";
-import { useNavigate } from "react-router-dom";
+import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import LogoWhite from "../assets/logoWhite.png";
+import { useAuth } from "../contexts/AuthContext";
 
 interface LinkItemProps {
   name: string;
@@ -39,16 +40,18 @@ interface LinkItemProps {
 }
 const LinkItems: Array<LinkItemProps> = [
   { name: "Home", route: "/", icon: FiHome },
-  { name: "Cadastro Equipe", route: "/equipe", icon: RiTeamLine },
-  { name: "Cadastro Eleitor", route: "/eleitor", icon: SiMicrosoftteams },
+  { name: "Equipe", route: "/equipe", icon: RiTeamLine },
+  { name: "Eleitor", route: "/eleitor", icon: SiMicrosoftteams },
   { name: "Demandas", route: "/demanda", icon: BsListTask },
   { name: "Tarefas", route: "/tarefa", icon: BiTask },
 ];
 
 export default function SidebarWithHeader({
   children,
+  backRoute,
 }: {
   children: ReactNode;
+  backRoute?: boolean;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [screenHeight, setScreenHeight] = useState(`calc(100vh - 60px)`);
@@ -58,7 +61,7 @@ export default function SidebarWithHeader({
   }, []);
 
   return (
-    <Box minH="100vh" bg="white">
+    <Box minH={["100%", "100vh"]} bg="white">
       <SidebarContent
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}
@@ -77,14 +80,15 @@ export default function SidebarWithHeader({
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
-      <MobileNav onOpen={onOpen} />
+      <MobileNav onOpen={onOpen} backRoute={backRoute} />
       <Box ml={{ base: 0, md: 60 }} p="26px" bg="gray.100" h={screenHeight}>
         <Box
           bgColor="white"
           h={["100%", `calc(100vh - 112px)`]}
           borderRadius="8px"
-          px="52px"
+          px="24px"
           py="40px"
+          overflow={"auto"}
         >
           {children}
         </Box>
@@ -95,10 +99,14 @@ export default function SidebarWithHeader({
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
+  active?: boolean;
+  icon?: IconType;
 }
 
-const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+
   return (
     <Box
       transition="3s ease"
@@ -118,94 +126,114 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           bg="blue.600"
         />
       </Flex>
-
-      {LinkItems.map((link) => (
-        <NavItem
-          onClick={() => navigate(`${link.route}`)}
-          key={link.name}
-          icon={link.icon}
-        >
-          {link.name}
-        </NavItem>
-      ))}
+      {LinkItems.map((link) =>
+        pathname === link.route ? (
+          <Link
+            style={{ textDecoration: "none" }}
+            _focus={{ boxShadow: "none" }}
+            onClick={() => navigate(`${link.route}`)}
+          >
+            <Flex
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
+              role="group"
+              cursor="pointer"
+              color="white"
+              bg="blue.600"
+              {...rest}
+            >
+              <Icon
+                mr="4"
+                color="white"
+                fontSize="16"
+                _groupHover={{
+                  color: "white",
+                }}
+                as={link.icon}
+              />
+              {link.name}
+            </Flex>
+          </Link>
+        ) : (
+          <Link
+            style={{ textDecoration: "none" }}
+            _focus={{ boxShadow: "none" }}
+            onClick={() => navigate(`${link.route}`)}
+          >
+            <Flex
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
+              role="group"
+              cursor="pointer"
+              color="gray.500"
+              _hover={{
+                bg: "blue.600",
+                color: "white",
+              }}
+              {...rest}
+            >
+              <Icon
+                mr="4"
+                color="gray.500"
+                fontSize="16"
+                _groupHover={{
+                  color: "white",
+                }}
+                as={link.icon}
+              />
+              {link.name}
+            </Flex>
+          </Link>
+        )
+      )}
     </Box>
-  );
-};
-
-interface NavItemProps extends FlexProps {
-  icon: IconType;
-  children: ReactText;
-}
-const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
-  return (
-    <Link
-      style={{ textDecoration: "none" }}
-      _focus={{ boxShadow: "none" }}
-      _activeLink={{
-        color: "gray.50",
-        background: "blue.600",
-      }}
-    >
-      <Flex
-        align="center"
-        p="4"
-        mx="4"
-        borderRadius="lg"
-        role="group"
-        cursor="pointer"
-        color="gray.500"
-        _hover={{
-          bg: "#0066AA",
-          color: "white",
-        }}
-        {...rest}
-      >
-        {icon && (
-          <Icon
-            mr="4"
-            color="gray.500"
-            fontSize="16"
-            _groupHover={{
-              color: "white",
-            }}
-            as={icon}
-          />
-        )}
-        {children}
-      </Flex>
-    </Link>
   );
 };
 
 interface MobileProps extends FlexProps {
   onOpen: () => void;
+  backRoute?: boolean;
 }
-const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
+const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
+
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
       px={{ base: 4, md: 4 }}
       height="60px"
       alignItems="center"
-      background="#0066AA"
-      borderBottomWidth="1px"
-      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
+      background="blue.600"
       justifyContent={{ base: "space-between", md: "space-between" }}
       {...rest}
     >
-      <Flex align="center">
-        <IconButton
-          display={{ base: "none", md: "flex" }}
-          size="lg"
-          variant="ghost"
-          height="40px"
-          width="40px"
-          color="white"
-          aria-label="open menu"
-          icon={<BiArrowBack />}
-        />
-        <Text>Voltar</Text>
-      </Flex>
+      {backRoute ? (
+        <Flex align="center" display={{ base: "none", md: "flex" }}>
+          <IconButton
+            display={{ base: "none", md: "flex" }}
+            size="lg"
+            variant="ghost"
+            height="40px"
+            width="40px"
+            color="white"
+            aria-label="open menu"
+            icon={<BiArrowBack />}
+            onClick={() => navigate(-1)}
+            _hover={{
+              bg: "transparent",
+            }}
+          />
+          <Text color="white">Voltar</Text>
+        </Flex>
+      ) : (
+        <Flex></Flex>
+      )}
+
       <IconButton
         display={{ base: "flex", md: "none" }}
         onClick={onOpen}
@@ -242,7 +270,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               <MenuItem>Settings</MenuItem>
               <MenuItem>Billing</MenuItem>
               <MenuDivider />
-              <MenuItem>Sign out</MenuItem>
+              <MenuItem onClick={signOut}>Sign out</MenuItem>
             </MenuList>
           </Menu>
         </Flex>

@@ -28,13 +28,27 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoadingUser, setLoadingUser] = useState(true);
-  const [user, setUser] = useState<User>({} as User);
+  const [user, setUser] = useState<User>(() => {
+    const token = localStorage.getItem(key.token);
+    const user = localStorage.getItem(key.user);
+
+    if (token && user) {
+      api.defaults.headers.authorization = `Bearer ${token}`;
+
+      return JSON.parse(user);
+    }
+
+    return {} as User;
+  });
   const isAuthenticated = !!user?.id;
 
   async function signOut() {
-    await localStorage.multiRemove([key.refreshToken, key.token, key.user]);
+    localStorage.removeItem(key.refreshToken);
+    localStorage.removeItem(key.token);
+    localStorage.removeItem(key.user);
 
     setUser({} as User);
+    // return window.location.reload();
   }
 
   useEffect(() => {
@@ -62,18 +76,24 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signIn = useCallback(
     async ({ email, password }: { email: string; password: string }) => {
-      const response = await api.post("/sessions/limit", {
-        email,
-        password,
-      });
+      const response = {
+        data: {
+          user: {
+            id: "1234",
+            name: "otavio",
+          },
+          token: "123",
+        },
+      };
+      // await api.post("/sessions/limit", {
+      //   email,
+      //   password,
+      // });
 
       const { token, user } = response.data;
 
-      await localStorage.multiSet([
-        [key.token, token],
-        // [key.refreshToken, null],
-        [key.user, JSON.stringify(user)],
-      ]);
+      localStorage.setItem(key.token, token);
+      localStorage.setItem(key.user, JSON.stringify(user));
 
       api.defaults.headers.authorization = `Bearer ${token}`;
 
@@ -84,7 +104,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const updateUser = async (user: User) => {
     setUser(user);
-    await localStorage.setItem(key.user, JSON.stringify(user));
+    localStorage.setItem(key.user, JSON.stringify(user));
   };
 
   return (

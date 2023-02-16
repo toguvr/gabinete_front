@@ -1,11 +1,9 @@
 import {
   Button,
-  FormControl,
   Flex,
   Heading,
   Stack,
   Text,
-  useColorModeValue,
   Box,
   Image,
   Icon,
@@ -113,7 +111,12 @@ export default function ForgetPassword() {
           boxShadow={"lg"}
           p={["20px", "104px 80px 88px"]}
         >
-          <Heading color="gray.600" size="md">
+          <Heading
+            color="gray.600"
+            size="md"
+            display={"flex"}
+            justifyContent="center"
+          >
             Esqueceu sua senha?
           </Heading>
           <Text color="gray.600" mt="16px" fontSize="sm">
