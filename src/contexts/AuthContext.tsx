@@ -76,19 +76,10 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signIn = useCallback(
     async ({ email, password }: { email: string; password: string }) => {
-      const response = {
-        data: {
-          user: {
-            id: "1234",
-            name: "otavio",
-          },
-          token: "123",
-        },
-      };
-      // await api.post("/sessions/limit", {
-      //   email,
-      //   password,
-      // });
+      const response = await api.post("/sessions", {
+        email,
+        password,
+      });
 
       const { token, user } = response.data;
 

@@ -17,6 +17,7 @@ import { StateProps } from "../dtos";
 import * as Yup from "yup";
 import getValidationErrors from "../utils/validationError";
 import Input from "../components/Form/Input";
+import api from "../services/api";
 
 type ForgotPasswordFormInputs = {
   email: string;
@@ -30,6 +31,7 @@ export default function ForgetPassword() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
+  console.log(values.email);
   const handleResetPassword = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
@@ -47,8 +49,11 @@ export default function ForgetPassword() {
           abortEarly: false,
         });
 
-        // await signIn(values);
-        console.log("values", values);
+        const body = {
+          email: values?.email,
+        };
+
+        await api.post("/password/forgot", body);
 
         return toast({
           title: "Link enviado com sucesso",

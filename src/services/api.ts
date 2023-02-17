@@ -13,7 +13,7 @@ type ModifyAxiosInstance = AxiosInstance & {
 };
 
 const api = axios.create({
-  baseURL: appUrl.apiProd,
+  baseURL: appUrl.apiDev,
 }) as ModifyAxiosInstance;
 
 api.registerInterceptTokenManager = (signOut: () => void) => {

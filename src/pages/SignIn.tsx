@@ -99,8 +99,7 @@ export default function Signin() {
         setLoading(false);
       }
     },
-    // [signIn, values]
-    [values]
+    [signIn, values]
   );
 
   return (

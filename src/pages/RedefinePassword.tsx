@@ -21,6 +21,8 @@ import { StateProps } from "../dtos";
 import * as Yup from "yup";
 import getValidationErrors from "../utils/validationError";
 import Input from "../components/Form/Input";
+import api from "../services/api";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type RedefineFormInputs = {
   password: string;
@@ -35,6 +37,8 @@ export default function RedefinePassword() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [showPassword, setShowPassword] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const handleResetPassword = useCallback(
     async (e: FormEvent) => {
@@ -47,16 +51,30 @@ export default function RedefinePassword() {
           password: Yup.string()
             .required("Senha obrigatória")
             .min(6, "Mínimo de 6 dígitos"),
+          confirmationPassword: Yup.string()
+            .oneOf([Yup.ref("password")], "Confirmação incorreta")
+            .required("Senha obrigatória"),
         });
 
         await schema.validate(values, {
           abortEarly: false,
         });
 
-        // await signIn(values);
-        console.log("values", values);
+        const token = new URLSearchParams(location.search).get("token");
 
-        return toast({
+        if (!token) {
+          throw new Error();
+        }
+
+        const body = {
+          password: values.password,
+          password_confirmation: values.confirmationPassword,
+          token,
+        };
+
+        await api.post("/password/reset", body);
+
+        toast({
           title: "Senha redefinida com sucesso",
           description: "Você inseriu uma nova senha.",
           status: "success",
@@ -64,6 +82,7 @@ export default function RedefinePassword() {
           isClosable: true,
           position: "top-right",
         });
+        return navigate("/");
       } catch (err: any) {
         if (err instanceof Yup.ValidationError) {
           setErrors(getValidationErrors(err));
