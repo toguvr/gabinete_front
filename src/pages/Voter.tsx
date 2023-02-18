@@ -23,7 +23,7 @@ import {
   Tr,
   useToast,
 } from "@chakra-ui/react";
-import { FormEvent, useCallback, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import HeaderSideBar from "../components/HeaderSideBar";
 import { StateProps } from "../dtos";
 import * as Yup from "yup";
@@ -31,8 +31,9 @@ import getValidationErrors from "../utils/validationError";
 import Input from "../components/Form/Input";
 import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
-type VoterData = {
+type VoterDataProps = {
   id: number;
   name: string;
   email: string;
@@ -45,32 +46,25 @@ export default function Voter() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const [data, setData] = useState<VoterData[]>([
-    {
-      id: 1,
-      name: "Augusto Telles",
-      email: "marketing@gmail.com",
-      birthday: "14/05/1993",
-      cell: "24999569920",
-      adress: "Rua 544, jardim amalia",
-    },
-    {
-      id: 2,
-      name: "Otavio Augusto Chrispim de Paiva",
-      email: "financeiro@gmail.com",
-      birthday: "11/01/1983",
-      cell: "24999569920",
-      adress: "Rua Jose Correa, jardim amalia",
-    },
-    {
-      id: 3,
-      name: "Hugo Não sei o que",
-      email: "social@gmail.com",
-      birthday: "13/01/2003",
-      cell: "24999569920",
-      adress: "Rua Jose Correa Fonseca, 21, jardim amalia",
-    },
-  ]);
+  const [data, setData] = useState([] as VoterDataProps[]);
+
+  const getVoterList = async () => {
+    setData([] as VoterDataProps[]);
+
+    setLoading(true);
+    try {
+      const response = await api.get(`/voter`);
+
+      setData(response.data);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getVoterList();
+  }, []);
 
   return (
     <HeaderSideBar>

@@ -30,7 +30,7 @@ type RegisterFormData = {
   office: string[];
 };
 
-export default function RegisterTeam() {
+export default function RegisterOffice() {
   const [values, setValues] = useState<RegisterFormData>(
     {} as RegisterFormData
   );

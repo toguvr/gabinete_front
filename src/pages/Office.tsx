@@ -23,7 +23,7 @@ import {
   Tr,
   useToast,
 } from "@chakra-ui/react";
-import { FormEvent, useCallback, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import HeaderSideBar from "../components/HeaderSideBar";
 import { StateProps } from "../dtos";
 import * as Yup from "yup";
@@ -31,8 +31,9 @@ import getValidationErrors from "../utils/validationError";
 import Input from "../components/Form/Input";
 import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
-type TeamData = {
+type OfficeDataProps = {
   id: number;
   name: string;
   email: string;
@@ -40,33 +41,29 @@ type TeamData = {
   office: string;
 };
 
-export default function Team() {
+export default function Office() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const [data, setData] = useState<TeamData[]>([
-    {
-      id: 1,
-      name: "Marketing",
-      email: "marketing@gmail.com",
-      cell: "24999569920",
-      office: "Diretor",
-    },
-    {
-      id: 2,
-      name: "Financeiro",
-      email: "financeiro@gmail.com",
-      cell: "24999569920",
-      office: "Supervisão",
-    },
-    {
-      id: 3,
-      name: "Social",
-      email: "social@gmail.com",
-      cell: "24999569920",
-      office: "Acessor",
-    },
-  ]);
+  const [data, setData] = useState([] as OfficeDataProps[]);
+
+  const getOfficeList = async () => {
+    setData([] as OfficeDataProps[]);
+
+    setLoading(true);
+    try {
+      const response = await api.get(`/office`);
+
+      setData(response.data);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getOfficeList();
+  }, []);
 
   return (
     <HeaderSideBar>
@@ -126,7 +123,7 @@ export default function Team() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {team?.name}
+                      ola
                     </Td>
                     <Td
                       color="gray.600"
@@ -136,7 +133,7 @@ export default function Team() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {team?.email}
+                      oi
                     </Td>
                     <Td
                       color="gray.600"
@@ -146,7 +143,7 @@ export default function Team() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {team?.cell}
+                      a
                     </Td>
                     <Td
                       color="gray.600"
@@ -156,7 +153,7 @@ export default function Team() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {team?.office}
+                      b
                     </Td>
                     <Td
                       py="0px"

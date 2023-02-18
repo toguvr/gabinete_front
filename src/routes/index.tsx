@@ -1,7 +1,7 @@
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import RegisterVoter from "../pages/RegisterVoter";
-import Team from "../pages/Team";
-import RegisterTeam from "../pages/RegisterTeam";
+import Office from "../pages/Office";
+import RegisterTeam from "../pages/RegisterOffice";
 import Home from "../pages/Home";
 import Signin from "../pages/SignIn";
 import Tarefa from "../pages/Tarefa";
@@ -19,13 +19,7 @@ interface PrivateRoutesProps {
 export default function AppRoutes() {
   const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
     const { isAuthenticated } = useAuth();
-    const { pathname } = useLocation();
 
-    console.log("isAuthenticated", isAuthenticated);
-    console.log("ISPRIVATE", isPrivate);
-    console.log("===", isAuthenticated === isPrivate);
-    console.log("goto", isPrivate ? "/signin" : "/");
-    console.log("pathname", pathname);
     return isAuthenticated === isPrivate ? (
       <Outlet />
     ) : (
@@ -37,7 +31,7 @@ export default function AppRoutes() {
     <Routes>
       <Route element={<AuthenticatedRoutes isPrivate />}>
         <Route path="/" element={<Home />} />
-        <Route path="/equipe" element={<Team />} />
+        <Route path="/equipe" element={<Office />} />
         <Route path="/eleitor" element={<Voter />} />
         <Route path="/equipe/registrar-equipe" element={<RegisterTeam />} />
         <Route path="/eleitor/registrar-eleitor" element={<RegisterVoter />} />

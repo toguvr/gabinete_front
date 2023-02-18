@@ -32,6 +32,7 @@ import { matchPath, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import LogoWhite from "../assets/logoWhite.png";
 import { useAuth } from "../contexts/AuthContext";
+import { usePermission } from "../contexts/PermissionContext";
 
 interface LinkItemProps {
   name: string;
@@ -106,7 +107,8 @@ interface SidebarProps extends BoxProps {
 const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-
+  const { permissionData } = usePermission();
+  console.log("permissionData", permissionData);
   return (
     <Box
       transition="3s ease"
@@ -132,6 +134,7 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
             style={{ textDecoration: "none" }}
             _focus={{ boxShadow: "none" }}
             onClick={() => navigate(`${link.route}`)}
+            key={link.name}
           >
             <Flex
               align="center"
@@ -161,6 +164,7 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
             style={{ textDecoration: "none" }}
             _focus={{ boxShadow: "none" }}
             onClick={() => navigate(`${link.route}`)}
+            key={link.name}
           >
             <Flex
               align="center"
