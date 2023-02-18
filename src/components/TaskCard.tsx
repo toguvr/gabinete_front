@@ -9,9 +9,11 @@ import {
   Link,
   Badge,
   useColorModeValue,
+  Icon,
 } from '@chakra-ui/react';
 import { TaskProps } from '../dtos';
 import { Flex } from '@chakra-ui/react';
+import { IoDocumentTextOutline } from 'react-icons/io5';
 
 interface TaskCardProps {
   task: TaskProps;
@@ -21,20 +23,44 @@ export default function SocialProfileSimple({ task }: TaskCardProps) {
   return (
     <Center py={4}>
       <Box w={'full'} bg={useColorModeValue('white', 'gray.900')} textAlign={'center'}>
-        <Heading p="0 12px" textAlign="start" fontSize="16px" fontFamily={'body'} mb={2}>
-          {task.title}
-        </Heading>
-        <Flex justifyContent="space-between" mb={8}>
-          <Text p="0 12px" textAlign="start" fontWeight={600} color={'gray.500'}>
+        <Box p="12px" borderRadius="8px" m="12px" border="1px solid #D3D3D3">
+          <Text textAlign={'center'} color={useColorModeValue('gray.700', 'gray.400')} px={3}>
+            {task.description}
+          </Text>
+        </Box>
+
+        <Box paddingLeft='6px' >
+          <Text marginBottom="6px" p="0 12px" textAlign="start" fontWeight={600} color={'gray.400'}>
             Eleitor: {task.voterId}
           </Text>
-          <Text p="0 12px" textAlign="start" fontWeight={600} color={'gray.500'}>
-            Prazo: {task.deadline}
+          <Text marginBottom="6px" p="0 12px" textAlign="start" fontWeight={600} color={'gray.400'}>
+            Criado por: {task.creator}
           </Text>
-        </Flex>
-        <Text textAlign={'center'} color={useColorModeValue('gray.700', 'gray.400')} px={3}>
-          {task.description}
-        </Text>
+          <Text marginBottom="6px" p="0 12px" textAlign="start" fontWeight={600} color={'gray.400'}>
+            Criado há:{' '}
+            {Math.ceil((new Date().getTime() - task.createdAt.getTime()) / (1000 * 3600 * 24))} dias
+          </Text>
+          <Text marginBottom="6px" p="0 12px" textAlign="start" fontWeight={600} color={'gray.400'}>
+            Recurso: {task.resources ? 'Sim' : 'Não'}
+          </Text>
+          <Text marginBottom="6px" p="0 12px" textAlign="start" fontWeight={600} color={'gray.400'}>
+            Prioridade: {task.priority}
+          </Text>
+          <Flex flexDirection="column">
+            <Text
+              marginBottom="6px"
+              p="0 12px"
+              textAlign="start"
+              fontWeight={600}
+              color={'gray.400'}
+            >
+              Arquivo:
+            </Text>
+            <Text p="0 24px" textAlign="start">
+              <Icon color="blue.600" fontSize="20px" as={IoDocumentTextOutline} />
+            </Text>
+          </Flex>
+        </Box>
       </Box>
     </Center>
   );

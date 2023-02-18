@@ -31,15 +31,16 @@ export default function Tarefa() {
       title: 'Ajudar com Cirurgia de Catarata',
       description:
         'Essa e uma descricao aleatoria de alguma task que vai ser atribuida a um assessor por um politico qualquer',
-      createdAt: '15/012/2022',
-      deadline: '10/03/2023',
-      doneDate: '10/03/2023',
+      createdAt: new Date('2023/01/12'),
+      deadline: new Date('2023/01/12'),
+      doneDate: new Date('2023/01/12'),
       status: '1',
       priority: 'Alta',
       responsible: 'João da Silva',
       creator: 'Maria da Silva',
       office: 'Munir',
       files: 'asd',
+      resources: true,
       voterId: '123',
     },
     {
@@ -47,15 +48,16 @@ export default function Tarefa() {
       title: 'Ajudar com Cirurgia de Catarata',
       description:
         'Essa e uma descricao aleatoria de alguma task que vai ser atribuida a um assessor por um politico qualquer',
-      createdAt: '15/012/2022',
-      deadline: '10/03/2023',
-      doneDate: '10/03/2023',
+      createdAt: new Date('2023/01/12'),
+      deadline: new Date('2023/01/12'),
+      doneDate: new Date('2023/01/12'),
       status: '3',
       priority: 'Alta',
       responsible: 'João da Silva',
       creator: 'Maria da Silva',
       office: 'Munir',
       files: 'asd',
+      resources: true,
       voterId: '123',
     },
     {
@@ -63,15 +65,16 @@ export default function Tarefa() {
       title: 'Ajudar com Cirurgia de Catarata',
       description:
         'Essa e uma descricao aleatoria de alguma task que vai ser atribuida a um assessor por um politico qualquer',
-      createdAt: '15/012/2022',
-      deadline: '10/03/2023',
-      doneDate: '10/03/2023',
+      createdAt: new Date('2023/01/12'),
+      deadline: new Date('2023/01/12'),
+      doneDate: new Date('2023/01/12'),
       status: '1',
       priority: 'Alta',
       responsible: 'João da Silva',
       creator: 'Maria da Silva',
       office: 'Munir',
       files: 'asd',
+      resources: true,
       voterId: '123',
     },
     {
@@ -79,15 +82,16 @@ export default function Tarefa() {
       title: 'Ajudar com Cirurgia de Catarata',
       description:
         'Essa e uma descricao aleatoria de alguma task que vai ser atribuida a um assessor por um politico qualquer',
-      createdAt: '15/012/2022',
-      deadline: '10/03/2023',
-      doneDate: '10/03/2023',
+      createdAt: new Date('2023/01/12'),
+      deadline: new Date('2023/01/12'),
+      doneDate: new Date('2023/01/12'),
       status: '2',
       priority: 'Alta',
       responsible: 'João da Silva',
       creator: 'Maria da Silva',
       office: 'Munir',
       files: 'asd',
+      resources: true,
       voterId: '123',
     },
   ]);
@@ -124,16 +128,18 @@ export default function Tarefa() {
       >
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
-          <ModalContent alignSelf="center" justifyItems="center">
-            <ModalHeader py={2}>Tarefa</ModalHeader>
+          <ModalContent p={6} alignSelf="center" justifyItems="center">
+            <ModalHeader color="blue.600" textAlign="center" py={2}>
+              Título da Demanda
+            </ModalHeader>
             <ModalCloseButton />
 
             <ModalBody bg="white" p={0} m={0}>
               <TaskCard task={selectedTask} />
             </ModalBody>
 
-            <ModalFooter py={2}>
-              <Button colorScheme="blue" mr={3} onClick={onClose}>
+            <ModalFooter display="flex" alignItems="center" justifyContent="center">
+              <Button alignSelf="center" colorScheme="blue" mr={3} onClick={onClose}>
                 Fechar
               </Button>
             </ModalFooter>
@@ -161,9 +167,7 @@ export default function Tarefa() {
                 <Th
                   fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   color="white"
-                  display="flex"
-                  flex={1}
-                  textAlign="start"
+                  textAlign="center"
                 >
                   Título
                 </Th>
@@ -173,9 +177,10 @@ export default function Tarefa() {
                   maxW={[1, 4, 4]}
                   color="white"
                   textAlign="center"
+                  flexWrap="wrap"
                   p={0}
                 >
-                  Prioridade
+                  Foco
                 </Th>
               </Tr>
             </Thead>
@@ -184,15 +189,12 @@ export default function Tarefa() {
                 <Tr key={task.id} bg="white">
                   <Td
                     onClick={() => handleSelectTask(task.id)}
-                    h="56px"
-                    maxW={[1]}
                     fontWeight="bold"
                     textAlign="center"
                   >
                     41523
                   </Td>
                   <Td
-                    p={0}
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
@@ -213,7 +215,7 @@ export default function Tarefa() {
                     whiteSpace="nowrap"
                     textOverflow="ellipsis"
                     maxW={[1, 4, 32]}
-                    textAlign="start"
+                    textAlign="center"
                     p={0}
                   >
                     {task.title}
@@ -222,21 +224,16 @@ export default function Tarefa() {
                   <Td
                     onClick={() => handleSelectTask(task.id)}
                     h="56px"
-                    maxW={[1, 4, 4]}
                     textAlign="center"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
                   >
                     {task.priority}
                   </Td>
                 </Tr>
               ))}
             </Tbody>
-            <Tfoot>
-              <Tr>
-                <Th></Th>
-                <Th></Th>
-                <Th></Th>
-              </Tr>
-            </Tfoot>
           </Table>
         </TableContainer>
       </Flex>

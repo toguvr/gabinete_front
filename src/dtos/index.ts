@@ -38,14 +38,15 @@ export interface TaskProps {
   id: string;
   title: string;
   description: string;
-  createdAt: string;
-  deadline: string;
-  doneDate: string;
+  createdAt: Date;
+  deadline: Date;
+  doneDate: Date;
   status: string;
   priority: string;
   responsible: string;
   creator: string;
   office: string;
+  resources: boolean;
   files: string;
   voterId: string;
 }
