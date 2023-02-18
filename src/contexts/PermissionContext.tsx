@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import { key } from "../config/key";
-import { Office, PermissionById } from "../dtos";
+import { OfficeDTO, PermissionByIdDTO } from "../dtos";
 import api from "../services/api";
 import { useAuth } from "./AuthContext";
 
@@ -15,33 +15,22 @@ type PermissionProviderProps = {
 };
 
 type PermissionContextData = {
-  permissionData: PermissionById[];
+  permissionData: PermissionByIdDTO[];
 };
 
 export const PermissionContext = createContext({} as PermissionContextData);
 
 export function PermissionProvider({ children }: PermissionProviderProps) {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, permissionsById } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [permissionData, setPermissionData] = useState([] as PermissionById[]);
-  const [officeData, setOfficeData] = useState({} as Office);
-
-  const getOffice = async () => {
-    setIsLoading(true);
-    try {
-      const response = await api.get(`/office`);
-
-      setOfficeData(response.data);
-    } catch (err) {
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [permissionData, setPermissionData] = useState(
+    [] as PermissionByIdDTO[]
+  );
 
   const getPermissions = async () => {
     setIsLoading(true);
     try {
-      const response = await api.get(`/permission/office/${user?.id}`);
+      const response = await api.get(`/permission/office/${permissionsById}`);
 
       localStorage.setItem(key.permission, JSON.stringify(response.data));
       setPermissionData(response.data);
@@ -53,13 +42,9 @@ export function PermissionProvider({ children }: PermissionProviderProps) {
 
   useEffect(() => {
     if (isAuthenticated) {
-      getOffice();
+      getPermissions();
     }
   }, [user, isAuthenticated]);
-
-  useEffect(() => {
-    getPermissions();
-  }, []);
 
   return (
     <PermissionContext.Provider value={{ permissionData }}>

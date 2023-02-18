@@ -11,6 +11,7 @@ import Voter from "../pages/Voter";
 
 import { useAuth } from "../contexts/AuthContext";
 import Demand from "../pages/Demand";
+import EditVoter from "../pages/EditVoter";
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -33,6 +34,7 @@ export default function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/equipe" element={<Office />} />
         <Route path="/eleitor" element={<Voter />} />
+        <Route path="/eleitor/:id" element={<EditVoter />} />
         <Route path="/equipe/registrar-equipe" element={<RegisterTeam />} />
         <Route path="/eleitor/registrar-eleitor" element={<RegisterVoter />} />
         <Route path="/demanda" element={<Demand />} />

@@ -8,7 +8,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { FormEvent, useCallback, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import HeaderSideBar from "../components/HeaderSideBar";
 import { StateProps } from "../dtos";
 import * as Yup from "yup";
@@ -17,9 +17,9 @@ import Input from "../components/Form/Input";
 import axios from "axios";
 import api from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 
-type RegisterFormData = {
+type EditFormData = {
   address_number: string;
   birthdate: string;
   cellphone: string;
@@ -28,7 +28,7 @@ type RegisterFormData = {
   document: string;
   email: string;
   gender: string;
-  id: string;
+  voter_id: string;
   name: string;
   neighborhood: string;
   office_id: string;
@@ -39,18 +39,17 @@ type RegisterFormData = {
   cpf: string;
 };
 
-export default function RegisterVoter() {
-  const [values, setValues] = useState<RegisterFormData>(
-    {} as RegisterFormData
-  );
+export default function EditVoter() {
+  const location = useLocation();
+  const { voter } = location.state;
+  const [values, setValues] = useState<EditFormData>({} as EditFormData);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const [verify, setVerify] = useState(false);
   const { permissionsById } = useAuth();
   const navigate = useNavigate();
 
-  const handleRegister = useCallback(
+  const handleUpdateVoter = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
 
@@ -77,7 +76,6 @@ export default function RegisterVoter() {
           address_number: values.address_number,
           birthdate: values.birthdate,
           city: values.city,
-          complement: values.city,
           gender: values.gender,
           neighborhood: values.neighborhood,
           reference: values.reference,
@@ -85,13 +83,14 @@ export default function RegisterVoter() {
           street: values.street,
           zip: values.zip,
           cpf: values.cpf,
+          voter_id: voter?.id,
         };
 
-        await api.post("/voter", body);
+        await api.put("/voter", body);
 
         toast({
-          title: "Eleitor cadastrado com sucesso",
-          description: "Você cadastrou um eleitor.",
+          title: "Eleitor atualizado com sucesso",
+          description: "Você atualizado um eleitor.",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -108,7 +107,7 @@ export default function RegisterVoter() {
           return toast({
             title:
               err.response.data.message ||
-              "Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais",
+              "Ocorreu um erro ao atualizado o eleitor, cheque as credenciais",
 
             status: "error",
             position: "top-right",
@@ -118,7 +117,7 @@ export default function RegisterVoter() {
         }
         return toast({
           title:
-            "Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais",
+            "Ocorreu um erro ao atualizado o eleitor, cheque as credenciais",
 
           status: "error",
           position: "top-right",
@@ -158,35 +157,43 @@ export default function RegisterVoter() {
     }
   };
 
-  const verifyVoter = async () => {
+  const getVoterById = async () => {
     setLoading(true);
-
     try {
-      const response = await api.get(
-        `/voter/check/office/${permissionsById}/cellphone/${values.ddd}${values.cellphone}`
-      );
-
-      if (response.data.isVoterExist === false) {
-        setVerify(true);
-      }
-    } catch (err: any) {
-      return toast({
-        title:
-          err?.response?.data?.message || "Eleitor registrado no gabinete.",
-        status: "warning",
-        position: "top-right",
-        duration: 3000,
-        isClosable: true,
+      const response = await api.get(`/voter/${voter?.id}`);
+      setValues({
+        ddd: response?.data?.cellphone.slice(0, 2),
+        cellphone: response?.data?.cellphone.slice(2),
+        name: response?.data?.name,
+        email: response?.data?.email,
+        office_id: permissionsById,
+        address_number: response?.data?.address_number,
+        birthdate: response?.data?.birthdate,
+        city: response?.data?.city,
+        gender: response?.data?.gender,
+        neighborhood: response?.data?.neighborhood,
+        reference: response?.data?.reference,
+        state: response?.data?.state,
+        street: response?.data?.street,
+        zip: response?.data?.zip,
+        cpf: response?.data?.cpf,
+        document: response?.data?.document,
+        voter_id: response?.data?.id,
       });
+    } catch (err) {
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    getVoterById();
+  }, []);
+
   return (
     <HeaderSideBar backRoute={true}>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
-        Cadastrar Eleitor
+        Editar Eleitor
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
         <Stack spacing={[5, 8]} mt={["24px", "40px"]} w="852px">
@@ -199,7 +206,7 @@ export default function RegisterVoter() {
                 name="ddd"
                 type="number"
                 error={errors?.ddd}
-                value={values.ddd}
+                value={values?.ddd}
                 onChange={(e) =>
                   setValues({
                     ...values,
@@ -213,13 +220,13 @@ export default function RegisterVoter() {
                 maxW="72px"
                 mr="8px"
                 borderColor="gray.500"
-                disabled={verify}
+                disabled
               />
               <Input
                 name="cellphone"
                 type="text"
                 error={errors?.cellphone}
-                value={values.cellphone}
+                value={values?.cellphone}
                 onChange={(e) =>
                   setValues({
                     ...values,
@@ -232,10 +239,9 @@ export default function RegisterVoter() {
                 w={["100%", "180px"]}
                 borderColor="gray.500"
                 maxLength={2}
-                disabled={verify}
+                disabled
               />
               <Button
-                onClick={verifyVoter}
                 bg={"blue.600"}
                 color={"white"}
                 alignSelf="center"
@@ -244,7 +250,7 @@ export default function RegisterVoter() {
                   bg: "blue.500",
                 }}
                 ml="45px"
-                isDisabled={verify}
+                isDisabled
               >
                 {loading ? <Spinner color="white" /> : "Verificar"}
               </Button>
@@ -257,12 +263,11 @@ export default function RegisterVoter() {
             name="name"
             type="text"
             error={errors?.name}
-            value={values.name}
+            value={values?.name}
             onChange={(e) =>
               setValues({ ...values, [e.target.name]: e.target.value })
             }
             borderColor="gray.500"
-            disabled={!verify}
           />
           <Input
             label="E-mail:"
@@ -270,12 +275,11 @@ export default function RegisterVoter() {
             name="email"
             type="email"
             error={errors?.email}
-            value={values.email}
+            value={values?.email}
             onChange={(e) =>
               setValues({ ...values, [e.target.name]: e.target.value })
             }
             borderColor="gray.500"
-            disabled={!verify}
           />
           <Box>
             <Flex
@@ -289,7 +293,7 @@ export default function RegisterVoter() {
                 name="birthdate"
                 type="date"
                 error={errors?.birthdate}
-                value={values.birthdate}
+                value={values?.birthdate}
                 onChange={(e) =>
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
@@ -307,7 +311,6 @@ export default function RegisterVoter() {
                 //     as={IoCalendarNumberOutline}
                 //   />
                 // }
-                disabled={!verify}
               />
 
               <Input
@@ -315,7 +318,7 @@ export default function RegisterVoter() {
                 name="cpf"
                 type="number"
                 error={errors?.cpf}
-                value={values.cpf}
+                value={values?.cpf}
                 onChange={(e) =>
                   setValues({
                     ...values,
@@ -326,7 +329,6 @@ export default function RegisterVoter() {
                 }
                 placeholder="CPF"
                 borderColor="gray.500"
-                disabled={!verify}
               />
 
               <Box w="100%">
@@ -339,7 +341,6 @@ export default function RegisterVoter() {
                   bg="gray.50"
                   _placeholder={{ color: "gray.500" }}
                   color="gray.600"
-                  disabled={!verify}
                 >
                   <option value="Male">Masculino</option>
                   <option value="Female">Feminino</option>
@@ -362,7 +363,7 @@ export default function RegisterVoter() {
                 name="zip"
                 type="number"
                 error={errors?.zip}
-                value={values.zip}
+                value={values?.zip}
                 onChange={(e) =>
                   setValues({
                     ...values,
@@ -375,20 +376,18 @@ export default function RegisterVoter() {
                 w={["100%", "200px"]}
                 borderColor="gray.500"
                 onBlur={getCep}
-                disabled={!verify}
               />
               <Input
                 placeholder="Rua"
                 name="street"
                 type="text"
                 error={errors?.street}
-                value={values.street}
+                value={values?.street}
                 onChange={(e) =>
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 borderColor="gray.500"
                 flex={1}
-                disabled={!verify}
               />
             </Flex>
             <Flex
@@ -403,26 +402,24 @@ export default function RegisterVoter() {
                 name="neighborhood"
                 type="text"
                 error={errors?.neighborhood}
-                value={values.neighborhood}
+                value={values?.neighborhood}
                 onChange={(e) =>
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 borderColor="gray.500"
                 flex={1}
-                disabled={!verify}
               />
               <Input
                 name="address_number"
                 type="number"
                 error={errors?.address_number}
-                value={values.address_number}
+                value={values?.address_number}
                 onChange={(e) =>
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 placeholder="Numero"
                 w={["100%", "200px"]}
                 borderColor="gray.500"
-                disabled={!verify}
               />
             </Flex>
             <Flex
@@ -437,36 +434,33 @@ export default function RegisterVoter() {
                 name="reference"
                 type="text"
                 error={errors?.reference}
-                value={values.reference}
+                value={values?.reference}
                 onChange={(e) =>
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 borderColor="gray.500"
-                disabled={!verify}
               />
               <Input
                 placeholder="Cidade"
                 name="city"
                 type="text"
                 error={errors?.city}
-                value={values.city}
+                value={values?.city}
                 onChange={(e) =>
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 borderColor="gray.500"
-                disabled={!verify}
               />
               <Input
                 placeholder="UF"
                 name="state"
                 type="text"
                 error={errors?.state}
-                value={values.state}
+                value={values?.state}
                 onChange={(e) =>
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 borderColor="gray.500"
-                disabled={!verify}
               />
             </Flex>
           </Box>
@@ -478,7 +472,7 @@ export default function RegisterVoter() {
             mt={["40px", "95px"]}
           >
             <Button
-              onClick={handleRegister}
+              onClick={handleUpdateVoter}
               bg={"blue.600"}
               color={"white"}
               alignSelf="center"
@@ -486,9 +480,8 @@ export default function RegisterVoter() {
               _hover={{
                 bg: "blue.500",
               }}
-              isDisabled={!verify}
             >
-              {loading ? <Spinner color="white" /> : "Cadastrar"}
+              {loading ? <Spinner color="white" /> : "Atualizar"}
             </Button>
           </Flex>
         </Stack>

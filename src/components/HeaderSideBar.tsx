@@ -109,7 +109,6 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { permissionData } = usePermission();
-  console.log("permissionData", permissionData);
   return (
     <Box
       transition="3s ease"

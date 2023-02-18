@@ -22,10 +22,10 @@ import HeaderSideBar from "../components/HeaderSideBar";
 import TaskListStatusIcon from "../components/TaskListStatusIcon";
 import { useDisclosure } from "@chakra-ui/react";
 import TaskCard from "../components/TaskCard";
-import { TaskProps } from "../dtos";
+import { TaskPropsDTO } from "../dtos";
 
 export default function Tarefa() {
-  const [tasksList, setTasksList] = useState<TaskProps[]>([
+  const [tasksList, setTasksList] = useState<TaskPropsDTO[]>([
     {
       id: "1",
       title: "Ajudar com Cirurgia de Catarata",
@@ -95,7 +95,9 @@ export default function Tarefa() {
       voterId: "123",
     },
   ]);
-  const [selectedTask, setSelectedTask] = useState<TaskProps>({} as TaskProps);
+  const [selectedTask, setSelectedTask] = useState<TaskPropsDTO>(
+    {} as TaskPropsDTO
+  );
 
   function statusChange(statusChange: string, id: string) {
     console.log("newStatus: ", statusChange, "id: ", id);
@@ -110,7 +112,7 @@ export default function Tarefa() {
 
   function handleSelectTask(id: string) {
     const selectedTaskByUser = tasksList.find((task) => task.id === id);
-    setSelectedTask(selectedTaskByUser as TaskProps);
+    setSelectedTask(selectedTaskByUser as TaskPropsDTO);
     onOpen();
   }
 

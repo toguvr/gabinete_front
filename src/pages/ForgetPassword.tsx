@@ -31,7 +31,6 @@ export default function ForgetPassword() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
-  console.log(values.email);
   const handleResetPassword = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();

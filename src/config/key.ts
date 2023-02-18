@@ -3,4 +3,5 @@ export const key = {
   refreshToken: "@gabinete:refreshToken",
   user: "@gabinete:user",
   permission: "@gabinete:permission",
+  permissionsById: "@gabinete:permissionsById",
 };

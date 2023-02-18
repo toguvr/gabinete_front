@@ -2,7 +2,7 @@ export interface StateProps {
   [key: string]: any;
 }
 
-export interface User {
+export interface UserDTO {
   avatar: string;
   avatar_url: string;
   cellphone: string;
@@ -13,7 +13,7 @@ export interface User {
   need_update_password: boolean;
 }
 
-export interface Office {
+export interface OfficeDTO {
   city: string;
   id: string;
   logo: string;
@@ -26,7 +26,7 @@ export interface Office {
   state: string;
 }
 
-export interface Role {
+export interface RoleDTO {
   cargo_page: number;
   demandas_page: number;
   eleitor_page: number;
@@ -38,18 +38,18 @@ export interface Role {
   tarefas_page: number;
 }
 
-export interface PermissionById {
+export interface PermissionByIdDTO {
   id: string;
   active: boolean;
-  office: Office;
+  office: OfficeDTO;
   office_id: string;
-  role: Role;
+  role: RoleDTO;
   role_id: string;
-  user: User;
+  user: UserDTO;
   user_id: string;
 }
 
-export interface TaskProps {
+export interface TaskPropsDTO {
   id: string;
   title: string;
   description: string;
@@ -64,4 +64,23 @@ export interface TaskProps {
   resources: boolean;
   files: string;
   voterId: string;
+}
+
+export interface VoterDTO {
+  address_number: string;
+  birthdate: string;
+  cellphone: string;
+  city: string;
+  complement: string;
+  document: string;
+  email: string;
+  gender: string;
+  id: string;
+  name: string;
+  neighborhood: string;
+  office_id: string;
+  reference: string;
+  state: string;
+  street: string;
+  zip: string;
 }

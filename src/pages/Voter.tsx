@@ -1,19 +1,16 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
   Box,
   Button,
-  Checkbox,
-  CheckboxGroup,
   Flex,
   HStack,
   Icon,
   IconButton,
   Spinner,
-  Stack,
   Table,
   Tbody,
   Td,
@@ -21,39 +18,40 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import HeaderSideBar from "../components/HeaderSideBar";
-import { StateProps } from "../dtos";
-import * as Yup from "yup";
-import getValidationErrors from "../utils/validationError";
-import Input from "../components/Form/Input";
+import { VoterDTO } from "../dtos";
 import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-
-type VoterDataProps = {
-  id: number;
-  name: string;
-  email: string;
-  birthday: string;
-  cell: string;
-  adress: string;
-};
+import { usePermission } from "../contexts/PermissionContext";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Voter() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const [data, setData] = useState([] as VoterDataProps[]);
+  const [data, setData] = useState([] as VoterDTO[]);
+  const [voterToDeleteId, setVoterToDeleteId] = useState("");
+  const { onOpen: onOpenDialog } = useDisclosure();
+  const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { permissionsById } = useAuth();
+
+  const openDialog = (voter_id: string) => {
+    setVoterToDeleteId(voter_id);
+    onOpen();
+  };
 
   const getVoterList = async () => {
-    setData([] as VoterDataProps[]);
+    setData([] as VoterDTO[]);
 
     setLoading(true);
     try {
-      const response = await api.get(`/voter`);
+      const response = await api.get(`/voter/office/${permissionsById}`);
 
       setData(response.data);
     } catch (err) {
@@ -66,8 +64,73 @@ export default function Voter() {
     getVoterList();
   }, []);
 
+  const deleteVoter = async () => {
+    setLoading(true);
+    try {
+      await api.delete(`/voter/${voterToDeleteId}`);
+
+      toast({
+        title: "Usuário excluído com sucesso",
+        status: "success",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+      getVoterList();
+      setVoterToDeleteId("");
+      onClose();
+    } catch (err: any) {
+      return toast({
+        title:
+          err?.response?.data?.message ||
+          "Ocorreu um erro ao excluir o eleitor, tente novamente",
+        status: "error",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditVoter = (voter: VoterDTO) => {
+    navigate(`/eleitor/${voter?.id}`, { state: { voter } });
+  };
+
   return (
     <HeaderSideBar>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
+        {/* <AlertDialogOverlay > */}
+        <AlertDialogContent mx="12px">
+          <AlertDialogHeader fontSize="lg" fontWeight="bold">
+            Deseja excluir este eleitor?
+          </AlertDialogHeader>
+
+          <AlertDialogBody>
+            Essa ação é irreversível, ao deletar não será possível desfazer.
+            Você deseja apagar mesmo assim?"
+          </AlertDialogBody>
+
+          <AlertDialogFooter>
+            <Button onClick={onClose}>Cancelar</Button>
+            <Button
+              colorScheme={"red"}
+              isLoading={loading}
+              onClick={deleteVoter}
+              ml={3}
+            >
+              Continuar
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+        {/* </AlertDialogOverlay> */}
+      </AlertDialog>
       <Flex
         justifyContent={"space-between"}
         gap={["20px", "0"]}
@@ -80,6 +143,7 @@ export default function Voter() {
           ml={[0, "28px"]}
         >
           Eleitor
+          {loading && <Spinner color="blue.600" ml="4" size="sm" />}
         </Text>
         <Button
           onClick={() => navigate("/eleitor/registrar-eleitor")}
@@ -135,9 +199,9 @@ export default function Voter() {
           </Thead>
           <Tbody>
             {Array.isArray(data) && data.length > 0 ? (
-              data.map((team) => {
+              data.map((voter) => {
                 return (
-                  <Tr key={team.id} whiteSpace="nowrap">
+                  <Tr key={voter.id} whiteSpace="nowrap">
                     <Td
                       color="gray.600"
                       fontSize="14px"
@@ -146,7 +210,7 @@ export default function Voter() {
                       borderBottomColor="gray.300"
                       py="4px"
                     >
-                      {team?.name}
+                      {voter?.name}
                     </Td>
                     <Td
                       color="gray.600"
@@ -156,7 +220,7 @@ export default function Voter() {
                       borderBottomColor="gray.300"
                       py="4px"
                     >
-                      {team?.email}
+                      {voter?.email}
                     </Td>
                     <Td
                       color="gray.600"
@@ -166,7 +230,7 @@ export default function Voter() {
                       borderBottomColor="gray.300"
                       py="4px"
                     >
-                      {team?.birthday}
+                      {voter?.birthdate ? voter?.birthdate : "-"}
                     </Td>
                     <Td
                       color="gray.600"
@@ -176,18 +240,35 @@ export default function Voter() {
                       borderBottomColor="gray.300"
                       py="4px"
                     >
-                      {team?.cell}
+                      {voter?.cellphone ? voter?.cellphone : "-"}
                     </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {team?.adress}
-                    </Td>
+                    {voter?.street ? (
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        w="120px"
+                        py="4px"
+                      >
+                        {voter?.street} - {voter?.address_number} -{" "}
+                        {voter?.neighborhood} - {voter?.complement} -{" "}
+                        {voter?.city} - {voter?.state}
+                      </Td>
+                    ) : (
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        -
+                      </Td>
+                    )}
+
                     <Td
                       py="4px"
                       borderBottomWidth="1px"
@@ -196,7 +277,7 @@ export default function Voter() {
                     >
                       <HStack spacing="4px">
                         <IconButton
-                          onClick={() => {}}
+                          onClick={() => handleEditVoter(voter)}
                           aria-label="Open navigation"
                           variant="unstyled"
                           icon={
@@ -210,7 +291,7 @@ export default function Voter() {
                         />
 
                         <IconButton
-                          onClick={() => {}}
+                          onClick={() => openDialog(voter?.id)}
                           aria-label="Open alert"
                           variant="unstyled"
                           icon={

@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 
-import { User } from "../dtos";
+import { PermissionByIdDTO, UserDTO } from "../dtos";
 import api from "../services/api";
 import { key } from "../config/key";
 
@@ -18,17 +18,19 @@ interface SignInCredentials {
 
 interface AuthContextData {
   signIn: (credentials: SignInCredentials) => Promise<void>;
-  updateUser: (user: User) => Promise<void>;
+  updateUser: (user: UserDTO) => Promise<void>;
   signOut: () => void;
   isAuthenticated: boolean;
-  user: User;
+  user: UserDTO;
+  permissionsById: string;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoadingUser, setLoadingUser] = useState(true);
-  const [user, setUser] = useState<User>(() => {
+  const [permissionsById, setPermissionById] = useState("");
+  const [user, setUser] = useState<UserDTO>(() => {
     const token = localStorage.getItem(key.token);
     const user = localStorage.getItem(key.user);
 
@@ -38,7 +40,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       return JSON.parse(user);
     }
 
-    return {} as User;
+    return {} as UserDTO;
   });
   const isAuthenticated = !!user?.id;
 
@@ -47,7 +49,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem(key.token);
     localStorage.removeItem(key.user);
 
-    setUser({} as User);
+    setUser({} as UserDTO);
     // return window.location.reload();
   }
 
@@ -81,19 +83,21 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         password,
       });
 
-      const { token, user } = response.data;
+      const { token, user, permissions } = response.data;
 
       localStorage.setItem(key.token, token);
       localStorage.setItem(key.user, JSON.stringify(user));
+      localStorage.setItem(key.permissionsById, permissions[0]?.office_id);
 
       api.defaults.headers.authorization = `Bearer ${token}`;
 
       setUser(user);
+      setPermissionById(permissions[0]?.office_id);
     },
     []
   );
 
-  const updateUser = async (user: User) => {
+  const updateUser = async (user: UserDTO) => {
     setUser(user);
     localStorage.setItem(key.user, JSON.stringify(user));
   };
@@ -106,6 +110,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated,
         user,
         updateUser,
+        permissionsById,
       }}
     >
       {children}
