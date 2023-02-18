@@ -48,3 +48,20 @@ export interface PermissionById {
   user: User;
   user_id: string;
 }
+
+export interface TaskProps {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: Date;
+  deadline: Date;
+  doneDate: Date;
+  status: string;
+  priority: string;
+  responsible: string;
+  creator: string;
+  office: string;
+  resources: boolean;
+  files: string;
+  voterId: string;
+}

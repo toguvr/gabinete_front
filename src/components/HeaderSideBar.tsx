@@ -55,6 +55,7 @@ export default function SidebarWithHeader({
   backRoute?: boolean;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [screenHeight, setScreenHeight] = useState(`calc(100vh - 60px)`);
 
   useEffect(() => {
