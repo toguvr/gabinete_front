@@ -1,14 +1,23 @@
-import { Box, Button, Flex, Select, Spinner, Stack, Text, useToast } from '@chakra-ui/react';
-import { FormEvent, useCallback, useState } from 'react';
-import HeaderSideBar from '../components/HeaderSideBar';
-import { StateProps } from '../dtos';
-import * as Yup from 'yup';
-import getValidationErrors from '../utils/validationError';
-import Input from '../components/Form/Input';
-import axios from 'axios';
-import api from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router';
+import {
+  Box,
+  Flex,
+  Select,
+  Spinner,
+  Stack,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
+import { FormEvent, useCallback, useState } from "react";
+import HeaderSideBar from "../components/HeaderSideBar";
+import { StateProps } from "../dtos";
+import * as Yup from "yup";
+import getValidationErrors from "../utils/validationError";
+import Input from "../components/Form/Input";
+import axios from "axios";
+import api from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router";
+import Button from "../components/Form/Button";
 
 type RegisterFormData = {
   address_number: string;
@@ -31,7 +40,9 @@ type RegisterFormData = {
 };
 
 export default function RegisterVoter() {
-  const [values, setValues] = useState<RegisterFormData>({} as RegisterFormData);
+  const [values, setValues] = useState<RegisterFormData>(
+    {} as RegisterFormData
+  );
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
@@ -48,8 +59,10 @@ export default function RegisterVoter() {
       setLoading(true);
       try {
         const schema = Yup.object().shape({
-          name: Yup.string().required('Nome completo obrigatório'),
-          email: Yup.string().email('E-mail inválido').required('E-mail obrigatório'),
+          name: Yup.string().required("Nome completo obrigatório"),
+          email: Yup.string()
+            .email("E-mail inválido")
+            .required("E-mail obrigatório"),
         });
 
         await schema.validate(values, {
@@ -74,17 +87,17 @@ export default function RegisterVoter() {
           cpf: values.cpf,
         };
 
-        await api.post('/voter', body);
+        await api.post("/voter", body);
 
         toast({
-          title: 'Eleitor cadastrado com sucesso',
-          description: 'Você cadastrou um eleitor.',
-          status: 'success',
+          title: "Eleitor cadastrado com sucesso",
+          description: "Você cadastrou um eleitor.",
+          status: "success",
           duration: 3000,
           isClosable: true,
-          position: 'top-right',
+          position: "top-right",
         });
-        return navigate('/eleitor');
+        return navigate("/eleitor");
       } catch (err: any) {
         if (err instanceof Yup.ValidationError) {
           setErrors(getValidationErrors(err));
@@ -95,19 +108,20 @@ export default function RegisterVoter() {
           return toast({
             title:
               err.response.data.message ||
-              'Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais',
+              "Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais",
 
-            status: 'error',
-            position: 'top-right',
+            status: "error",
+            position: "top-right",
             duration: 3000,
             isClosable: true,
           });
         }
         return toast({
-          title: 'Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais',
+          title:
+            "Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais",
 
-          status: 'error',
-          position: 'top-right',
+          status: "error",
+          position: "top-right",
           duration: 3000,
           isClosable: true,
         });
@@ -120,7 +134,9 @@ export default function RegisterVoter() {
 
   const getCep = async () => {
     try {
-      const response = await axios.get(`https://viacep.com.br/ws/${values?.zip}/json/`);
+      const response = await axios.get(
+        `https://viacep.com.br/ws/${values?.zip}/json/`
+      );
 
       const { bairro, localidade, logradouro, uf } = response.data;
 
@@ -133,9 +149,9 @@ export default function RegisterVoter() {
       });
     } catch (err) {
       return toast({
-        title: 'Ocorreu um erro ao buscar o cep, tente novamente',
-        status: 'error',
-        position: 'top-right',
+        title: "Ocorreu um erro ao buscar o cep, tente novamente",
+        status: "error",
+        position: "top-right",
         duration: 3000,
         isClosable: true,
       });
@@ -143,6 +159,8 @@ export default function RegisterVoter() {
   };
 
   const verifyVoter = async () => {
+    setErrors({});
+
     setLoading(true);
 
     try {
@@ -155,9 +173,10 @@ export default function RegisterVoter() {
       }
     } catch (err: any) {
       return toast({
-        title: err?.response?.data?.message || 'Eleitor registrado no gabinete.',
-        status: 'warning',
-        position: 'top-right',
+        title:
+          err?.response?.data?.message || "Eleitor registrado no gabinete.",
+        status: "warning",
+        position: "top-right",
         duration: 3000,
         isClosable: true,
       });
@@ -172,9 +191,13 @@ export default function RegisterVoter() {
         Cadastrar Eleitor
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
-        <Stack spacing={[5, 8]} mt={['24px', '40px']} w="852px">
-          <Flex flexDir={'column'}>
-            <Text color="gray.500" fontWeight="400" margin="0">
+        <Stack spacing={[5, 8]} mt={["24px", "40px"]} w="852px">
+          <Flex flexDir={"column"}>
+            <Text
+              color={verify ? "gray.300" : "gray.500"}
+              fontWeight="400"
+              margin="0"
+            >
               Telefone:
             </Text>
             <Flex>
@@ -186,7 +209,9 @@ export default function RegisterVoter() {
                 onChange={(e) =>
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value)).toString().slice(0, 2),
+                    [e.target.name]: Math.max(0, parseInt(e.target.value))
+                      .toString()
+                      .slice(0, 2),
                   })
                 }
                 placeholder="DDD"
@@ -204,73 +229,78 @@ export default function RegisterVoter() {
                 onChange={(e) =>
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value)).toString().slice(0, 9),
+                    [e.target.name]: Math.max(0, parseInt(e.target.value))
+                      .toString()
+                      .slice(0, 9),
                   })
                 }
                 placeholder="00000-0000"
-                w={['100%', '180px']}
+                w={["100%", "180px"]}
                 borderColor="gray.500"
                 maxLength={2}
                 disabled={verify}
               />
               <Button
                 onClick={verifyVoter}
-                bg={'blue.600'}
-                color={'white'}
-                alignSelf="center"
-                w="220px"
-                _hover={{
-                  bg: 'blue.500',
-                }}
+                width="220px"
                 ml="45px"
                 isDisabled={verify}
               >
-                {loading ? <Spinner color="white" /> : 'Verificar'}
+                {loading ? <Spinner color="white" /> : "Verificar"}
               </Button>
             </Flex>
           </Flex>
 
           <Input
+            labelColor={!verify ? "gray.300" : "gray.500"}
             label="Nome:"
             placeholder="Nome completo"
             name="name"
             type="text"
             error={errors?.name}
             value={values.name}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             borderColor="gray.500"
             disabled={!verify}
           />
           <Input
+            labelColor={!verify ? "gray.300" : "gray.500"}
             label="E-mail:"
             placeholder="E-mail"
             name="email"
             type="email"
             error={errors?.email}
             value={values.email}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             borderColor="gray.500"
             disabled={!verify}
           />
           <Box>
             <Flex
-              justifyContent={['flex-start', 'space-between']}
-              alignItems={['flex-start', 'flex-end']}
-              flexDirection={['column', 'row']}
-              gap={[5, '48px']}
+              justifyContent={["flex-start", "space-between"]}
+              alignItems={["flex-start", "flex-end"]}
+              flexDirection={["column", "row"]}
+              gap={[5, "48px"]}
             >
               <Input
+                labelColor={!verify ? "gray.300" : "gray.500"}
                 label="Data de nascimento:"
                 name="birthdate"
                 type="date"
                 error={errors?.birthdate}
                 value={values.birthdate}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 placeholder="Data de Nascimento"
                 borderColor="gray.500"
                 css={{
-                  '&::-webkit-calendar-picker-indicator': {
-                    color: 'gray.500',
+                  "&::-webkit-calendar-picker-indicator": {
+                    color: "gray.500",
                   },
                 }}
                 // rightIcon={
@@ -284,6 +314,7 @@ export default function RegisterVoter() {
               />
 
               <Input
+                labelColor={!verify ? "gray.300" : "gray.500"}
                 label="CPF:"
                 name="cpf"
                 type="number"
@@ -292,7 +323,9 @@ export default function RegisterVoter() {
                 onChange={(e) =>
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value)).toString().slice(0, 11),
+                    [e.target.name]: Math.max(0, parseInt(e.target.value))
+                      .toString()
+                      .slice(0, 11),
                   })
                 }
                 placeholder="CPF"
@@ -301,14 +334,18 @@ export default function RegisterVoter() {
               />
 
               <Box w="100%">
-                <Text color="gray.500" fontWeight="400" margin="0">
+                <Text
+                  color={!verify ? "gray.300" : "gray.500"}
+                  fontWeight="400"
+                  margin="0"
+                >
                   Gênero:
                 </Text>
                 <Select
                   placeholder="Gênero"
                   borderColor="gray.500"
                   bg="gray.50"
-                  _placeholder={{ color: 'gray.500' }}
+                  _placeholder={{ color: "gray.500" }}
                   color="gray.600"
                   disabled={!verify}
                 >
@@ -319,15 +356,19 @@ export default function RegisterVoter() {
             </Flex>
           </Box>
           <Box>
-            <Text color="gray.500" fontWeight="400" margin="0">
+            <Text
+              color={!verify ? "gray.300" : "gray.500"}
+              fontWeight="400"
+              margin="0"
+            >
               Endereço:
             </Text>
             <Flex
               mb="24px"
-              justifyContent={['flex-start', 'space-between']}
-              alignItems={['flex-start', 'flex-end']}
-              flexDirection={['column', 'row']}
-              gap={[5, '44px']}
+              justifyContent={["flex-start", "space-between"]}
+              alignItems={["flex-start", "flex-end"]}
+              flexDirection={["column", "row"]}
+              gap={[5, "44px"]}
             >
               <Input
                 name="zip"
@@ -337,11 +378,13 @@ export default function RegisterVoter() {
                 onChange={(e) =>
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value)).toString().slice(0, 8),
+                    [e.target.name]: Math.max(0, parseInt(e.target.value))
+                      .toString()
+                      .slice(0, 8),
                   })
                 }
                 placeholder="CEP"
-                w={['100%', '200px']}
+                w={["100%", "200px"]}
                 borderColor="gray.500"
                 onBlur={getCep}
                 disabled={!verify}
@@ -352,7 +395,9 @@ export default function RegisterVoter() {
                 type="text"
                 error={errors?.street}
                 value={values.street}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
                 flex={1}
                 disabled={!verify}
@@ -360,10 +405,10 @@ export default function RegisterVoter() {
             </Flex>
             <Flex
               mb="24px"
-              justifyContent={['flex-start', 'space-between']}
-              alignItems={['flex-start', 'flex-end']}
-              flexDirection={['column', 'row']}
-              gap={[5, '44px']}
+              justifyContent={["flex-start", "space-between"]}
+              alignItems={["flex-start", "flex-end"]}
+              flexDirection={["column", "row"]}
+              gap={[5, "44px"]}
             >
               <Input
                 placeholder="Bairro"
@@ -371,7 +416,9 @@ export default function RegisterVoter() {
                 type="text"
                 error={errors?.neighborhood}
                 value={values.neighborhood}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
                 flex={1}
                 disabled={!verify}
@@ -381,19 +428,21 @@ export default function RegisterVoter() {
                 type="number"
                 error={errors?.address_number}
                 value={values.address_number}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 placeholder="Numero"
-                w={['100%', '200px']}
+                w={["100%", "200px"]}
                 borderColor="gray.500"
                 disabled={!verify}
               />
             </Flex>
             <Flex
               mb="24px"
-              justifyContent={['flex-start', 'space-between']}
-              alignItems={['flex-start', 'flex-end']}
-              flexDirection={['column', 'row']}
-              gap={[5, '44px']}
+              justifyContent={["flex-start", "space-between"]}
+              alignItems={["flex-start", "flex-end"]}
+              flexDirection={["column", "row"]}
+              gap={[5, "44px"]}
             >
               <Input
                 placeholder="Complemento"
@@ -401,7 +450,9 @@ export default function RegisterVoter() {
                 type="text"
                 error={errors?.reference}
                 value={values.reference}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
                 disabled={!verify}
               />
@@ -411,7 +462,9 @@ export default function RegisterVoter() {
                 type="text"
                 error={errors?.city}
                 value={values.city}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
                 disabled={!verify}
               />
@@ -421,26 +474,23 @@ export default function RegisterVoter() {
                 type="text"
                 error={errors?.state}
                 value={values.state}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
                 disabled={!verify}
               />
             </Flex>
           </Box>
 
-          <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
-            <Button
-              onClick={handleRegister}
-              bg={'blue.600'}
-              color={'white'}
-              alignSelf="center"
-              w="280px"
-              _hover={{
-                bg: 'blue.500',
-              }}
-              isDisabled={!verify}
-            >
-              {loading ? <Spinner color="white" /> : 'Cadastrar'}
+          <Flex
+            w="100%"
+            alignItems="center"
+            justifyContent="center"
+            mt={["40px", "95px"]}
+          >
+            <Button onClick={handleRegister} width="280px" isDisabled={!verify}>
+              {loading ? <Spinner color="white" /> : "Cadastrar"}
             </Button>
           </Flex>
         </Stack>

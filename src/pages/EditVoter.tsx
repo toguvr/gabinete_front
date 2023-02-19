@@ -1,14 +1,23 @@
-import { Box, Button, Flex, Select, Spinner, Stack, Text, useToast } from '@chakra-ui/react';
-import { FormEvent, useCallback, useEffect, useState } from 'react';
-import HeaderSideBar from '../components/HeaderSideBar';
-import { StateProps } from '../dtos';
-import * as Yup from 'yup';
-import getValidationErrors from '../utils/validationError';
-import Input from '../components/Form/Input';
-import axios from 'axios';
-import api from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import {
+  Box,
+  Flex,
+  Select,
+  Spinner,
+  Stack,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
+import HeaderSideBar from "../components/HeaderSideBar";
+import { StateProps } from "../dtos";
+import * as Yup from "yup";
+import getValidationErrors from "../utils/validationError";
+import Input from "../components/Form/Input";
+import axios from "axios";
+import api from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
+import { useLocation, useNavigate, useParams } from "react-router";
+import Button from "../components/Form/Button";
 
 type EditFormData = {
   address_number: string;
@@ -49,8 +58,10 @@ export default function EditVoter() {
       setLoading(true);
       try {
         const schema = Yup.object().shape({
-          name: Yup.string().required('Nome completo obrigatório'),
-          email: Yup.string().email('E-mail inválido').required('E-mail obrigatório'),
+          name: Yup.string().required("Nome completo obrigatório"),
+          email: Yup.string()
+            .email("E-mail inválido")
+            .required("E-mail obrigatório"),
         });
 
         await schema.validate(values, {
@@ -75,17 +86,17 @@ export default function EditVoter() {
           voter_id: voter?.id,
         };
 
-        await api.put('/voter', body);
+        await api.put("/voter", body);
 
         toast({
-          title: 'Eleitor atualizado com sucesso',
-          description: 'Você atualizado um eleitor.',
-          status: 'success',
+          title: "Eleitor atualizado com sucesso",
+          description: "Você atualizado um eleitor.",
+          status: "success",
           duration: 3000,
           isClosable: true,
-          position: 'top-right',
+          position: "top-right",
         });
-        return navigate('/eleitor');
+        return navigate("/eleitor");
       } catch (err: any) {
         if (err instanceof Yup.ValidationError) {
           setErrors(getValidationErrors(err));
@@ -96,19 +107,20 @@ export default function EditVoter() {
           return toast({
             title:
               err.response.data.message ||
-              'Ocorreu um erro ao atualizado o eleitor, cheque as credenciais',
+              "Ocorreu um erro ao atualizado o eleitor, cheque as credenciais",
 
-            status: 'error',
-            position: 'top-right',
+            status: "error",
+            position: "top-right",
             duration: 3000,
             isClosable: true,
           });
         }
         return toast({
-          title: 'Ocorreu um erro ao atualizado o eleitor, cheque as credenciais',
+          title:
+            "Ocorreu um erro ao atualizado o eleitor, cheque as credenciais",
 
-          status: 'error',
-          position: 'top-right',
+          status: "error",
+          position: "top-right",
           duration: 3000,
           isClosable: true,
         });
@@ -121,7 +133,9 @@ export default function EditVoter() {
 
   const getCep = async () => {
     try {
-      const response = await axios.get(`https://viacep.com.br/ws/${values?.zip}/json/`);
+      const response = await axios.get(
+        `https://viacep.com.br/ws/${values?.zip}/json/`
+      );
 
       const { bairro, localidade, logradouro, uf } = response.data;
 
@@ -134,9 +148,9 @@ export default function EditVoter() {
       });
     } catch (err) {
       return toast({
-        title: 'Ocorreu um erro ao buscar o cep, tente novamente',
-        status: 'error',
-        position: 'top-right',
+        title: "Ocorreu um erro ao buscar o cep, tente novamente",
+        status: "error",
+        position: "top-right",
         duration: 3000,
         isClosable: true,
       });
@@ -182,8 +196,8 @@ export default function EditVoter() {
         Editar Eleitor
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
-        <Stack spacing={[5, 8]} mt={['24px', '40px']} w="852px">
-          <Flex flexDir={'column'}>
+        <Stack spacing={[5, 8]} mt={["24px", "40px"]} w="852px">
+          <Flex flexDir={"column"}>
             <Text color="gray.500" fontWeight="400" margin="0">
               Telefone:
             </Text>
@@ -196,7 +210,9 @@ export default function EditVoter() {
                 onChange={(e) =>
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value)).toString().slice(0, 2),
+                    [e.target.name]: Math.max(0, parseInt(e.target.value))
+                      .toString()
+                      .slice(0, 2),
                   })
                 }
                 placeholder="DDD"
@@ -214,27 +230,19 @@ export default function EditVoter() {
                 onChange={(e) =>
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value)).toString().slice(0, 9),
+                    [e.target.name]: Math.max(0, parseInt(e.target.value))
+                      .toString()
+                      .slice(0, 9),
                   })
                 }
                 placeholder="00000-0000"
-                w={['100%', '180px']}
+                w={["100%", "180px"]}
                 borderColor="gray.500"
                 maxLength={2}
                 disabled
               />
-              <Button
-                bg={'blue.600'}
-                color={'white'}
-                alignSelf="center"
-                w="220px"
-                _hover={{
-                  bg: 'blue.500',
-                }}
-                ml="45px"
-                isDisabled
-              >
-                {loading ? <Spinner color="white" /> : 'Verificar'}
+              <Button onClick={() => {}} w="220px" ml="45px" isDisabled>
+                {loading ? <Spinner color="white" /> : "Verificar"}
               </Button>
             </Flex>
           </Flex>
@@ -246,7 +254,9 @@ export default function EditVoter() {
             type="text"
             error={errors?.name}
             value={values?.name}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             borderColor="gray.500"
           />
           <Input
@@ -256,15 +266,17 @@ export default function EditVoter() {
             type="email"
             error={errors?.email}
             value={values?.email}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             borderColor="gray.500"
           />
           <Box>
             <Flex
-              justifyContent={['flex-start', 'space-between']}
-              alignItems={['flex-start', 'flex-end']}
-              flexDirection={['column', 'row']}
-              gap={[5, '48px']}
+              justifyContent={["flex-start", "space-between"]}
+              alignItems={["flex-start", "flex-end"]}
+              flexDirection={["column", "row"]}
+              gap={[5, "48px"]}
             >
               <Input
                 label="Data de nascimento:"
@@ -272,21 +284,16 @@ export default function EditVoter() {
                 type="date"
                 error={errors?.birthdate}
                 value={values?.birthdate}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 placeholder="Data de Nascimento"
                 borderColor="gray.500"
                 css={{
-                  '&::-webkit-calendar-picker-indicator': {
-                    color: 'gray.500',
+                  "&::-webkit-calendar-picker-indicator": {
+                    color: "gray.500",
                   },
                 }}
-                // rightIcon={
-                //   <Icon
-                //     color="gray.500"
-                //     fontSize="20px"
-                //     as={IoCalendarNumberOutline}
-                //   />
-                // }
               />
 
               <Input
@@ -298,7 +305,9 @@ export default function EditVoter() {
                 onChange={(e) =>
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value)).toString().slice(0, 11),
+                    [e.target.name]: Math.max(0, parseInt(e.target.value))
+                      .toString()
+                      .slice(0, 11),
                   })
                 }
                 placeholder="CPF"
@@ -313,7 +322,7 @@ export default function EditVoter() {
                   placeholder="Gênero"
                   borderColor="gray.500"
                   bg="gray.50"
-                  _placeholder={{ color: 'gray.500' }}
+                  _placeholder={{ color: "gray.500" }}
                   color="gray.600"
                 >
                   <option value="Male">Masculino</option>
@@ -328,10 +337,10 @@ export default function EditVoter() {
             </Text>
             <Flex
               mb="24px"
-              justifyContent={['flex-start', 'space-between']}
-              alignItems={['flex-start', 'flex-end']}
-              flexDirection={['column', 'row']}
-              gap={[5, '44px']}
+              justifyContent={["flex-start", "space-between"]}
+              alignItems={["flex-start", "flex-end"]}
+              flexDirection={["column", "row"]}
+              gap={[5, "44px"]}
             >
               <Input
                 name="zip"
@@ -341,11 +350,13 @@ export default function EditVoter() {
                 onChange={(e) =>
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value)).toString().slice(0, 8),
+                    [e.target.name]: Math.max(0, parseInt(e.target.value))
+                      .toString()
+                      .slice(0, 8),
                   })
                 }
                 placeholder="CEP"
-                w={['100%', '200px']}
+                w={["100%", "200px"]}
                 borderColor="gray.500"
                 onBlur={getCep}
               />
@@ -355,17 +366,19 @@ export default function EditVoter() {
                 type="text"
                 error={errors?.street}
                 value={values?.street}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
                 flex={1}
               />
             </Flex>
             <Flex
               mb="24px"
-              justifyContent={['flex-start', 'space-between']}
-              alignItems={['flex-start', 'flex-end']}
-              flexDirection={['column', 'row']}
-              gap={[5, '44px']}
+              justifyContent={["flex-start", "space-between"]}
+              alignItems={["flex-start", "flex-end"]}
+              flexDirection={["column", "row"]}
+              gap={[5, "44px"]}
             >
               <Input
                 placeholder="Bairro"
@@ -373,7 +386,9 @@ export default function EditVoter() {
                 type="text"
                 error={errors?.neighborhood}
                 value={values?.neighborhood}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
                 flex={1}
               />
@@ -382,18 +397,20 @@ export default function EditVoter() {
                 type="number"
                 error={errors?.address_number}
                 value={values?.address_number}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 placeholder="Numero"
-                w={['100%', '200px']}
+                w={["100%", "200px"]}
                 borderColor="gray.500"
               />
             </Flex>
             <Flex
               mb="24px"
-              justifyContent={['flex-start', 'space-between']}
-              alignItems={['flex-start', 'flex-end']}
-              flexDirection={['column', 'row']}
-              gap={[5, '44px']}
+              justifyContent={["flex-start", "space-between"]}
+              alignItems={["flex-start", "flex-end"]}
+              flexDirection={["column", "row"]}
+              gap={[5, "44px"]}
             >
               <Input
                 placeholder="Complemento"
@@ -401,7 +418,9 @@ export default function EditVoter() {
                 type="text"
                 error={errors?.reference}
                 value={values?.reference}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
               />
               <Input
@@ -410,7 +429,9 @@ export default function EditVoter() {
                 type="text"
                 error={errors?.city}
                 value={values?.city}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
               />
               <Input
@@ -419,24 +440,22 @@ export default function EditVoter() {
                 type="text"
                 error={errors?.state}
                 value={values?.state}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
               />
             </Flex>
           </Box>
 
-          <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
-            <Button
-              onClick={handleUpdateVoter}
-              bg={'blue.600'}
-              color={'white'}
-              alignSelf="center"
-              w="280px"
-              _hover={{
-                bg: 'blue.500',
-              }}
-            >
-              {loading ? <Spinner color="white" /> : 'Atualizar'}
+          <Flex
+            w="100%"
+            alignItems="center"
+            justifyContent="center"
+            mt={["40px", "95px"]}
+          >
+            <Button onClick={handleUpdateVoter} w="280px">
+              {loading ? <Spinner color="white" /> : "Atualizar"}
             </Button>
           </Flex>
         </Stack>

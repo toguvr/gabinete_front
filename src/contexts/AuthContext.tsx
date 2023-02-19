@@ -5,13 +5,12 @@ import React, {
   useContext,
   useEffect,
   useState,
-} from 'react';
+} from "react";
 
-import { OfficeDTO, PermissionByIdDTO, UserDTO } from '../dtos';
-import api from '../services/api';
-import { key } from '../config/key';
-import { RoleDTO } from '../dtos/index';
-import Office from '../pages/Office';
+import { OfficeDTO, PermissionByIdDTO, UserDTO } from "../dtos";
+import api from "../services/api";
+import { key } from "../config/key";
+import { RoleDTO } from "../dtos/index";
 
 interface SignInCredentials {
   email: string;
@@ -31,7 +30,6 @@ interface AuthContextData {
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isLoadingUser, setLoadingUser] = useState(true);
   const [user, setUser] = useState<UserDTO>(() => {
     const token = localStorage.getItem(key.token);
     const user = localStorage.getItem(key.user);
@@ -101,27 +99,33 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   //   loadStorageData();
   // }, [user?.id]);
 
-  const signIn = useCallback(async ({ email, password }: { email: string; password: string }) => {
-    const response = await api.post('/sessions', {
-      email,
-      password,
-    });
+  const signIn = useCallback(
+    async ({ email, password }: { email: string; password: string }) => {
+      const response = await api.post("/sessions", {
+        email,
+        password,
+      });
 
-    const { token, user, permissions } = response.data;
+      const { token, user, permissions } = response.data;
 
-    localStorage.setItem(key.token, token);
-    localStorage.setItem(key.user, JSON.stringify(user));
-    if (permissions.length > 0) {
-      localStorage.setItem(key.office, JSON.stringify(permissions[0]?.office));
-      localStorage.setItem(key.role, JSON.stringify(permissions[0]?.role));
-      setRole(permissions[0]?.office);
-      setOffice(permissions[0]?.role);
-    }
+      localStorage.setItem(key.token, token);
+      localStorage.setItem(key.user, JSON.stringify(user));
+      if (permissions.length > 0) {
+        localStorage.setItem(
+          key.office,
+          JSON.stringify(permissions[0]?.office)
+        );
+        localStorage.setItem(key.role, JSON.stringify(permissions[0]?.role));
+        setRole(permissions[0]?.role);
+        setOffice(permissions[0]?.office);
+      }
 
-    api.defaults.headers.authorization = `Bearer ${token}`;
+      api.defaults.headers.authorization = `Bearer ${token}`;
 
-    setUser(user);
-  }, []);
+      setUser(user);
+    },
+    []
+  );
 
   const updateUser = async (user: UserDTO) => {
     setUser(user);
@@ -149,7 +153,7 @@ function useAuth(): AuthContextData {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
 
   return context;

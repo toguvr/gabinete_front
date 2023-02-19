@@ -5,7 +5,6 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
-  Button,
   Checkbox,
   CheckboxGroup,
   Flex,
@@ -21,13 +20,17 @@ import { StateProps } from "../dtos";
 import * as Yup from "yup";
 import getValidationErrors from "../utils/validationError";
 import Input from "../components/Form/Input";
+import { useAuth } from "../contexts/AuthContext";
+import api from "../services/api";
+import Button from "../components/Form/Button";
 
 type RegisterFormData = {
   name: string;
+  cellphone: string;
   email: string;
+  office_id: string;
+  role_id: string;
   ddd: string;
-  cell: string;
-  office: string[];
 };
 
 export default function RegisterOffice() {
@@ -37,7 +40,8 @@ export default function RegisterOffice() {
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const [step, setStep] = useState(1);
+  const { role } = useAuth();
+  const [verify, setVerify] = useState(false);
 
   const handleRegister = useCallback(
     async (e: FormEvent) => {
@@ -52,16 +56,21 @@ export default function RegisterOffice() {
           email: Yup.string()
             .email("Email inválido")
             .required("Email obrigatório"),
-          ddd: Yup.string().required("DDD obrigatório"),
-          cell: Yup.string().required("Contato obrigatório"),
         });
 
         await schema.validate(values, {
           abortEarly: false,
         });
 
-        // await signIn(values);
-        console.log("values", values);
+        const body = {
+          name: values.name,
+          cellphone: values.ddd + values.cellphone,
+          email: values.email,
+          office_id: values.email,
+          role_id: values.role_id,
+        };
+
+        await api.post("/permission", body);
 
         return toast({
           title: "Cadastrado com sucesso",
@@ -104,15 +113,42 @@ export default function RegisterOffice() {
     [values]
   );
 
+  const verifyPermission = async () => {
+    setLoading(true);
+
+    try {
+      const response = await api.get(
+        `/invite/check/office/${role?.office_id}/email/${values.email}`
+      );
+
+      if (response.data.isVoterExist === false) {
+        setVerify(true);
+      }
+    } catch (err: any) {
+      return toast({
+        title:
+          err?.response?.data?.message || "Eleitor registrado no gabinete.",
+        status: "warning",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <HeaderSideBar backRoute={true}>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
         Cadastrar Equipe
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
-        {step === 1 && (
-          <Flex mt={["24px", "40px"]} w="852px" alignItems={"center"}>
+        <Stack spacing={[5, 10]} mt={["24px", "40px"]} w="852px">
+          <Flex display={"flex"} alignItems={"flex-end"} gap={["20px", "40px"]}>
             <Input
+              color={verify ? "gray.300" : "gray.500"}
+              label="E-mail:"
               placeholder="E-mail"
               name="email"
               type="email"
@@ -123,48 +159,49 @@ export default function RegisterOffice() {
               }
               borderColor="gray.500"
               w="100%"
+              disabled={verify}
             />
 
-            <Flex w="100%" alignItems="center" justifyContent="center">
-              <Button
-                onClick={() => {}}
-                bg={"blue.600"}
-                color={"white"}
-                alignSelf="center"
-                w="200px"
-                _hover={{
-                  bg: "blue.500",
-                }}
-              >
-                {loading ? <Spinner color="white" /> : "Verificar"}
-              </Button>
-            </Flex>
+            <Button onClick={verifyPermission} w="200px" isDisabled={verify}>
+              {loading ? <Spinner color="white" /> : "Verificar"}
+            </Button>
           </Flex>
-        )}
-        {step === 2 && (
-          <Stack spacing={[5, 10]} mt={["24px", "40px"]} w="852px">
-            <Input
-              placeholder="Nome completo"
-              name="name"
-              type="text"
-              error={errors?.name}
-              value={values.name}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
+          <Input
+            labelColor={!verify ? "gray.300" : "gray.500"}
+            label="Nome:"
+            placeholder="Nome completo"
+            name="name"
+            type="text"
+            error={errors?.name}
+            value={values.name}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
+            borderColor="gray.500"
+            disabled={!verify}
+          />
+          <Box w="100%">
+            <Text
+              color={!verify ? "gray.300" : "gray.500"}
+              fontWeight="400"
+              margin="0"
+            >
+              Gênero:
+            </Text>
+            <Select
+              placeholder="Gênero"
               borderColor="gray.500"
-            />
-            <Input
-              placeholder="E-mail"
-              name="email"
-              type="email"
-              error={errors?.email}
-              value={values.email}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
-              borderColor="gray.500"
-            />
+              bg="gray.50"
+              _placeholder={{ color: "gray.500" }}
+              color="gray.600"
+              disabled={!verify}
+            >
+              <option value="Male">Masculino</option>
+              <option value="Female">Feminino</option>
+            </Select>
+          </Box>
+          <Flex flexDir={"column"}>
+            <Text color={!verify ? "gray.300" : "gray.500"}>Telefone:</Text>
             <Flex>
               <Input
                 name="ddd"
@@ -178,97 +215,93 @@ export default function RegisterOffice() {
                 w="72px"
                 mr="8px"
                 borderColor="gray.500"
+                isDisabled={!verify}
               />
               <Input
-                name="cell"
+                name="cellphone"
                 type="number"
-                error={errors?.cell}
-                value={values.cell}
+                error={errors?.cellphone}
+                value={values.cellphone}
                 onChange={(e) =>
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 placeholder="00000-0000"
                 w="180px"
                 borderColor="gray.500"
+                isDisabled={!verify}
               />
             </Flex>
-            <Accordion allowMultiple bgColor="gray.50" color="gray.500">
-              <AccordionItem
-                borderColor="gray.500"
-                borderRightWidth="1px"
-                borderLeftWidth="1px"
-                borderRadius="md"
-              >
-                <h2>
-                  <AccordionButton>
-                    <Box as="span" flex="1" textAlign="left">
-                      Acessos
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                </h2>
-                <AccordionPanel pb={4} display="flex" flexDirection="column">
-                  <CheckboxGroup colorScheme="blue" defaultValue={[]}>
-                    <Stack
-                      spacing={[1, 2]}
-                      maxH={["80px", "120px"]}
-                      overflow="auto"
-                      sx={{
-                        "::-webkit-scrollbar": {
-                          bg: "gray.50",
-                          width: "12px",
-                        },
-                        "&::-webkit-scrollbar-track": {
-                          width: "2px",
-                        },
-                        "&::-webkit-scrollbar-thumb": {
-                          background: "gray.500",
-                          borderRadius: "8px",
-                        },
-                      }}
-                    >
-                      <Flex>
-                        <Checkbox value="parlamentar" borderColor="gray.400">
-                          Equipe
-                        </Checkbox>
-                        <Select bg="gray.50" w="120px" ml="20px">
-                          <option value="">Ler</option>
-                          <option value="">Editar</option>
-                          <option value="">Excluir</option>
-                        </Select>
-                      </Flex>
-                      <Checkbox value="acessoradm" borderColor="gray.400">
-                        Eleitores
-                      </Checkbox>
-                      <Checkbox value="acessormark" borderColor="gray.400">
-                        Demandas
-                      </Checkbox>
-                    </Stack>
-                  </CheckboxGroup>
-                </AccordionPanel>
-              </AccordionItem>
-            </Accordion>
-            <Flex
-              w="100%"
-              alignItems="center"
-              justifyContent="center"
-              mt={["40px", "95px"]}
+          </Flex>
+          <Accordion allowMultiple color="gray.500">
+            <Text color={!verify ? "gray.300" : "gray.500"}>Cargo:</Text>
+            <AccordionItem
+              borderColor={!verify ? "gray.300" : "gray.500"}
+              borderRightWidth="1px"
+              borderLeftWidth="1px"
+              borderRadius="md"
+              isDisabled={!verify}
+              bgColor={!verify ? "white" : "gray.50"}
             >
-              <Button
-                onClick={handleRegister}
-                bg={"blue.600"}
-                color={"white"}
-                alignSelf="center"
-                w="280px"
-                _hover={{
-                  bg: "blue.500",
-                }}
-              >
-                {loading ? <Spinner color="white" /> : "Cadastrar"}
-              </Button>
-            </Flex>
-          </Stack>
-        )}
+              <h2>
+                <AccordionButton>
+                  <Box as="span" flex="1" textAlign="left">
+                    Acessos
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+              </h2>
+              <AccordionPanel pb={4} display="flex" flexDirection="column">
+                <CheckboxGroup colorScheme="blue" defaultValue={[]}>
+                  <Stack
+                    spacing={[1, 2]}
+                    maxH={["80px", "120px"]}
+                    overflow="auto"
+                    sx={{
+                      "::-webkit-scrollbar": {
+                        bg: "gray.50",
+                        width: "12px",
+                      },
+                      "&::-webkit-scrollbar-track": {
+                        width: "2px",
+                      },
+                      "&::-webkit-scrollbar-thumb": {
+                        background: "gray.500",
+                        borderRadius: "8px",
+                      },
+                    }}
+                  >
+                    <Flex>
+                      <Checkbox value="parlamentar" borderColor="gray.400">
+                        Equipe
+                      </Checkbox>
+                      <Select bg="gray.50" w="120px" ml="20px">
+                        <option value="">Ler</option>
+                        <option value="">Editar</option>
+                        <option value="">Excluir</option>
+                      </Select>
+                    </Flex>
+                    <Checkbox value="acessoradm" borderColor="gray.400">
+                      Eleitores
+                    </Checkbox>
+                    <Checkbox value="acessormark" borderColor="gray.400">
+                      Demandas
+                    </Checkbox>
+                  </Stack>
+                </CheckboxGroup>
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+          <Flex
+            w="100%"
+            alignItems="center"
+            justifyContent="center"
+            mt={["40px", "95px"]}
+          >
+            <Button onClick={handleRegister} width="280px" isDisabled={!verify}>
+              {loading ? <Spinner color="white" /> : "Cadastrar"}
+            </Button>
+          </Flex>
+        </Stack>
       </Flex>
     </HeaderSideBar>
   );

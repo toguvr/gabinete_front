@@ -1,19 +1,14 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
   Box,
-  Button,
-  Checkbox,
-  CheckboxGroup,
   Flex,
   HStack,
   Icon,
   IconButton,
-  Spinner,
-  Stack,
   Table,
   Tbody,
   Td,
@@ -21,38 +16,40 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
+  Button as ChakraButton,
 } from "@chakra-ui/react";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import HeaderSideBar from "../components/HeaderSideBar";
-import { StateProps } from "../dtos";
-import * as Yup from "yup";
-import getValidationErrors from "../utils/validationError";
-import Input from "../components/Form/Input";
+import { PermissionByIdDTO } from "../dtos";
 import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-
-type OfficeDataProps = {
-  id: number;
-  name: string;
-  email: string;
-  cell: string;
-  office: string;
-};
+import { useAuth } from "../contexts/AuthContext";
+import Button from "../components/Form/Button";
 
 export default function Office() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const [data, setData] = useState([] as OfficeDataProps[]);
+  const [data, setData] = useState([] as PermissionByIdDTO[]);
+  const { role } = useAuth();
+  const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [officeToDeleteId, setOfficeToDeleteId] = useState("");
+
+  const openDialog = (office_id: string) => {
+    setOfficeToDeleteId(office_id);
+    onOpen();
+  };
 
   const getOfficeList = async () => {
-    setData([] as OfficeDataProps[]);
+    setData([] as PermissionByIdDTO[]);
 
     setLoading(true);
     try {
-      const response = await api.get(`/office`);
+      const response = await api.get(`/permission/office/${role?.office_id}`);
 
       setData(response.data);
     } catch (err) {
@@ -65,8 +62,73 @@ export default function Office() {
     getOfficeList();
   }, []);
 
+  const deleteOffice = async () => {
+    setLoading(true);
+    try {
+      await api.delete(`/permission/${officeToDeleteId}`);
+
+      toast({
+        title: "Equipe excluída com sucesso",
+        status: "success",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+      getOfficeList();
+      setOfficeToDeleteId("");
+      onClose();
+    } catch (err: any) {
+      return toast({
+        title:
+          err?.response?.data?.message ||
+          "Ocorreu um erro ao excluir a equipe, tente novamente",
+        status: "error",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditVoter = (office: PermissionByIdDTO) => {
+    navigate(`/equipe/${office?.id}`, { state: { office } });
+  };
+
   return (
     <HeaderSideBar>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
+        {/* <AlertDialogOverlay > */}
+        <AlertDialogContent mx="12px">
+          <AlertDialogHeader fontSize="lg" fontWeight="bold">
+            Deseja excluir este eleitor?
+          </AlertDialogHeader>
+
+          <AlertDialogBody>
+            Essa ação é irreversível, ao deletar não será possível desfazer.
+            Você deseja apagar mesmo assim?
+          </AlertDialogBody>
+
+          <AlertDialogFooter>
+            <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
+            <ChakraButton
+              colorScheme={"red"}
+              isLoading={loading}
+              onClick={deleteOffice}
+              ml={3}
+            >
+              Continuar
+            </ChakraButton>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+        {/* </AlertDialogOverlay> */}
+      </AlertDialog>
       <Flex
         justifyContent={"space-between"}
         gap={["20px", "0"]}
@@ -82,18 +144,30 @@ export default function Office() {
         </Text>
         <Button
           onClick={() => navigate("/equipe/registrar-equipe")}
-          bg={"blue.600"}
-          color={"white"}
-          alignSelf="center"
           w={["160px", "280px"]}
-          _hover={{
-            bg: "blue.500",
-          }}
         >
           Cadastrar equipe
         </Button>
       </Flex>
-      <Box maxH="calc(100vh - 340px)" overflow="auto" mt={["32px", "84px"]}>
+      <Box
+        maxH="calc(100vh - 340px)"
+        overflow="auto"
+        mt="84px"
+        sx={{
+          "::-webkit-scrollbar": {
+            bg: "gray.50",
+            width: "8px",
+            height: "8px",
+          },
+          "&::-webkit-scrollbar-track": {
+            width: "2px",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            background: "gray.600",
+            borderRadius: "8px",
+          },
+        }}
+      >
         <Table variant="simple">
           <Thead position="sticky" top="0px">
             <Tr
@@ -112,9 +186,9 @@ export default function Office() {
           </Thead>
           <Tbody>
             {Array.isArray(data) && data.length > 0 ? (
-              data.map((team) => {
+              data.map((permission) => {
                 return (
-                  <Tr key={team.id}>
+                  <Tr key={permission.id}>
                     <Td
                       color="gray.600"
                       fontSize="14px"
@@ -123,7 +197,7 @@ export default function Office() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      ola
+                      {permission?.user?.name}
                     </Td>
                     <Td
                       color="gray.600"
@@ -133,7 +207,7 @@ export default function Office() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      oi
+                      {permission?.user?.email}
                     </Td>
                     <Td
                       color="gray.600"
@@ -143,7 +217,7 @@ export default function Office() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      a
+                      {permission?.user?.cellphone}
                     </Td>
                     <Td
                       color="gray.600"
@@ -153,7 +227,7 @@ export default function Office() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      b
+                      {permission?.role?.name}
                     </Td>
                     <Td
                       py="0px"
@@ -163,7 +237,7 @@ export default function Office() {
                     >
                       <HStack spacing="8px">
                         <IconButton
-                          onClick={() => {}}
+                          onClick={() => handleEditVoter(permission)}
                           aria-label="Open navigation"
                           variant="unstyled"
                           minW={6}
@@ -178,7 +252,7 @@ export default function Office() {
                         />
 
                         <IconButton
-                          onClick={() => {}}
+                          onClick={() => openDialog(permission?.office_id)}
                           aria-label="Open alert"
                           variant="unstyled"
                           minW={6}

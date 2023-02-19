@@ -20,18 +20,18 @@ import {
   Text,
   useColorModeValue,
   useDisclosure,
-} from '@chakra-ui/react';
-import { ReactNode, ReactText, useEffect, useState } from 'react';
-import { IconType } from 'react-icons';
-import { BiArrowBack, BiTask } from 'react-icons/bi';
-import { BsListTask } from 'react-icons/bs';
-import { FiHome, FiMenu } from 'react-icons/fi';
-import { RiTeamLine } from 'react-icons/ri';
-import { SiMicrosoftteams } from 'react-icons/si';
-import { matchPath, useLocation, useNavigate } from 'react-router-dom';
-import Logo from '../assets/logo.png';
-import LogoWhite from '../assets/logoWhite.png';
-import { useAuth } from '../contexts/AuthContext';
+} from "@chakra-ui/react";
+import { ReactNode, ReactText, useEffect, useState } from "react";
+import { IconType } from "react-icons";
+import { BiArrowBack, BiTask } from "react-icons/bi";
+import { BsListTask } from "react-icons/bs";
+import { FiHome, FiMenu } from "react-icons/fi";
+import { RiTeamLine } from "react-icons/ri";
+import { SiMicrosoftteams } from "react-icons/si";
+import { matchPath, useLocation, useNavigate } from "react-router-dom";
+import Logo from "../assets/logo.png";
+import LogoWhite from "../assets/logoWhite.png";
+import { useAuth } from "../contexts/AuthContext";
 
 interface LinkItemProps {
   name: string;
@@ -39,11 +39,11 @@ interface LinkItemProps {
   icon: IconType;
 }
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', route: '/', icon: FiHome },
-  { name: 'Equipe', route: '/equipe', icon: RiTeamLine },
-  { name: 'Eleitor', route: '/eleitor', icon: SiMicrosoftteams },
-  { name: 'Demandas', route: '/demanda', icon: BsListTask },
-  { name: 'Tarefas', route: '/tarefa', icon: BiTask },
+  { name: "Home", route: "/", icon: FiHome },
+  { name: "Equipe", route: "/equipe", icon: RiTeamLine },
+  { name: "Eleitor", route: "/eleitor", icon: SiMicrosoftteams },
+  { name: "Demandas", route: "/demanda", icon: BsListTask },
+  { name: "Tarefas", route: "/tarefa", icon: BiTask },
 ];
 
 export default function SidebarWithHeader({
@@ -62,8 +62,11 @@ export default function SidebarWithHeader({
   }, []);
 
   return (
-    <Box minH={['100%', '100vh']} bg="white">
-      <SidebarContent onClose={() => onClose} display={{ base: 'none', md: 'block' }} />
+    <Box minH={["100%", "100vh"]} bg="white">
+      <SidebarContent
+        onClose={() => onClose}
+        display={{ base: "none", md: "block" }}
+      />
       <Drawer
         autoFocus={false}
         isOpen={isOpen}
@@ -82,11 +85,11 @@ export default function SidebarWithHeader({
       <Box ml={{ base: 0, md: 60 }} p="26px" bg="gray.100" h={screenHeight}>
         <Box
           bgColor="white"
-          h={['100%', `calc(100vh - 112px)`]}
+          h={["100%", `calc(100vh - 112px)`]}
           borderRadius="8px"
           px="24px"
           py="40px"
-          overflow={'auto'}
+          overflow={"auto"}
         >
           {children}
         </Box>
@@ -103,27 +106,33 @@ interface SidebarProps extends BoxProps {
 
 const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
   const navigate = useNavigate();
+  const { office } = useAuth();
   const { pathname } = useLocation();
   return (
     <Box
       transition="3s ease"
       bg="white"
-      w={{ base: 'full', md: 60 }}
+      w={{ base: "full", md: 60 }}
       pos="fixed"
       h="full"
       {...rest}
     >
       <Flex alignItems="center" mx="8" my={4} justifyContent="space-between">
         <Box>
-          <Image src={Logo} alt="Logo" />
+          <Image src={office?.logo_url ? office?.logo_url : Logo} alt="Logo" />
         </Box>
-        <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} bg="blue.600" />
+        <CloseButton
+          display={{ base: "flex", md: "none" }}
+          onClick={onClose}
+          bg={office?.secondary_color}
+          color={office?.primary_color}
+        />
       </Flex>
       {LinkItems.map((link) =>
         pathname === link.route ? (
           <Link
-            style={{ textDecoration: 'none' }}
-            _focus={{ boxShadow: 'none' }}
+            style={{ textDecoration: "none" }}
+            _focus={{ boxShadow: "none" }}
             onClick={() => navigate(`${link.route}`)}
             key={link.name}
           >
@@ -134,16 +143,16 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
               borderRadius="lg"
               role="group"
               cursor="pointer"
-              color="white"
-              bg="blue.600"
+              color={office?.secondary_color}
+              bg={office?.primary_color}
               {...rest}
             >
               <Icon
                 mr="4"
-                color="white"
+                color={office?.secondary_color}
                 fontSize="16"
                 _groupHover={{
-                  color: 'white',
+                  color: office?.secondary_color,
                 }}
                 as={link.icon}
               />
@@ -152,8 +161,8 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
           </Link>
         ) : (
           <Link
-            style={{ textDecoration: 'none' }}
-            _focus={{ boxShadow: 'none' }}
+            style={{ textDecoration: "none" }}
+            _focus={{ boxShadow: "none" }}
             onClick={() => navigate(`${link.route}`)}
             key={link.name}
           >
@@ -166,8 +175,8 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
               cursor="pointer"
               color="gray.500"
               _hover={{
-                bg: 'blue.600',
-                color: 'white',
+                bg: office?.primary_color,
+                color: office?.secondary_color,
               }}
               {...rest}
             >
@@ -176,7 +185,7 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
                 color="gray.500"
                 fontSize="16"
                 _groupHover={{
-                  color: 'white',
+                  color: office?.secondary_color,
                 }}
                 as={link.icon}
               />
@@ -204,13 +213,13 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
       height="60px"
       alignItems="center"
       background="blue.600"
-      justifyContent={{ base: 'space-between', md: 'space-between' }}
+      justifyContent={{ base: "space-between", md: "space-between" }}
       {...rest}
     >
       {backRoute ? (
-        <Flex align="center" display={{ base: 'none', md: 'flex' }}>
+        <Flex align="center" display={{ base: "none", md: "flex" }}>
           <IconButton
-            display={{ base: 'none', md: 'flex' }}
+            display={{ base: "none", md: "flex" }}
             size="lg"
             variant="ghost"
             height="40px"
@@ -220,7 +229,7 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
             icon={<BiArrowBack />}
             onClick={() => navigate(-1)}
             _hover={{
-              bg: 'transparent',
+              bg: "transparent",
             }}
           />
           <Text color="white">Voltar</Text>
@@ -230,32 +239,36 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
       )}
 
       <IconButton
-        display={{ base: 'flex', md: 'none' }}
+        display={{ base: "flex", md: "none" }}
         onClick={onOpen}
         aria-label="open menu"
         icon={<FiMenu />}
       />
 
-      <Box height="40px" display={{ base: 'flex', md: 'none' }}>
+      <Box height="40px" display={{ base: "flex", md: "none" }}>
         <Image src={LogoWhite} alt="Logo" />
       </Box>
 
-      <HStack spacing={{ base: '0', md: '6' }}>
-        <Flex alignItems={'center'}>
+      <HStack spacing={{ base: "0", md: "6" }}>
+        <Flex alignItems={"center"}>
           <Menu>
-            <MenuButton py={2} transition="all 0.3s" _focus={{ boxShadow: 'none' }}>
+            <MenuButton
+              py={2}
+              transition="all 0.3s"
+              _focus={{ boxShadow: "none" }}
+            >
               <HStack>
                 <Avatar
-                  size={'sm'}
+                  size={"sm"}
                   src={
-                    'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
+                    "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
                   }
                 />
               </HStack>
             </MenuButton>
             <MenuList
-              bg={useColorModeValue('white', 'gray.900')}
-              borderColor={useColorModeValue('gray.200', 'gray.700')}
+              bg={useColorModeValue("white", "gray.900")}
+              borderColor={useColorModeValue("gray.200", "gray.700")}
             >
               <MenuItem>Profile</MenuItem>
               <MenuItem>Settings</MenuItem>
