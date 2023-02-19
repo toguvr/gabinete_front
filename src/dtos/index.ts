@@ -56,6 +56,7 @@ export interface TaskPropsDTO {
   createdAt: Date;
   deadline: Date;
   doneDate: Date;
+  date: Date;
   status: string;
   priority: string;
   responsible: string;

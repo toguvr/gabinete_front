@@ -1,19 +1,10 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Button,
-  Checkbox,
-  CheckboxGroup,
   Flex,
   HStack,
   Icon,
   IconButton,
-  Spinner,
-  Stack,
   Table,
   Tbody,
   Td,
@@ -22,15 +13,11 @@ import {
   Thead,
   Tr,
   useToast,
-} from "@chakra-ui/react";
-import { FormEvent, useCallback, useState } from "react";
-import HeaderSideBar from "../components/HeaderSideBar";
-import { StateProps } from "../dtos";
-import * as Yup from "yup";
-import getValidationErrors from "../utils/validationError";
-import Input from "../components/Form/Input";
-import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+} from '@chakra-ui/react';
+import { useState } from 'react';
+import { IoPencilOutline, IoTrashOutline } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
+import HeaderSideBar from '../components/HeaderSideBar';
 
 type DemandData = {
   id: number;
@@ -46,47 +33,42 @@ export default function Demand() {
   const [data, setData] = useState<DemandData[]>([
     {
       id: 1,
-      title: "Cuidar do projeto",
-      voter: "Augusto Telles",
-      deadline: "14/05/1993",
+      title: 'Cuidar do projeto',
+      voter: 'Augusto Telles',
+      deadline: '14/05/1993',
     },
     {
       id: 2,
-      title: "Dev front",
-      voter: "Otavio Augusto Chrispim de Paiva",
-      deadline: "14/05/1993",
+      title: 'Dev front',
+      voter: 'Otavio Augusto Chrispim de Paiva',
+      deadline: '14/05/1993',
     },
     {
       id: 3,
-      title: "Dev front, back e UI",
-      voter: "Hugo",
-      deadline: "14/05/1993",
+      title: 'Dev front, back e UI',
+      voter: 'Hugo',
+      deadline: '14/05/1993',
     },
   ]);
 
   return (
     <HeaderSideBar>
       <Flex
-        justifyContent={"space-between"}
-        gap={["20px", "0"]}
-        alignItems={["center", "flex-start"]}
+        justifyContent={'space-between'}
+        gap={['20px', '0']}
+        alignItems={['center', 'flex-start']}
       >
-        <Text
-          color="gray.500"
-          fontWeight="semibold"
-          fontSize="20px"
-          ml={[0, "28px"]}
-        >
+        <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
           Demandas
         </Text>
         <Button
-          onClick={() => navigate("/demanda/registrar-demanda")}
-          bg={"blue.600"}
-          color={"white"}
+          onClick={() => navigate('/demanda/registrar-demanda')}
+          bg={'blue.600'}
+          color={'white'}
           alignSelf="center"
-          w={["160px", "280px"]}
+          w={['160px', '280px']}
           _hover={{
-            bg: "blue.500",
+            bg: 'blue.500',
           }}
         >
           Cadastrar Demanda
@@ -97,17 +79,17 @@ export default function Demand() {
         overflow="auto"
         mt="84px"
         sx={{
-          "::-webkit-scrollbar": {
-            bg: "gray.50",
-            width: "8px",
-            height: "8px",
+          '::-webkit-scrollbar': {
+            bg: 'gray.50',
+            width: '8px',
+            height: '8px',
           },
-          "&::-webkit-scrollbar-track": {
-            width: "2px",
+          '&::-webkit-scrollbar-track': {
+            width: '2px',
           },
-          "&::-webkit-scrollbar-thumb": {
-            background: "gray.600",
-            borderRadius: "8px",
+          '&::-webkit-scrollbar-thumb': {
+            background: 'gray.600',
+            borderRadius: '8px',
           },
         }}
       >
@@ -116,9 +98,9 @@ export default function Demand() {
             position="sticky"
             top="0px"
             background="white"
-            borderBottomWidth={"4px"}
+            borderBottomWidth={'4px'}
             borderBottomStyle="solid"
-            borderBottomColor={"gray.300"}
+            borderBottomColor={'gray.300'}
           >
             <Tr>
               <Th color="gray.600">Título</Th>

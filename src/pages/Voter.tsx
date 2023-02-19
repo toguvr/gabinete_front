@@ -20,38 +20,37 @@ import {
   Tr,
   useDisclosure,
   useToast,
-} from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
-import HeaderSideBar from "../components/HeaderSideBar";
-import { VoterDTO } from "../dtos";
-import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
-import api from "../services/api";
-import { usePermission } from "../contexts/PermissionContext";
-import { useAuth } from "../contexts/AuthContext";
+} from '@chakra-ui/react';
+import { useEffect, useRef, useState } from 'react';
+import { IoPencilOutline, IoTrashOutline } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
+import HeaderSideBar from '../components/HeaderSideBar';
+import { useAuth } from '../contexts/AuthContext';
+import { VoterDTO } from '../dtos';
+import api from '../services/api';
 
 export default function Voter() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [data, setData] = useState([] as VoterDTO[]);
-  const [voterToDeleteId, setVoterToDeleteId] = useState("");
+  const [voterToDeleteId, setVoterToDeleteId] = useState('');
   const { onOpen: onOpenDialog } = useDisclosure();
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { permissionsById } = useAuth();
 
   const openDialog = (voter_id: string) => {
     setVoterToDeleteId(voter_id);
     onOpen();
   };
+  const auth = useAuth();
 
   const getVoterList = async () => {
     setData([] as VoterDTO[]);
 
     setLoading(true);
     try {
-      const response = await api.get(`/voter/office/${permissionsById}`);
+      const response = await api.get(`/voter/office/${auth.office.id}`);
 
       setData(response.data);
     } catch (err) {
@@ -70,22 +69,21 @@ export default function Voter() {
       await api.delete(`/voter/${voterToDeleteId}`);
 
       toast({
-        title: "Usuário excluído com sucesso",
-        status: "success",
-        position: "top-right",
+        title: 'Usuário excluído com sucesso',
+        status: 'success',
+        position: 'top-right',
         duration: 3000,
         isClosable: true,
       });
       getVoterList();
-      setVoterToDeleteId("");
+      setVoterToDeleteId('');
       onClose();
     } catch (err: any) {
       return toast({
         title:
-          err?.response?.data?.message ||
-          "Ocorreu um erro ao excluir o eleitor, tente novamente",
-        status: "error",
-        position: "top-right",
+          err?.response?.data?.message || 'Ocorreu um erro ao excluir o eleitor, tente novamente',
+        status: 'error',
+        position: 'top-right',
         duration: 3000,
         isClosable: true,
       });
@@ -100,12 +98,7 @@ export default function Voter() {
 
   return (
     <HeaderSideBar>
-      <AlertDialog
-        leastDestructiveRef={cancelRef}
-        isOpen={isOpen}
-        onClose={onClose}
-        isCentered
-      >
+      <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose} isCentered>
         {/* <AlertDialogOverlay > */}
         <AlertDialogContent mx="12px">
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -113,18 +106,13 @@ export default function Voter() {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            Essa ação é irreversível, ao deletar não será possível desfazer.
-            Você deseja apagar mesmo assim?"
+            Essa ação é irreversível, ao deletar não será possível desfazer. Você deseja apagar
+            mesmo assim?"
           </AlertDialogBody>
 
           <AlertDialogFooter>
             <Button onClick={onClose}>Cancelar</Button>
-            <Button
-              colorScheme={"red"}
-              isLoading={loading}
-              onClick={deleteVoter}
-              ml={3}
-            >
+            <Button colorScheme={'red'} isLoading={loading} onClick={deleteVoter} ml={3}>
               Continuar
             </Button>
           </AlertDialogFooter>
@@ -132,27 +120,22 @@ export default function Voter() {
         {/* </AlertDialogOverlay> */}
       </AlertDialog>
       <Flex
-        justifyContent={"space-between"}
-        gap={["20px", "0"]}
-        alignItems={["center", "flex-start"]}
+        justifyContent={'space-between'}
+        gap={['20px', '0']}
+        alignItems={['center', 'flex-start']}
       >
-        <Text
-          color="gray.500"
-          fontWeight="semibold"
-          fontSize="20px"
-          ml={[0, "28px"]}
-        >
+        <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
           Eleitor
           {loading && <Spinner color="blue.600" ml="4" size="sm" />}
         </Text>
         <Button
-          onClick={() => navigate("/eleitor/registrar-eleitor")}
-          bg={"blue.600"}
-          color={"white"}
+          onClick={() => navigate('/eleitor/registrar-eleitor')}
+          bg={'blue.600'}
+          color={'white'}
           alignSelf="center"
-          w={["160px", "280px"]}
+          w={['160px', '280px']}
           _hover={{
-            bg: "blue.500",
+            bg: 'blue.500',
           }}
         >
           Cadastrar eleitor
@@ -163,17 +146,17 @@ export default function Voter() {
         overflow="auto"
         mt="84px"
         sx={{
-          "::-webkit-scrollbar": {
-            bg: "gray.50",
-            width: "8px",
-            height: "8px",
+          '::-webkit-scrollbar': {
+            bg: 'gray.50',
+            width: '8px',
+            height: '8px',
           },
-          "&::-webkit-scrollbar-track": {
-            width: "2px",
+          '&::-webkit-scrollbar-track': {
+            width: '2px',
           },
-          "&::-webkit-scrollbar-thumb": {
-            background: "gray.600",
-            borderRadius: "8px",
+          '&::-webkit-scrollbar-thumb': {
+            background: 'gray.600',
+            borderRadius: '8px',
           },
         }}
       >
@@ -182,9 +165,9 @@ export default function Voter() {
             position="sticky"
             top="0px"
             background="white"
-            borderBottomWidth={"4px"}
+            borderBottomWidth={'4px'}
             borderBottomStyle="solid"
-            borderBottomColor={"gray.300"}
+            borderBottomColor={'gray.300'}
           >
             <Tr>
               <Th color="gray.600">Nome</Th>
@@ -230,7 +213,7 @@ export default function Voter() {
                       borderBottomColor="gray.300"
                       py="4px"
                     >
-                      {voter?.birthdate ? voter?.birthdate : "-"}
+                      {voter?.birthdate ? voter?.birthdate : '-'}
                     </Td>
                     <Td
                       color="gray.600"
@@ -240,7 +223,7 @@ export default function Voter() {
                       borderBottomColor="gray.300"
                       py="4px"
                     >
-                      {voter?.cellphone ? voter?.cellphone : "-"}
+                      {voter?.cellphone ? voter?.cellphone : '-'}
                     </Td>
                     {voter?.street ? (
                       <Td
@@ -252,9 +235,8 @@ export default function Voter() {
                         w="120px"
                         py="4px"
                       >
-                        {voter?.street} - {voter?.address_number} -{" "}
-                        {voter?.neighborhood} - {voter?.complement} -{" "}
-                        {voter?.city} - {voter?.state}
+                        {voter?.street} - {voter?.address_number} - {voter?.neighborhood} -{' '}
+                        {voter?.complement} - {voter?.city} - {voter?.state}
                       </Td>
                     ) : (
                       <Td

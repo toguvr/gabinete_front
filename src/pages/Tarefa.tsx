@@ -1,122 +1,83 @@
 import {
+  Button,
   Flex,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Table,
   TableContainer,
   Tbody,
   Td,
-  Tfoot,
   Th,
   Thead,
   Tr,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-} from "@chakra-ui/react";
-import { useState } from "react";
-import HeaderSideBar from "../components/HeaderSideBar";
-import TaskListStatusIcon from "../components/TaskListStatusIcon";
-import { useDisclosure } from "@chakra-ui/react";
-import TaskCard from "../components/TaskCard";
-import { TaskPropsDTO } from "../dtos";
+  useDisclosure,
+} from '@chakra-ui/react';
+import { useState, useEffect } from 'react';
+import HeaderSideBar from '../components/HeaderSideBar';
+import TaskCard from '../components/TaskCard';
+import TaskListStatusIcon from '../components/TaskListStatusIcon';
+import { useAuth } from '../contexts/AuthContext';
+import { TaskPropsDTO } from '../dtos';
+import api from '../services/api';
 
 export default function Tarefa() {
-  const [tasksList, setTasksList] = useState<TaskPropsDTO[]>([
-    {
-      id: "1",
-      title: "Ajudar com Cirurgia de Catarata",
-      description:
-        "Essa e uma descricao aleatoria de alguma task que vai ser atribuida a um assessor por um politico qualquer",
-      createdAt: new Date("2023/01/12"),
-      deadline: new Date("2023/01/12"),
-      doneDate: new Date("2023/01/12"),
-      status: "1",
-      priority: "Alta",
-      responsible: "João da Silva",
-      creator: "Maria da Silva",
-      office: "Munir",
-      files: "asd",
-      resources: true,
-      voterId: "123",
-    },
-    {
-      id: "2",
-      title: "Ajudar com Cirurgia de Catarata",
-      description:
-        "Essa e uma descricao aleatoria de alguma task que vai ser atribuida a um assessor por um politico qualquer",
-      createdAt: new Date("2023/01/12"),
-      deadline: new Date("2023/01/12"),
-      doneDate: new Date("2023/01/12"),
-      status: "3",
-      priority: "Alta",
-      responsible: "João da Silva",
-      creator: "Maria da Silva",
-      office: "Munir",
-      files: "asd",
-      resources: true,
-      voterId: "123",
-    },
-    {
-      id: "3",
-      title: "Ajudar com Cirurgia de Catarata",
-      description:
-        "Essa e uma descricao aleatoria de alguma task que vai ser atribuida a um assessor por um politico qualquer",
-      createdAt: new Date("2023/01/12"),
-      deadline: new Date("2023/01/12"),
-      doneDate: new Date("2023/01/12"),
-      status: "1",
-      priority: "Alta",
-      responsible: "João da Silva",
-      creator: "Maria da Silva",
-      office: "Munir",
-      files: "asd",
-      resources: true,
-      voterId: "123",
-    },
-    {
-      id: "4",
-      title: "Ajudar com Cirurgia de Catarata",
-      description:
-        "Essa e uma descricao aleatoria de alguma task que vai ser atribuida a um assessor por um politico qualquer",
-      createdAt: new Date("2023/01/12"),
-      deadline: new Date("2023/01/12"),
-      doneDate: new Date("2023/01/12"),
-      status: "2",
-      priority: "Alta",
-      responsible: "João da Silva",
-      creator: "Maria da Silva",
-      office: "Munir",
-      files: "asd",
-      resources: true,
-      voterId: "123",
-    },
-  ]);
-  const [selectedTask, setSelectedTask] = useState<TaskPropsDTO>(
-    {} as TaskPropsDTO
-  );
+  const [selectedTask, setSelectedTask] = useState({} as TaskPropsDTO);
+  const [taskList, setTaskList] = useState<TaskPropsDTO[]>([]);
+  const [loading, setLoading] = useState(false);
+  const auth = useAuth();
+  console.log('selectedTask', selectedTask);
 
-  function statusChange(statusChange: string, id: string) {
-    console.log("newStatus: ", statusChange, "id: ", id);
-    const newTasksList = tasksList.map((task) => {
-      if (task.id === id) {
-        task.status = statusChange;
-      }
-      return task;
-    });
-    setTasksList(newTasksList);
+  async function getOfficeList() {
+    setTaskList([] as TaskPropsDTO[]);
+
+    setLoading(true);
+    try {
+      const response = await api.get(`/task/office/${auth.office.id}/responsible`);
+      console.log('response', response.data);
+      setTaskList(response.data);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function statusChange(statusChange: string, id: string) {
+    console.log('statusChange', statusChange, 'id', id);
+    try {
+      console.log('vou fazer');
+      console.log('statusChange', statusChange, 'id', id);
+      const response = await api.put(`/task/status/responsible`, {
+        status: statusChange,
+        taskId: String(id),
+      });
+      console.log('fiz');
+      getOfficeList();
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
   }
 
   function handleSelectTask(id: string) {
-    const selectedTaskByUser = tasksList.find((task) => task.id === id);
+    const selectedTaskByUser = taskList.find((task) => task.id === id);
+    console.log('selectedTaskByUser', selectedTaskByUser);
     setSelectedTask(selectedTaskByUser as TaskPropsDTO);
     onOpen();
   }
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  useEffect(() => {
+    if (auth.office.id) {
+      getOfficeList();
+    }
+  }, [auth.office.id]);
+  console.log('auth', auth.office);
 
   return (
     <HeaderSideBar>
@@ -140,28 +101,19 @@ export default function Tarefa() {
               <TaskCard task={selectedTask} />
             </ModalBody>
 
-            <ModalFooter
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Button
-                alignSelf="center"
-                colorScheme="blue"
-                mr={3}
-                onClick={onClose}
-              >
+            <ModalFooter display="flex" alignItems="center" justifyContent="center">
+              <Button alignSelf="center" colorScheme="blue" mr={3} onClick={onClose}>
                 Fechar
               </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
         <TableContainer padding={2}>
-          <Table fontSize={{ base: "10px", md: "12px", lg: "14px" }} size="md">
+          <Table fontSize={{ base: '10px', md: '12px', lg: '14px' }} size="md">
             <Thead>
               <Tr bg="blue.600">
                 <Th
-                  fontSize={{ base: "10px", md: "12px", lg: "14px" }}
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   maxW={[1]}
                   color="white"
                   textAlign="center"
@@ -169,14 +121,14 @@ export default function Tarefa() {
                   Id
                 </Th>
                 <Th
-                  fontSize={{ base: "10px", md: "12px", lg: "14px" }}
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   color="white"
                   textAlign="center"
                 >
                   Status
                 </Th>
                 <Th
-                  fontSize={{ base: "10px", md: "12px", lg: "14px" }}
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   color="white"
                   textAlign="center"
                 >
@@ -184,7 +136,7 @@ export default function Tarefa() {
                 </Th>
 
                 <Th
-                  fontSize={{ base: "10px", md: "12px", lg: "14px" }}
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   maxW={[1, 4, 4]}
                   color="white"
                   textAlign="center"
@@ -196,14 +148,14 @@ export default function Tarefa() {
               </Tr>
             </Thead>
             <Tbody>
-              {tasksList.map((task) => (
+              {taskList.map((task) => (
                 <Tr key={task.id} bg="white">
                   <Td
                     onClick={() => handleSelectTask(task.id)}
                     fontWeight="bold"
                     textAlign="center"
                   >
-                    41523
+                    {task.id}
                   </Td>
                   <Td
                     display="flex"
