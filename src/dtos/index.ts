@@ -3,14 +3,18 @@ export interface StateProps {
 }
 
 export interface UserDTO {
-  avatar: string;
-  avatar_url: string;
+  avatar?: string;
+  avatar_url?: string;
   cellphone: string;
   email: string;
   gender: string;
-  id: string;
+  id?: string;
   name: string;
-  need_update_password: boolean;
+  need_update_password?: boolean;
+  old_password?: string;
+  new_password?: string;
+  created_at?: Date;
+  updated_at?: Date;
 }
 
 export interface OfficeDTO {
@@ -65,6 +69,7 @@ export interface TaskPropsDTO {
   resources: boolean;
   files: string;
   voterId: string;
+  voter: VoterDTO;
 }
 
 export interface VoterDTO {

@@ -1,17 +1,22 @@
 import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
-import RegisterVoter from "../pages/RegisterVoter";
-import Office from "../pages/Office";
-import RegisterTeam from "../pages/RegisterOffice";
+import VoterRegister from "../pages/VoterRegister";
+import Permission from "../pages/Permission";
+import PermissionRegister from "../pages/PermissionRegister";
 import Home from "../pages/Home";
 import Signin from "../pages/SignIn";
 import Tarefa from "../pages/Tarefa";
 import ForgetPassword from "../pages/ForgetPassword";
 import RedefinePassword from "../pages/RedefinePassword";
 import Voter from "../pages/Voter";
+import VoterEdit from "../pages/VoterEdit";
+import Demand from "../pages/Demand";
+import PermissionEdit from "../pages/PermissionEdit";
 
 import { useAuth } from "../contexts/AuthContext";
-import Demand from "../pages/Demand";
-import EditVoter from "../pages/EditVoter";
+import Perfil from "../pages/Perfil";
+import ChangePassword from "../pages/ChangePassword";
+import DemandRegister from "../pages/DemandRegister";
+import Roles from "../pages/Roles";
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -32,13 +37,21 @@ export default function AppRoutes() {
     <Routes>
       <Route element={<AuthenticatedRoutes isPrivate />}>
         <Route path="/" element={<Home />} />
-        <Route path="/equipe" element={<Office />} />
+        <Route path="/equipe" element={<Permission />} />
+        <Route path="/equipe/:id" element={<PermissionEdit />} />
+        <Route
+          path="/equipe/registrar-equipe"
+          element={<PermissionRegister />}
+        />
         <Route path="/eleitor" element={<Voter />} />
-        <Route path="/eleitor/:id" element={<EditVoter />} />
-        <Route path="/equipe/registrar-equipe" element={<RegisterTeam />} />
-        <Route path="/eleitor/registrar-eleitor" element={<RegisterVoter />} />
+        <Route path="/eleitor/:id" element={<VoterEdit />} />
+        <Route path="/eleitor/registrar-eleitor" element={<VoterRegister />} />
         <Route path="/demanda" element={<Demand />} />
+        <Route path="/demanda/registrar-demanda" element={<DemandRegister />} />
         <Route path="/tarefa" element={<Tarefa />} />
+        <Route path="/perfil" element={<Perfil />} />
+        <Route path="/trocar-senha" element={<ChangePassword />} />
+        <Route path="/cargo" element={<Roles />} />
       </Route>
 
       <Route element={<AuthenticatedRoutes isPrivate={false} />}>

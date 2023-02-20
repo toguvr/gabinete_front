@@ -13,43 +13,43 @@ import {
   Tr,
   useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Form/Button";
 import HeaderSideBar from "../components/HeaderSideBar";
-
-type DemandData = {
-  id: number;
-  title: string;
-  voter: string;
-  deadline: string;
-};
+import { useAuth } from "../contexts/AuthContext";
+import { TaskPropsDTO } from "../dtos";
+import api from "../services/api";
+import { getFormatDate } from "../utils/date";
 
 export default function Demand() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const [data, setData] = useState<DemandData[]>([
-    {
-      id: 1,
-      title: "Cuidar do projeto",
-      voter: "Augusto Telles",
-      deadline: "14/05/1993",
-    },
-    {
-      id: 2,
-      title: "Dev front",
-      voter: "Otavio Augusto Chrispim de Paiva",
-      deadline: "14/05/1993",
-    },
-    {
-      id: 3,
-      title: "Dev front, back e UI",
-      voter: "Hugo",
-      deadline: "14/05/1993",
-    },
-  ]);
+  const [data, setData] = useState([] as TaskPropsDTO[]);
+  const auth = useAuth();
+
+  async function getTasks() {
+    setData([] as TaskPropsDTO[]);
+
+    setLoading(true);
+    try {
+      const response = await api.get(
+        `/task/office/${auth?.office?.id}/responsible`
+      );
+      setData(response?.data);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (auth?.office?.id) {
+      getTasks();
+    }
+  }, [auth?.office?.id]);
 
   return (
     <HeaderSideBar>
@@ -112,9 +112,9 @@ export default function Demand() {
           </Thead>
           <Tbody>
             {Array.isArray(data) && data.length > 0 ? (
-              data.map((team) => {
+              data.map((task) => {
                 return (
-                  <Tr key={team.id} whiteSpace="nowrap">
+                  <Tr key={task.id} whiteSpace="nowrap">
                     <Td
                       color="gray.600"
                       fontSize="14px"
@@ -123,7 +123,7 @@ export default function Demand() {
                       borderBottomColor="gray.300"
                       py="4px"
                     >
-                      {team?.title}
+                      {task?.title}
                     </Td>
                     <Td
                       color="gray.600"
@@ -133,7 +133,7 @@ export default function Demand() {
                       borderBottomColor="gray.300"
                       py="4px"
                     >
-                      {team?.voter}
+                      {task?.voter?.name}
                     </Td>
                     <Td
                       color="gray.600"
@@ -143,7 +143,7 @@ export default function Demand() {
                       borderBottomColor="gray.300"
                       py="4px"
                     >
-                      {team?.deadline}
+                      {getFormatDate(task?.date)}
                     </Td>
                     <Td
                       py="4px"

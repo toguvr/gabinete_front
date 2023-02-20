@@ -5,7 +5,6 @@ import convert from "color-convert";
 
 interface ChakraButtonProps extends ButtonProps {
   children: ReactNode;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
   width?: string;
   bgColor?: string;
   color?: string;

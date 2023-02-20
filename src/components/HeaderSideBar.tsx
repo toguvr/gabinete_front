@@ -26,6 +26,7 @@ import { IconType } from "react-icons";
 import { BiArrowBack, BiTask } from "react-icons/bi";
 import { BsListTask } from "react-icons/bs";
 import { FiHome, FiMenu } from "react-icons/fi";
+import { IoAlbumsOutline } from "react-icons/io5";
 import { RiTeamLine } from "react-icons/ri";
 import { SiMicrosoftteams } from "react-icons/si";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
@@ -40,6 +41,7 @@ interface LinkItemProps {
 }
 const LinkItems: Array<LinkItemProps> = [
   { name: "Home", route: "/", icon: FiHome },
+  { name: "Cargos", route: "/cargo", icon: IoAlbumsOutline },
   { name: "Equipe", route: "/equipe", icon: RiTeamLine },
   { name: "Eleitor", route: "/eleitor", icon: SiMicrosoftteams },
   { name: "Demandas", route: "/demanda", icon: BsListTask },
@@ -204,7 +206,11 @@ interface MobileProps extends FlexProps {
 }
 const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
+
+  const handleNavigatePerfil = () => {
+    navigate(`/perfil`);
+  };
 
   return (
     <Flex
@@ -261,7 +267,9 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
                 <Avatar
                   size={"sm"}
                   src={
-                    "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
+                    user?.avatar_url
+                      ? user?.avatar_url
+                      : "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
                   }
                 />
               </HStack>
@@ -270,11 +278,9 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
               bg={useColorModeValue("white", "gray.900")}
               borderColor={useColorModeValue("gray.200", "gray.700")}
             >
-              <MenuItem>Profile</MenuItem>
-              <MenuItem>Settings</MenuItem>
-              <MenuItem>Billing</MenuItem>
+              <MenuItem onClick={handleNavigatePerfil}>Perfil</MenuItem>
               <MenuDivider />
-              <MenuItem onClick={signOut}>Sign out</MenuItem>
+              <MenuItem onClick={signOut}>Sair</MenuItem>
             </MenuList>
           </Menu>
         </Flex>

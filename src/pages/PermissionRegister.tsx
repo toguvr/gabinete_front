@@ -31,9 +31,10 @@ type RegisterFormData = {
   office_id: string;
   role_id: string;
   ddd: string;
+  gender: string;
 };
 
-export default function RegisterOffice() {
+export default function PermissionRegister() {
   const [values, setValues] = useState<RegisterFormData>(
     {} as RegisterFormData
   );
@@ -117,6 +118,15 @@ export default function RegisterOffice() {
     setLoading(true);
 
     try {
+      const schema = Yup.object().shape({
+        ddd: Yup.string().required("Obrigatório"),
+        cellphone: Yup.string().required("E-mail obrigatório"),
+      });
+
+      await schema.validate(values, {
+        abortEarly: false,
+      });
+
       const response = await api.get(
         `/invite/check/office/${role?.office_id}/email/${values.email}`
       );
@@ -195,6 +205,11 @@ export default function RegisterOffice() {
               _placeholder={{ color: "gray.500" }}
               color="gray.600"
               disabled={!verify}
+              name="gender"
+              value={values?.gender}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
             >
               <option value="Male">Masculino</option>
               <option value="Female">Feminino</option>

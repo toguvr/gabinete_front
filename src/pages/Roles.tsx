@@ -19,37 +19,38 @@ import {
   useDisclosure,
   useToast,
   Button as ChakraButton,
+  Spinner,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import HeaderSideBar from "../components/HeaderSideBar";
-import { PermissionByIdDTO } from "../dtos";
+import { PermissionByIdDTO, RoleDTO } from "../dtos";
 import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/Form/Button";
 
-export default function Office() {
+export default function Roles() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const [data, setData] = useState([] as PermissionByIdDTO[]);
+  const [data, setData] = useState([] as RoleDTO[]);
   const { role } = useAuth();
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [officeToDeleteId, setOfficeToDeleteId] = useState("");
+  const [roleToDeleteId, setRoleToDeleteId] = useState("");
 
   const openDialog = (office_id: string) => {
-    setOfficeToDeleteId(office_id);
+    setRoleToDeleteId(office_id);
     onOpen();
   };
 
-  const getOfficeList = async () => {
-    setData([] as PermissionByIdDTO[]);
+  const getRoles = async () => {
+    setData([] as RoleDTO[]);
 
     setLoading(true);
     try {
-      const response = await api.get(`/permission/office/${role?.office_id}`);
+      const response = await api.get(`/role`);
 
       setData(response.data);
     } catch (err) {
@@ -59,13 +60,13 @@ export default function Office() {
   };
 
   useEffect(() => {
-    getOfficeList();
+    getRoles();
   }, []);
 
-  const deleteOffice = async () => {
+  const deletePermission = async () => {
     setLoading(true);
     try {
-      await api.delete(`/permission/${officeToDeleteId}`);
+      await api.delete(`/permission/${roleToDeleteId}`);
 
       toast({
         title: "Equipe excluída com sucesso",
@@ -74,8 +75,8 @@ export default function Office() {
         duration: 3000,
         isClosable: true,
       });
-      getOfficeList();
-      setOfficeToDeleteId("");
+      getRoles();
+      setRoleToDeleteId("");
       onClose();
     } catch (err: any) {
       return toast({
@@ -92,8 +93,8 @@ export default function Office() {
     }
   };
 
-  const handleEditVoter = (office: PermissionByIdDTO) => {
-    navigate(`/equipe/${office?.id}`, { state: { office } });
+  const handleEditRole = (role: RoleDTO) => {
+    navigate(`/role/${role?.id}`, { state: { role } });
   };
 
   return (
@@ -120,7 +121,7 @@ export default function Office() {
             <ChakraButton
               colorScheme={"red"}
               isLoading={loading}
-              onClick={deleteOffice}
+              onClick={deletePermission}
               ml={3}
             >
               Continuar
@@ -141,6 +142,7 @@ export default function Office() {
           ml={[0, "28px"]}
         >
           Equipe
+          {loading && <Spinner color="blue.600" ml="4" size="sm" />}
         </Text>
         <Button
           onClick={() => navigate("/equipe/registrar-equipe")}
@@ -186,9 +188,9 @@ export default function Office() {
           </Thead>
           <Tbody>
             {Array.isArray(data) && data.length > 0 ? (
-              data.map((permission) => {
+              data.map((role) => {
                 return (
-                  <Tr key={permission.id}>
+                  <Tr key={role.id}>
                     <Td
                       color="gray.600"
                       fontSize="14px"
@@ -197,7 +199,7 @@ export default function Office() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {permission?.user?.name}
+                      {role?.name}
                     </Td>
                     <Td
                       color="gray.600"
@@ -207,7 +209,7 @@ export default function Office() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {permission?.user?.email}
+                      {role?.cargo_page}
                     </Td>
                     <Td
                       color="gray.600"
@@ -217,7 +219,7 @@ export default function Office() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {permission?.user?.cellphone}
+                      {role?.equipe_page}
                     </Td>
                     <Td
                       color="gray.600"
@@ -227,7 +229,27 @@ export default function Office() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {permission?.role?.name}
+                      {role?.eleitor_page}
+                    </Td>
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="0px"
+                    >
+                      {role?.demandas_page}
+                    </Td>
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="0px"
+                    >
+                      {role?.tarefas_page}
                     </Td>
                     <Td
                       py="0px"
@@ -237,7 +259,7 @@ export default function Office() {
                     >
                       <HStack spacing="8px">
                         <IconButton
-                          onClick={() => handleEditVoter(permission)}
+                          onClick={() => handleEditRole(role)}
                           aria-label="Open navigation"
                           variant="unstyled"
                           minW={6}
@@ -252,7 +274,7 @@ export default function Office() {
                         />
 
                         <IconButton
-                          onClick={() => openDialog(permission?.office_id)}
+                          onClick={() => openDialog(role?.office_id)}
                           aria-label="Open alert"
                           variant="unstyled"
                           minW={6}
