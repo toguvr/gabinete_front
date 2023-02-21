@@ -119,8 +119,7 @@ export default function PermissionRegister() {
 
     try {
       const schema = Yup.object().shape({
-        ddd: Yup.string().required("Obrigatório"),
-        cellphone: Yup.string().required("E-mail obrigatório"),
+        email: Yup.string().required("E-mail obrigatório"),
       });
 
       await schema.validate(values, {
@@ -137,7 +136,8 @@ export default function PermissionRegister() {
     } catch (err: any) {
       return toast({
         title:
-          err?.response?.data?.message || "Eleitor registrado no gabinete.",
+          err?.response?.data?.message ||
+          "Não foi possível verificar o e-mail.",
         status: "warning",
         position: "top-right",
         duration: 3000,

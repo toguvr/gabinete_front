@@ -17,6 +17,8 @@ import Perfil from "../pages/Perfil";
 import ChangePassword from "../pages/ChangePassword";
 import DemandRegister from "../pages/DemandRegister";
 import Roles from "../pages/Roles";
+import RoleRegister from "../pages/RoleRegister";
+import RoleEdit from "../pages/RoleEdit";
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -52,6 +54,8 @@ export default function AppRoutes() {
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/trocar-senha" element={<ChangePassword />} />
         <Route path="/cargo" element={<Roles />} />
+        <Route path="/cargo/registrar-cargo" element={<RoleRegister />} />
+        <Route path="/cargo/:id" element={<RoleEdit />} />
       </Route>
 
       <Route element={<AuthenticatedRoutes isPrivate={false} />}>

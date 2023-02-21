@@ -257,7 +257,6 @@ export default function VoterRegister() {
                 placeholder="00000-0000"
                 w={["100%", "180px"]}
                 borderColor="gray.500"
-                maxLength={2}
                 disabled={verify}
               />
               <Button

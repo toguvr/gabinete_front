@@ -90,7 +90,7 @@ export default function VoterEdit() {
 
         toast({
           title: "Eleitor atualizado com sucesso",
-          description: "Você atualizado um eleitor.",
+          description: "Você atualizou o eleitor.",
           status: "success",
           duration: 3000,
           isClosable: true,
@@ -107,7 +107,7 @@ export default function VoterEdit() {
           return toast({
             title:
               err.response.data.message ||
-              "Ocorreu um erro ao atualizado o eleitor, cheque as credenciais",
+              "Ocorreu um erro ao atualizar o eleitor, cheque as credenciais",
 
             status: "error",
             position: "top-right",
@@ -117,7 +117,7 @@ export default function VoterEdit() {
         }
         return toast({
           title:
-            "Ocorreu um erro ao atualizado o eleitor, cheque as credenciais",
+            "Ocorreu um erro ao atualizar o eleitor, cheque as credenciais",
 
           status: "error",
           position: "top-right",

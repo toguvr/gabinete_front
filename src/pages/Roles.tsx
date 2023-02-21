@@ -29,6 +29,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/Form/Button";
+import { RoleStatus } from "../utils/roleStatus";
 
 export default function Roles() {
   const navigate = useNavigate();
@@ -39,6 +40,19 @@ export default function Roles() {
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [roleToDeleteId, setRoleToDeleteId] = useState("");
+
+  const getRoleStatus = (id: number) => {
+    switch (id) {
+      case RoleStatus.desativado:
+        return "Desativado";
+      case RoleStatus.leitor:
+        return "Leitor";
+      case RoleStatus.editor:
+        return "Editor";
+      default:
+        return "Status desconhecido";
+    }
+  };
 
   const openDialog = (office_id: string) => {
     setRoleToDeleteId(office_id);
@@ -63,13 +77,13 @@ export default function Roles() {
     getRoles();
   }, []);
 
-  const deletePermission = async () => {
+  const deleteRole = async () => {
     setLoading(true);
     try {
-      await api.delete(`/permission/${roleToDeleteId}`);
+      await api.delete(`/role/${roleToDeleteId}`);
 
       toast({
-        title: "Equipe excluída com sucesso",
+        title: "Cargo excluído com sucesso",
         status: "success",
         position: "top-right",
         duration: 3000,
@@ -82,7 +96,7 @@ export default function Roles() {
       return toast({
         title:
           err?.response?.data?.message ||
-          "Ocorreu um erro ao excluir a equipe, tente novamente",
+          "Ocorreu um erro ao excluir o cargo, tente novamente",
         status: "error",
         position: "top-right",
         duration: 3000,
@@ -94,7 +108,7 @@ export default function Roles() {
   };
 
   const handleEditRole = (role: RoleDTO) => {
-    navigate(`/role/${role?.id}`, { state: { role } });
+    navigate(`/cargo/${role?.id}`, { state: { role } });
   };
 
   return (
@@ -108,7 +122,7 @@ export default function Roles() {
         {/* <AlertDialogOverlay > */}
         <AlertDialogContent mx="12px">
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Deseja excluir este eleitor?
+            Deseja excluir este cargo?
           </AlertDialogHeader>
 
           <AlertDialogBody>
@@ -121,7 +135,7 @@ export default function Roles() {
             <ChakraButton
               colorScheme={"red"}
               isLoading={loading}
-              onClick={deletePermission}
+              onClick={deleteRole}
               ml={3}
             >
               Continuar
@@ -141,14 +155,14 @@ export default function Roles() {
           fontSize="20px"
           ml={[0, "28px"]}
         >
-          Equipe
+          Cargos
           {loading && <Spinner color="blue.600" ml="4" size="sm" />}
         </Text>
         <Button
-          onClick={() => navigate("/equipe/registrar-equipe")}
+          onClick={() => navigate("/cargo/registrar-cargo")}
           w={["160px", "280px"]}
         >
-          Cadastrar equipe
+          Cadastrar cargo
         </Button>
       </Flex>
       <Box
@@ -178,9 +192,11 @@ export default function Roles() {
               borderBottomColor={"gray.300"}
             >
               <Th color="gray.600">Nome</Th>
-              <Th color="gray.600">E-mail</Th>
-              <Th color="gray.600">Telefone</Th>
-              <Th color="gray.600">Cargo</Th>
+              <Th color="gray.600">Cargos</Th>
+              <Th color="gray.600">Equipe</Th>
+              <Th color="gray.600">Eleitor</Th>
+              <Th color="gray.600">Demandas</Th>
+              <Th color="gray.600">Tarefas</Th>
               <Th color="gray.600" w="8">
                 Ações
               </Th>
@@ -209,7 +225,7 @@ export default function Roles() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {role?.cargo_page}
+                      {getRoleStatus(role?.cargo_page)}
                     </Td>
                     <Td
                       color="gray.600"
@@ -219,7 +235,7 @@ export default function Roles() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {role?.equipe_page}
+                      {getRoleStatus(role?.equipe_page)}
                     </Td>
                     <Td
                       color="gray.600"
@@ -229,7 +245,7 @@ export default function Roles() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {role?.eleitor_page}
+                      {getRoleStatus(role?.eleitor_page)}
                     </Td>
                     <Td
                       color="gray.600"
@@ -239,7 +255,7 @@ export default function Roles() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {role?.demandas_page}
+                      {getRoleStatus(role?.demandas_page)}
                     </Td>
                     <Td
                       color="gray.600"
@@ -249,7 +265,7 @@ export default function Roles() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {role?.tarefas_page}
+                      {getRoleStatus(role?.tarefas_page)}
                     </Td>
                     <Td
                       py="0px"
@@ -274,7 +290,7 @@ export default function Roles() {
                         />
 
                         <IconButton
-                          onClick={() => openDialog(role?.office_id)}
+                          onClick={() => openDialog(role?.id)}
                           aria-label="Open alert"
                           variant="unstyled"
                           minW={6}
