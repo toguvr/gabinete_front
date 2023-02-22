@@ -28,16 +28,14 @@ export default function Demand() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [data, setData] = useState([] as TaskPropsDTO[]);
-  const auth = useAuth();
+  const { office } = useAuth();
 
   async function getTasks() {
     setData([] as TaskPropsDTO[]);
 
     setLoading(true);
     try {
-      const response = await api.get(
-        `/task/office/${auth?.office?.id}/responsible`
-      );
+      const response = await api.get(`/task/office/${office?.id}`);
       setData(response?.data);
     } catch (err) {
     } finally {
@@ -46,10 +44,10 @@ export default function Demand() {
   }
 
   useEffect(() => {
-    if (auth?.office?.id) {
+    if (office?.id) {
       getTasks();
     }
-  }, [auth?.office?.id]);
+  }, [office?.id]);
 
   return (
     <HeaderSideBar>

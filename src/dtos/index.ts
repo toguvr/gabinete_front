@@ -1,3 +1,9 @@
+export enum TaskPriority {
+  ALTA = "ALTA",
+  MEDIA = "MEDIA",
+  BAIXA = "BAIXA",
+}
+
 export interface StateProps {
   [key: string]: any;
 }

@@ -36,7 +36,6 @@ type RegisterFormData = {
   street: string;
   zip: string;
   ddd: string;
-  cpf: string;
 };
 
 export default function VoterRegister() {
@@ -84,7 +83,7 @@ export default function VoterRegister() {
           state: values.state,
           street: values.street,
           zip: values.zip,
-          cpf: values.cpf,
+          document: values.document,
         };
 
         await api.post("/voter", body);
@@ -254,7 +253,7 @@ export default function VoterRegister() {
                       .slice(0, 9),
                   })
                 }
-                placeholder="00000-0000"
+                placeholder="000000000"
                 w={["100%", "180px"]}
                 borderColor="gray.500"
                 disabled={verify}
@@ -335,10 +334,10 @@ export default function VoterRegister() {
               <Input
                 labelColor={!verify ? "gray.300" : "gray.500"}
                 label="CPF:"
-                name="cpf"
+                name="document"
                 type="number"
-                error={errors?.cpf}
-                value={values.cpf}
+                error={errors?.document}
+                value={values.document}
                 onChange={(e) =>
                   setValues({
                     ...values,

@@ -25,7 +25,6 @@ type EditFormData = {
   cellphone: string;
   city: string;
   reference: string;
-  document: string;
   email: string;
   gender: string;
   voter_id: string;
@@ -36,7 +35,7 @@ type EditFormData = {
   street: string;
   zip: string;
   ddd: string;
-  cpf: string;
+  document: string;
 };
 
 export default function VoterEdit() {
@@ -82,7 +81,7 @@ export default function VoterEdit() {
           state: values?.state,
           street: values?.street,
           zip: values?.zip,
-          cpf: values?.cpf,
+          document: values?.document,
           voter_id: voter?.id,
         };
 
@@ -176,7 +175,6 @@ export default function VoterEdit() {
         state: response?.data?.state,
         street: response?.data?.street,
         zip: response?.data?.zip,
-        cpf: response?.data?.cpf,
         document: response?.data?.document,
         voter_id: response?.data?.id,
       });
@@ -234,7 +232,7 @@ export default function VoterEdit() {
                       .slice(0, 9),
                   })
                 }
-                placeholder="00000-0000"
+                placeholder="000000000"
                 w={["100%", "180px"]}
                 borderColor="gray.500"
                 maxLength={2}
@@ -296,10 +294,10 @@ export default function VoterEdit() {
 
               <Input
                 label="CPF:"
-                name="cpf"
+                name="document"
                 type="number"
-                error={errors?.cpf}
-                value={values?.cpf}
+                error={errors?.document}
+                value={values?.document}
                 onChange={(e) =>
                   setValues({
                     ...values,

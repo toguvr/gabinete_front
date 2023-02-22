@@ -33,7 +33,7 @@ import { useAuth } from "../contexts/AuthContext";
 import api from "../services/api";
 import Button from "../components/Form/Button";
 import { IoInformationCircleOutline } from "react-icons/io5";
-import { roleStatus } from "../utils/roleStatus";
+import { roleStatus, roleStatusTasks } from "../utils/roleStatus";
 import { useNavigate } from "react-router";
 
 type RegisterFormData = {
@@ -304,13 +304,21 @@ export default function RoleEdit() {
                       setValues({ ...values, [e.target.name]: e.target.value })
                     }
                   >
-                    {roleStatus.map((role) => {
-                      return (
-                        <option key={role?.key} value={role?.key}>
-                          {role?.value}
-                        </option>
-                      );
-                    })}
+                    {page.name === "Tarefas"
+                      ? roleStatusTasks.map((role) => {
+                          return (
+                            <option key={role?.key} value={role?.key}>
+                              {role?.value}
+                            </option>
+                          );
+                        })
+                      : roleStatus.map((role) => {
+                          return (
+                            <option key={role?.key} value={role?.key}>
+                              {role?.value}
+                            </option>
+                          );
+                        })}
                   </Select>
                   <IconButton
                     onClick={() => openDialog(page.fix)}

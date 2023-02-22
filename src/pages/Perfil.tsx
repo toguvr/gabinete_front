@@ -39,10 +39,9 @@ export default function Perfil() {
     const formData = new FormData();
     formData.append("avatar", image);
 
-    console.log("avatar", image);
-    console.log("formData", formData);
     try {
       const response = await api.patch("/users/avatar", formData);
+      setValues(response.data);
       updateUser(response.data);
 
       return toast({
@@ -104,19 +103,19 @@ export default function Perfil() {
         abortEarly: false,
       });
 
-      delete values.id;
-      delete values.avatar;
-      delete values.avatar_url;
-      delete values.need_update_password;
-      delete values.created_at;
-      delete values.updated_at;
+      const body = {
+        cellphone: values?.cellphone,
+        email: values?.email,
+        gender: values?.gender,
+        name: values?.name,
+      };
 
-      const response = await api.put("/profile", values);
+      const response = await api.put("/profile", body);
 
       updateUser(response.data);
 
       toast({
-        title: "Perfil atualizados",
+        title: "Perfil atualizado",
         status: "success",
         position: "top-right",
         duration: 3000,

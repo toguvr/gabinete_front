@@ -71,7 +71,6 @@ export default function DemandRegister() {
   const [image, setImage] = useState({} as File);
   const [responsibles, setResponsibles] = useState([] as SelectProps[]);
   const [responsible, setResponsible] = useState({} as SelectProps);
-  console.log("responsibles", responsibles);
 
   const verifyPermission = async () => {
     setErrors({});
@@ -263,7 +262,7 @@ export default function DemandRegister() {
             _placeholder={{ color: "gray.500" }}
             color="gray.600"
             value={responsible?.value}
-            name="gender"
+            name="responsible"
             onChange={(e) =>
               setValues({ ...values, [e.target.name]: e.target.value })
             }
@@ -312,7 +311,7 @@ export default function DemandRegister() {
               <option value="FEMALE">Feminino</option>
             </Select>
           </Flex>
-          <FormLabel htmlFor="document" m="0" cursor="pointer">
+          {/* <FormLabel htmlFor="document" m="0" cursor="pointer">
             <Flex
               p="12px"
               borderRadius="md"
@@ -369,7 +368,7 @@ export default function DemandRegister() {
                 id="document"
               />
             </Flex>
-          </FormLabel>
+          </FormLabel> */}
           <Flex gap="24px">
             <Text color="gray.500">Recurso:</Text>
             <HStack>

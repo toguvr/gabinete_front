@@ -110,7 +110,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       localStorage.setItem(key.token, token);
       localStorage.setItem(key.user, JSON.stringify(user));
-      if (permissions.length > 0) {
+      if (Array.isArray(permissions) && permissions.length > 0) {
         localStorage.setItem(
           key.office,
           JSON.stringify(permissions[0]?.office)

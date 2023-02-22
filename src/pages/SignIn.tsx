@@ -149,13 +149,9 @@ export default function Signin() {
                   onClick={handleViewPassword}
                 >
                   {showPassword ? (
-                    <Icon
-                      color="blue.600"
-                      fontSize="20px"
-                      as={IoEyeOffOutline}
-                    />
+                    <Icon fontSize="20px" as={IoEyeOffOutline} />
                   ) : (
-                    <Icon color="blue.600" fontSize="20px" as={IoEyeOutline} />
+                    <Icon fontSize="20px" as={IoEyeOutline} />
                   )}
                 </Button>
               }

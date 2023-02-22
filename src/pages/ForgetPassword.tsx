@@ -18,6 +18,7 @@ import * as Yup from "yup";
 import getValidationErrors from "../utils/validationError";
 import Input from "../components/Form/Input";
 import api from "../services/api";
+import { useNavigate } from "react-router";
 
 type ForgotPasswordFormInputs = {
   email: string;
@@ -30,6 +31,7 @@ export default function ForgetPassword() {
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const navigate = useNavigate();
 
   const handleResetPassword = useCallback(
     async (e: FormEvent) => {
@@ -54,7 +56,7 @@ export default function ForgetPassword() {
 
         await api.post("/password/forgot", body);
 
-        return toast({
+        toast({
           title: "Link enviado com sucesso",
           description: "Você receberá um link no e-mail.",
           status: "success",
@@ -62,6 +64,7 @@ export default function ForgetPassword() {
           isClosable: true,
           position: "top-right",
         });
+        return navigate("/signin");
       } catch (err: any) {
         if (err instanceof Yup.ValidationError) {
           setErrors(getValidationErrors(err));

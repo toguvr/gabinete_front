@@ -9,3 +9,8 @@ export const roleStatus = [
   { key: 1, value: "Leitor" },
   { key: 2, value: "Editor" },
 ];
+
+export const roleStatusTasks = [
+  { key: 0, value: "Desativado" },
+  { key: 2, value: "Editor" },
+];

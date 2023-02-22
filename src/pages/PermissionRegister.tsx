@@ -14,9 +14,9 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { FormEvent, useCallback, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import HeaderSideBar from "../components/HeaderSideBar";
-import { StateProps } from "../dtos";
+import { RoleDTO, StateProps } from "../dtos";
 import * as Yup from "yup";
 import getValidationErrors from "../utils/validationError";
 import Input from "../components/Form/Input";
@@ -41,8 +41,9 @@ export default function PermissionRegister() {
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const { role } = useAuth();
+  const { role, office } = useAuth();
   const [verify, setVerify] = useState(false);
+  const [roles, setRoles] = useState([] as RoleDTO[]);
 
   const handleRegister = useCallback(
     async (e: FormEvent) => {
@@ -69,9 +70,10 @@ export default function PermissionRegister() {
           email: values.email,
           office_id: values.email,
           role_id: values.role_id,
+          gender: values.gender,
         };
 
-        await api.post("/permission", body);
+        await api.post("/invite", body);
 
         return toast({
           title: "Cadastrado com sucesso",
@@ -130,7 +132,7 @@ export default function PermissionRegister() {
         `/invite/check/office/${role?.office_id}/email/${values.email}`
       );
 
-      if (response.data.isVoterExist === false) {
+      if (response.data.isUserOnThisOffice === false) {
         setVerify(true);
       }
     } catch (err: any) {
@@ -147,6 +149,23 @@ export default function PermissionRegister() {
       setLoading(false);
     }
   };
+
+  const getRoles = async () => {
+    setRoles([] as RoleDTO[]);
+
+    setLoading(true);
+    try {
+      const response = await api.get(`/role/office/${office?.id}`);
+      setRoles(response.data);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getRoles();
+  }, []);
 
   return (
     <HeaderSideBar backRoute={true}>
@@ -247,65 +266,29 @@ export default function PermissionRegister() {
               />
             </Flex>
           </Flex>
-          <Accordion allowMultiple color="gray.500">
+          <Box flexDirection={"column"}>
             <Text color={!verify ? "gray.300" : "gray.500"}>Cargo:</Text>
-            <AccordionItem
+            <Select
               borderColor={!verify ? "gray.300" : "gray.500"}
-              borderRightWidth="1px"
-              borderLeftWidth="1px"
-              borderRadius="md"
+              bg="gray.50"
+              _placeholder={{ color: "gray.500" }}
+              color={!verify ? "gray.300" : "gray.500"}
+              name="role_id"
+              value={values?.role_id}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               isDisabled={!verify}
-              bgColor={!verify ? "white" : "gray.50"}
             >
-              <h2>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left">
-                    Acessos
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-              </h2>
-              <AccordionPanel pb={4} display="flex" flexDirection="column">
-                <CheckboxGroup colorScheme="blue" defaultValue={[]}>
-                  <Stack
-                    spacing={[1, 2]}
-                    maxH={["80px", "120px"]}
-                    overflow="auto"
-                    sx={{
-                      "::-webkit-scrollbar": {
-                        bg: "gray.50",
-                        width: "12px",
-                      },
-                      "&::-webkit-scrollbar-track": {
-                        width: "2px",
-                      },
-                      "&::-webkit-scrollbar-thumb": {
-                        background: "gray.500",
-                        borderRadius: "8px",
-                      },
-                    }}
-                  >
-                    <Flex>
-                      <Checkbox value="parlamentar" borderColor="gray.400">
-                        Equipe
-                      </Checkbox>
-                      <Select bg="gray.50" w="120px" ml="20px">
-                        <option value="">Ler</option>
-                        <option value="">Editar</option>
-                        <option value="">Excluir</option>
-                      </Select>
-                    </Flex>
-                    <Checkbox value="acessoradm" borderColor="gray.400">
-                      Eleitores
-                    </Checkbox>
-                    <Checkbox value="acessormark" borderColor="gray.400">
-                      Demandas
-                    </Checkbox>
-                  </Stack>
-                </CheckboxGroup>
-              </AccordionPanel>
-            </AccordionItem>
-          </Accordion>
+              {roles?.map((role) => {
+                return (
+                  <option key={role?.id} value={role?.id}>
+                    {role?.name}
+                  </option>
+                );
+              })}
+            </Select>
+          </Box>
           <Flex
             w="100%"
             alignItems="center"

@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import HeaderSideBar from "../components/HeaderSideBar";
-import { StateProps } from "../dtos";
+import { RoleDTO, StateProps } from "../dtos";
 import * as Yup from "yup";
 import getValidationErrors from "../utils/validationError";
 import Input from "../components/Form/Input";
@@ -47,6 +47,25 @@ export default function PermissionEdit() {
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const [roles, setRoles] = useState([] as RoleDTO[]);
+  const { office } = useAuth();
+
+  const getRoles = async () => {
+    setRoles([] as RoleDTO[]);
+
+    setLoading(true);
+    try {
+      const response = await api.get(`/role/office/${office?.id}`);
+      setRoles(response.data);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getRoles();
+  }, []);
 
   const handleUpdatePermission = useCallback(
     async (e: FormEvent) => {
@@ -124,7 +143,7 @@ export default function PermissionEdit() {
   const getPermissionById = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/role/${role?.id}`);
+      const response = await api.get(`/permission/${permission?.id}`);
       setValues({
         ddd: response?.data?.cellphone.slice(0, 2),
         cellphone: response?.data?.cellphone.slice(2),
@@ -233,64 +252,28 @@ export default function PermissionEdit() {
               />
             </Flex>
           </Flex>
-          <Accordion allowMultiple color="gray.500">
-            <Text color="gray.500">Cargo:</Text>
-            <AccordionItem
-              borderColor="gray.500"
-              borderRightWidth="1px"
-              borderLeftWidth="1px"
-              borderRadius="md"
-              bgColor="gray.50"
+          <Box flexDirection={"column"}>
+            <Text color={"gray.500"}>Cargo:</Text>
+            <Select
+              borderColor={"gray.500"}
+              bg="gray.50"
+              _placeholder={{ color: "gray.500" }}
+              color={"gray.500"}
+              name="role_id"
+              value={values?.role_id}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
             >
-              <h2>
-                <AccordionButton>
-                  <Box as="span" flex="1" textAlign="left">
-                    Acessos
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-              </h2>
-              <AccordionPanel pb={4} display="flex" flexDirection="column">
-                <CheckboxGroup colorScheme="blue" defaultValue={[]}>
-                  <Stack
-                    spacing={[1, 2]}
-                    maxH={["80px", "120px"]}
-                    overflow="auto"
-                    sx={{
-                      "::-webkit-scrollbar": {
-                        bg: "gray.50",
-                        width: "12px",
-                      },
-                      "&::-webkit-scrollbar-track": {
-                        width: "2px",
-                      },
-                      "&::-webkit-scrollbar-thumb": {
-                        background: "gray.500",
-                        borderRadius: "8px",
-                      },
-                    }}
-                  >
-                    <Flex>
-                      <Checkbox value="parlamentar" borderColor="gray.400">
-                        Equipe
-                      </Checkbox>
-                      <Select bg="gray.50" w="120px" ml="20px">
-                        <option value="">Ler</option>
-                        <option value="">Editar</option>
-                        <option value="">Excluir</option>
-                      </Select>
-                    </Flex>
-                    <Checkbox value="acessoradm" borderColor="gray.400">
-                      Eleitores
-                    </Checkbox>
-                    <Checkbox value="acessormark" borderColor="gray.400">
-                      Demandas
-                    </Checkbox>
-                  </Stack>
-                </CheckboxGroup>
-              </AccordionPanel>
-            </AccordionItem>
-          </Accordion>
+              {roles?.map((role) => {
+                return (
+                  <option key={role?.id} value={role?.id}>
+                    {role?.name}
+                  </option>
+                );
+              })}
+            </Select>
+          </Box>
           <Flex
             w="100%"
             alignItems="center"
