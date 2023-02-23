@@ -34,7 +34,8 @@ import api from "../services/api";
 import Button from "../components/Form/Button";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { roleStatus, roleStatusTasks } from "../utils/roleStatus";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import { useLocation } from "react-router-dom";
 
 type RegisterFormData = {
   name: string;
@@ -48,13 +49,15 @@ type RegisterFormData = {
 };
 
 export default function RoleEdit() {
+  const { id } = useParams();
   const [values, setValues] = useState<RegisterFormData>(
     {} as RegisterFormData
   );
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
+  const [roleLoading, setRoleLoading] = useState(false);
   const toast = useToast();
-  const { office, role } = useAuth();
+  const { office } = useAuth();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -168,6 +171,7 @@ export default function RoleEdit() {
           eleitor_page: Number(values?.eleitor_page),
           demandas_page: Number(values?.demandas_page),
           tarefas_page: Number(values?.tarefas_page),
+          roleId: id,
         };
 
         await api.put("/role", body);
@@ -215,9 +219,9 @@ export default function RoleEdit() {
   );
 
   const getRoleById = async () => {
-    setLoading(true);
+    setRoleLoading(true);
     try {
-      const response = await api.get(`/role/${role?.id}`);
+      const response = await api.get(`/role/${id}`);
       setValues({
         ...values,
         name: response?.data?.name,
@@ -230,7 +234,7 @@ export default function RoleEdit() {
       });
     } catch (err) {
     } finally {
-      setLoading(false);
+      setRoleLoading(false);
     }
   };
 
@@ -262,6 +266,7 @@ export default function RoleEdit() {
       </AlertDialog>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
         Editar Cargo
+        {roleLoading && <Spinner color="white" />}
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
         <Stack spacing={[5, 10]} mt={["24px", "40px"]} w="852px">

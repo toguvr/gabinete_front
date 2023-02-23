@@ -23,6 +23,7 @@ import Input from "../components/Form/Input";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../services/api";
 import Button from "../components/Form/Button";
+import { useNavigate } from "react-router-dom";
 
 type RegisterFormData = {
   name: string;
@@ -44,6 +45,7 @@ export default function PermissionRegister() {
   const { role, office } = useAuth();
   const [verify, setVerify] = useState(false);
   const [roles, setRoles] = useState([] as RoleDTO[]);
+  const navigate = useNavigate();
 
   const handleRegister = useCallback(
     async (e: FormEvent) => {
@@ -65,17 +67,17 @@ export default function PermissionRegister() {
         });
 
         const body = {
-          name: values.name,
-          cellphone: values.ddd + values.cellphone,
-          email: values.email,
-          office_id: values.email,
-          role_id: values.role_id,
-          gender: values.gender,
+          name: values?.name,
+          cellphone: values?.ddd + values?.cellphone,
+          email: values?.email,
+          office_id: office?.id,
+          role_id: values?.role_id,
+          gender: values?.gender,
         };
 
         await api.post("/invite", body);
 
-        return toast({
+        toast({
           title: "Cadastrado com sucesso",
           description: "Você cadastrou uma equipe.",
           status: "success",
@@ -83,6 +85,7 @@ export default function PermissionRegister() {
           isClosable: true,
           position: "top-right",
         });
+        return navigate("/equipe");
       } catch (err: any) {
         if (err instanceof Yup.ValidationError) {
           setErrors(getValidationErrors(err));
@@ -162,11 +165,10 @@ export default function PermissionRegister() {
       setLoading(false);
     }
   };
-
+  console.log("values?.role_id", values?.role_id);
   useEffect(() => {
     getRoles();
   }, []);
-
   return (
     <HeaderSideBar backRoute={true}>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
@@ -182,7 +184,7 @@ export default function PermissionRegister() {
               name="email"
               type="email"
               error={errors?.email}
-              value={values.email}
+              value={values?.email}
               onChange={(e) =>
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
@@ -230,8 +232,8 @@ export default function PermissionRegister() {
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
             >
-              <option value="Male">Masculino</option>
-              <option value="Female">Feminino</option>
+              <option value="MALE">Masculino</option>
+              <option value="FEMALE">Feminino</option>
             </Select>
           </Box>
           <Flex flexDir={"column"}>
@@ -259,7 +261,7 @@ export default function PermissionRegister() {
                 onChange={(e) =>
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
-                placeholder="00000-0000"
+                placeholder="000000000"
                 w="180px"
                 borderColor="gray.500"
                 isDisabled={!verify}
@@ -279,6 +281,7 @@ export default function PermissionRegister() {
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
               isDisabled={!verify}
+              placeholder="Selecione"
             >
               {roles?.map((role) => {
                 return (

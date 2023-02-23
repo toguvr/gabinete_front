@@ -38,14 +38,41 @@ interface LinkItemProps {
   name: string;
   route: string;
   icon: IconType;
+  permissionName: string;
 }
+
 const LinkItems: Array<LinkItemProps> = [
-  { name: "Home", route: "/", icon: FiHome },
-  { name: "Cargos", route: "/cargo", icon: IoAlbumsOutline },
-  { name: "Equipe", route: "/equipe", icon: RiTeamLine },
-  { name: "Eleitor", route: "/eleitor", icon: SiMicrosoftteams },
-  { name: "Demandas", route: "/demanda", icon: BsListTask },
-  { name: "Tarefas", route: "/tarefa", icon: BiTask },
+  { name: "Home", route: "/", icon: FiHome, permissionName: "home_page" },
+  {
+    name: "Cargos",
+    route: "/cargo",
+    icon: IoAlbumsOutline,
+    permissionName: "cargo_page",
+  },
+  {
+    name: "Equipe",
+    route: "/equipe",
+    icon: RiTeamLine,
+    permissionName: "equipe_page",
+  },
+  {
+    name: "Eleitor",
+    route: "/eleitor",
+    icon: SiMicrosoftteams,
+    permissionName: "eleitor_page",
+  },
+  {
+    name: "Demandas",
+    route: "/demanda",
+    icon: BsListTask,
+    permissionName: "demandas_page",
+  },
+  {
+    name: "Tarefas",
+    route: "/tarefa",
+    icon: BiTask,
+    permissionName: "tarefas_page",
+  },
 ];
 
 export default function SidebarWithHeader({
@@ -108,8 +135,11 @@ interface SidebarProps extends BoxProps {
 
 const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
   const navigate = useNavigate();
-  const { office } = useAuth();
+  const { office, role } = useAuth();
   const { pathname } = useLocation();
+
+  const teste = role as any;
+
   return (
     <Box
       transition="3s ease"
@@ -130,72 +160,446 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
           color={office?.primary_color}
         />
       </Flex>
-      {LinkItems.map((link) =>
-        pathname === link.route ? (
-          <Link
-            style={{ textDecoration: "none" }}
-            _focus={{ boxShadow: "none" }}
-            onClick={() => navigate(`${link.route}`)}
-            key={link.name}
-          >
-            <Flex
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              color={office?.secondary_color}
-              bg={office?.primary_color}
-              {...rest}
+
+      {LinkItems.map((link) => {
+        if (teste[link?.permissionName] > 0) {
+          return pathname === link.route ? (
+            <Link
+              style={{ textDecoration: "none" }}
+              _focus={{ boxShadow: "none" }}
+              onClick={() => navigate(link?.route)}
             >
-              <Icon
-                mr="4"
+              <Flex
+                align="center"
+                p="4"
+                mx="4"
+                borderRadius="lg"
+                role="group"
+                cursor="pointer"
                 color={office?.secondary_color}
-                fontSize="16"
-                _groupHover={{
+                bg={office?.primary_color}
+                {...rest}
+              >
+                <Icon
+                  mr="4"
+                  color={office?.secondary_color}
+                  fontSize="16"
+                  _groupHover={{
+                    color: office?.secondary_color,
+                  }}
+                  as={link?.icon}
+                />
+                {link?.name}
+              </Flex>
+            </Link>
+          ) : (
+            <Link
+              style={{ textDecoration: "none" }}
+              _focus={{ boxShadow: "none" }}
+              onClick={() => navigate(link?.route)}
+            >
+              <Flex
+                align="center"
+                p="4"
+                mx="4"
+                borderRadius="lg"
+                role="group"
+                cursor="pointer"
+                color="gray.500"
+                _hover={{
+                  bg: office?.primary_color,
                   color: office?.secondary_color,
                 }}
-                as={link.icon}
-              />
-              {link.name}
-            </Flex>
-          </Link>
-        ) : (
-          <Link
-            style={{ textDecoration: "none" }}
-            _focus={{ boxShadow: "none" }}
-            onClick={() => navigate(`${link.route}`)}
-            key={link.name}
+                {...rest}
+              >
+                <Icon
+                  mr="4"
+                  color="gray.500"
+                  fontSize="16"
+                  _groupHover={{
+                    color: office?.secondary_color,
+                  }}
+                  as={link?.icon}
+                />
+                {link?.name}
+              </Flex>
+            </Link>
+          );
+        }
+      })}
+
+      {/* {role?.home_page > 0 && pathname === "/" ? (
+        <Link
+          style={{ textDecoration: "none" }}
+          _focus={{ boxShadow: "none" }}
+          onClick={() => navigate("/")}
+        >
+          <Flex
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            color={office?.secondary_color}
+            bg={office?.primary_color}
+            {...rest}
           >
-            <Flex
-              align="center"
-              p="4"
-              mx="4"
-              borderRadius="lg"
-              role="group"
-              cursor="pointer"
-              color="gray.500"
-              _hover={{
-                bg: office?.primary_color,
+            <Icon
+              mr="4"
+              color={office?.secondary_color}
+              fontSize="16"
+              _groupHover={{
                 color: office?.secondary_color,
               }}
-              {...rest}
-            >
-              <Icon
-                mr="4"
-                color="gray.500"
-                fontSize="16"
-                _groupHover={{
-                  color: office?.secondary_color,
-                }}
-                as={link.icon}
-              />
-              {link.name}
-            </Flex>
-          </Link>
-        )
+              as={FiHome}
+            />
+            Home
+          </Flex>
+        </Link>
+      ) : (
+        <Link
+          style={{ textDecoration: "none" }}
+          _focus={{ boxShadow: "none" }}
+          onClick={() => navigate(`/`)}
+        >
+          <Flex
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            color="gray.500"
+            _hover={{
+              bg: office?.primary_color,
+              color: office?.secondary_color,
+            }}
+            {...rest}
+          >
+            <Icon
+              mr="4"
+              color="gray.500"
+              fontSize="16"
+              _groupHover={{
+                color: office?.secondary_color,
+              }}
+              as={FiHome}
+            />
+            Home
+          </Flex>
+        </Link>
       )}
+      {role?.cargo_page > 0 && pathname === "/cargo" ? (
+        <Link
+          style={{ textDecoration: "none" }}
+          _focus={{ boxShadow: "none" }}
+          onClick={() => navigate("/cargo")}
+        >
+          <Flex
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            color={office?.secondary_color}
+            bg={office?.primary_color}
+            {...rest}
+          >
+            <Icon
+              mr="4"
+              color={office?.secondary_color}
+              fontSize="16"
+              _groupHover={{
+                color: office?.secondary_color,
+              }}
+              as={IoAlbumsOutline}
+            />
+            Cargo
+          </Flex>
+        </Link>
+      ) : (
+        <Link
+          style={{ textDecoration: "none" }}
+          _focus={{ boxShadow: "none" }}
+          onClick={() => navigate(`/cargo`)}
+        >
+          <Flex
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            color="gray.500"
+            _hover={{
+              bg: office?.primary_color,
+              color: office?.secondary_color,
+            }}
+            {...rest}
+          >
+            <Icon
+              mr="4"
+              color="gray.500"
+              fontSize="16"
+              _groupHover={{
+                color: office?.secondary_color,
+              }}
+              as={IoAlbumsOutline}
+            />
+            Cargo
+          </Flex>
+        </Link>
+      )}
+      {role?.equipe_page > 0 && pathname === "/equipe" ? (
+        <Link
+          style={{ textDecoration: "none" }}
+          _focus={{ boxShadow: "none" }}
+          onClick={() => navigate("/equipe")}
+        >
+          <Flex
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            color={office?.secondary_color}
+            bg={office?.primary_color}
+            {...rest}
+          >
+            <Icon
+              mr="4"
+              color={office?.secondary_color}
+              fontSize="16"
+              _groupHover={{
+                color: office?.secondary_color,
+              }}
+              as={RiTeamLine}
+            />
+            Equipe
+          </Flex>
+        </Link>
+      ) : (
+        <Link
+          style={{ textDecoration: "none" }}
+          _focus={{ boxShadow: "none" }}
+          onClick={() => navigate(`/equipe`)}
+        >
+          <Flex
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            color="gray.500"
+            _hover={{
+              bg: office?.primary_color,
+              color: office?.secondary_color,
+            }}
+            {...rest}
+          >
+            <Icon
+              mr="4"
+              color="gray.500"
+              fontSize="16"
+              _groupHover={{
+                color: office?.secondary_color,
+              }}
+              as={RiTeamLine}
+            />
+            Equipe
+          </Flex>
+        </Link>
+      )}
+      {role?.eleitor_page > 0 && pathname === "/eleitor" ? (
+        <Link
+          style={{ textDecoration: "none" }}
+          _focus={{ boxShadow: "none" }}
+          onClick={() => navigate("/eleitor")}
+        >
+          <Flex
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            color={office?.secondary_color}
+            bg={office?.primary_color}
+            {...rest}
+          >
+            <Icon
+              mr="4"
+              color={office?.secondary_color}
+              fontSize="16"
+              _groupHover={{
+                color: office?.secondary_color,
+              }}
+              as={SiMicrosoftteams}
+            />
+            Eleitor
+          </Flex>
+        </Link>
+      ) : (
+        <Link
+          style={{ textDecoration: "none" }}
+          _focus={{ boxShadow: "none" }}
+          onClick={() => navigate(`/eleitor`)}
+        >
+          <Flex
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            color="gray.500"
+            _hover={{
+              bg: office?.primary_color,
+              color: office?.secondary_color,
+            }}
+            {...rest}
+          >
+            <Icon
+              mr="4"
+              color="gray.500"
+              fontSize="16"
+              _groupHover={{
+                color: office?.secondary_color,
+              }}
+              as={SiMicrosoftteams}
+            />
+            Eleitor
+          </Flex>
+        </Link>
+      )}
+      {role?.demandas_page > 0 && pathname === "/demanda" ? (
+        <Link
+          style={{ textDecoration: "none" }}
+          _focus={{ boxShadow: "none" }}
+          onClick={() => navigate("/demanda")}
+        >
+          <Flex
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            color={office?.secondary_color}
+            bg={office?.primary_color}
+            {...rest}
+          >
+            <Icon
+              mr="4"
+              color={office?.secondary_color}
+              fontSize="16"
+              _groupHover={{
+                color: office?.secondary_color,
+              }}
+              as={BsListTask}
+            />
+            Demandas
+          </Flex>
+        </Link>
+      ) : (
+        <Link
+          style={{ textDecoration: "none" }}
+          _focus={{ boxShadow: "none" }}
+          onClick={() => navigate(`/demanda`)}
+        >
+          <Flex
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            color="gray.500"
+            _hover={{
+              bg: office?.primary_color,
+              color: office?.secondary_color,
+            }}
+            {...rest}
+          >
+            <Icon
+              mr="4"
+              color="gray.500"
+              fontSize="16"
+              _groupHover={{
+                color: office?.secondary_color,
+              }}
+              as={BsListTask}
+            />
+            Demandas
+          </Flex>
+        </Link>
+      )}
+      {role?.tarefas_page > 0 && pathname === "/tarefa" ? (
+        <Link
+          style={{ textDecoration: "none" }}
+          _focus={{ boxShadow: "none" }}
+          onClick={() => navigate("/tarefa")}
+        >
+          <Flex
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            color={office?.secondary_color}
+            bg={office?.primary_color}
+            {...rest}
+          >
+            <Icon
+              mr="4"
+              color={office?.secondary_color}
+              fontSize="16"
+              _groupHover={{
+                color: office?.secondary_color,
+              }}
+              as={BiTask}
+            />
+            Tarefas
+          </Flex>
+        </Link>
+      ) : (
+        <Link
+          style={{ textDecoration: "none" }}
+          _focus={{ boxShadow: "none" }}
+          onClick={() => navigate(`/tarefa`)}
+        >
+          <Flex
+            align="center"
+            p="4"
+            mx="4"
+            borderRadius="lg"
+            role="group"
+            cursor="pointer"
+            color="gray.500"
+            _hover={{
+              bg: office?.primary_color,
+              color: office?.secondary_color,
+            }}
+            {...rest}
+          >
+            <Icon
+              mr="4"
+              color="gray.500"
+              fontSize="16"
+              _groupHover={{
+                color: office?.secondary_color,
+              }}
+              as={BiTask}
+            />
+            Tarefas
+          </Flex>
+        </Link>
+      )} */}
     </Box>
   );
 };

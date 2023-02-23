@@ -20,6 +20,7 @@ import {
   useToast,
   Button as ChakraButton,
   Spinner,
+  Switch,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import HeaderSideBar from "../components/HeaderSideBar";
@@ -40,8 +41,8 @@ export default function Permission() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [permissionToDeleteId, setPermissionToDeleteId] = useState("");
 
-  const openDialog = (office_id: string) => {
-    setPermissionToDeleteId(office_id);
+  const openDialog = (permission_id: string) => {
+    setPermissionToDeleteId(permission_id);
     onOpen();
   };
 
@@ -144,12 +145,14 @@ export default function Permission() {
           Equipe
           {loading && <Spinner color="blue.600" ml="4" size="sm" />}
         </Text>
-        <Button
-          onClick={() => navigate("/equipe/registrar-equipe")}
-          w={["160px", "280px"]}
-        >
-          Cadastrar equipe
-        </Button>
+        {role?.equipe_page > 1 && (
+          <Button
+            onClick={() => navigate("/equipe/registrar-equipe")}
+            w={["160px", "280px"]}
+          >
+            Cadastrar equipe
+          </Button>
+        )}
       </Flex>
       <Box
         maxH="calc(100vh - 340px)"
@@ -181,9 +184,11 @@ export default function Permission() {
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Telefone</Th>
               <Th color="gray.600">Cargo</Th>
-              <Th color="gray.600" w="8">
-                Ações
-              </Th>
+              {role?.equipe_page > 1 && (
+                <Th color="gray.600" w="8">
+                  Ações
+                </Th>
+              )}
             </Tr>
           </Thead>
           <Tbody>
@@ -238,35 +243,39 @@ export default function Permission() {
                       borderBottomColor="gray.300"
                     >
                       <HStack spacing="8px">
-                        <IconButton
-                          onClick={() => handleEditPermission(permission)}
-                          aria-label="Open navigation"
-                          variant="unstyled"
-                          minW={6}
-                          icon={
-                            <Icon
-                              cursor="pointer"
-                              fontSize="20"
-                              as={IoPencilOutline}
-                              color="gray.600"
+                        {role?.equipe_page > 1 && (
+                          <>
+                            <IconButton
+                              onClick={() => handleEditPermission(permission)}
+                              aria-label="Open navigation"
+                              variant="unstyled"
+                              minW={6}
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="20"
+                                  as={IoPencilOutline}
+                                  color="gray.600"
+                                />
+                              }
                             />
-                          }
-                        />
-
-                        <IconButton
-                          onClick={() => openDialog(permission?.office_id)}
-                          aria-label="Open alert"
-                          variant="unstyled"
-                          minW={6}
-                          icon={
-                            <Icon
-                              cursor="pointer"
-                              fontSize="20"
-                              as={IoTrashOutline}
-                              color="gray.600"
+                            <IconButton
+                              onClick={() => openDialog(permission?.id)}
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              minW={6}
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="20"
+                                  as={IoTrashOutline}
+                                  color="gray.600"
+                                />
+                              }
                             />
-                          }
-                        />
+                            <Switch isChecked={permission?.active} />
+                          </>
+                        )}
                       </HStack>
                     </Td>
                   </Tr>

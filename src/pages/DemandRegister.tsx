@@ -91,10 +91,10 @@ export default function DemandRegister() {
       }
 
       const response = await api.get(
-        `/voter/check/office/${role?.office_id}/cellphone/${values?.cellphone}`
+        `/voter/fill/check/office/${role?.office_id}/cellphone/${values?.cellphone}`
       );
 
-      if (response.data.isVoterExist === false) {
+      if (response.data.isVoterExist === true) {
         setVerify(true);
       }
     } catch (err: any) {
@@ -115,7 +115,9 @@ export default function DemandRegister() {
 
     setLoading(true);
     try {
-      const response = await api.get(`/permission/office/${role?.office_id}`);
+      const response = await api.get(
+        `/permission/office/${role?.office_id}/responsible`
+      );
 
       setResponsibles(
         response.data.map((responsible: PermissionByIdDTO) => ({

@@ -28,7 +28,7 @@ export default function Demand() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [data, setData] = useState([] as TaskPropsDTO[]);
-  const { office } = useAuth();
+  const { office, role } = useAuth();
 
   async function getTasks() {
     setData([] as TaskPropsDTO[]);
@@ -64,12 +64,14 @@ export default function Demand() {
         >
           Demandas
         </Text>
-        <Button
-          onClick={() => navigate("/demanda/registrar-demanda")}
-          w={["160px", "280px"]}
-        >
-          Cadastrar Demanda
-        </Button>
+        {role?.demandas_page > 1 && (
+          <Button
+            onClick={() => navigate("/demanda/registrar-demanda")}
+            w={["160px", "280px"]}
+          >
+            Cadastrar Demanda
+          </Button>
+        )}
       </Flex>
       <Box
         maxH="calc(100vh - 340px)"
@@ -103,9 +105,11 @@ export default function Demand() {
               <Th color="gray.600">Título</Th>
               <Th color="gray.600">Eleitor</Th>
               <Th color="gray.600">Prazo</Th>
-              <Th color="gray.600" w="8">
-                Ações
-              </Th>
+              {role?.equipe_page > 1 && (
+                <Th color="gray.600" w="8">
+                  Ações
+                </Th>
+              )}
             </Tr>
           </Thead>
           <Tbody>
@@ -143,42 +147,44 @@ export default function Demand() {
                     >
                       {getFormatDate(task?.date)}
                     </Td>
-                    <Td
-                      py="4px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                    >
-                      <HStack spacing="4px">
-                        <IconButton
-                          onClick={() => {}}
-                          aria-label="Open navigation"
-                          variant="unstyled"
-                          icon={
-                            <Icon
-                              cursor="pointer"
-                              fontSize="24"
-                              as={IoPencilOutline}
-                              color="gray.600"
-                            />
-                          }
-                        />
+                    {role?.equipe_page > 1 && (
+                      <Td
+                        py="4px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                      >
+                        <HStack spacing="4px">
+                          <IconButton
+                            onClick={() => {}}
+                            aria-label="Open navigation"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24"
+                                as={IoPencilOutline}
+                                color="gray.600"
+                              />
+                            }
+                          />
 
-                        <IconButton
-                          onClick={() => {}}
-                          aria-label="Open alert"
-                          variant="unstyled"
-                          icon={
-                            <Icon
-                              cursor="pointer"
-                              fontSize="24"
-                              as={IoTrashOutline}
-                              color="gray.600"
-                            />
-                          }
-                        />
-                      </HStack>
-                    </Td>
+                          <IconButton
+                            onClick={() => {}}
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24"
+                                as={IoTrashOutline}
+                                color="gray.600"
+                              />
+                            }
+                          />
+                        </HStack>
+                      </Td>
+                    )}
                   </Tr>
                 );
               })

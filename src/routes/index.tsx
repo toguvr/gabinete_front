@@ -39,23 +39,29 @@ export default function AppRoutes() {
     <Routes>
       <Route element={<AuthenticatedRoutes isPrivate />}>
         <Route path="/" element={<Home />} />
+
         <Route path="/equipe" element={<Permission />} />
         <Route path="/equipe/:id" element={<PermissionEdit />} />
         <Route
           path="/equipe/registrar-equipe"
           element={<PermissionRegister />}
         />
+
         <Route path="/eleitor" element={<Voter />} />
         <Route path="/eleitor/:id" element={<VoterEdit />} />
         <Route path="/eleitor/registrar-eleitor" element={<VoterRegister />} />
+
         <Route path="/demanda" element={<Demand />} />
         <Route path="/demanda/registrar-demanda" element={<DemandRegister />} />
-        <Route path="/tarefa" element={<Tarefa />} />
-        <Route path="/perfil" element={<Perfil />} />
-        <Route path="/trocar-senha" element={<ChangePassword />} />
+
         <Route path="/cargo" element={<Roles />} />
         <Route path="/cargo/registrar-cargo" element={<RoleRegister />} />
         <Route path="/cargo/:id" element={<RoleEdit />} />
+
+        <Route path="/tarefa" element={<Tarefa />} />
+
+        <Route path="/perfil" element={<Perfil />} />
+        <Route path="/trocar-senha" element={<ChangePassword />} />
       </Route>
 
       <Route element={<AuthenticatedRoutes isPrivate={false} />}>

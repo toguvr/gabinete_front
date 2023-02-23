@@ -4,6 +4,11 @@ export enum TaskPriority {
   BAIXA = "BAIXA",
 }
 
+export enum UserGender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+}
+
 export interface StateProps {
   [key: string]: any;
 }

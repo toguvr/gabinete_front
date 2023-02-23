@@ -36,9 +36,9 @@ export default function Voter() {
   const toast = useToast();
   const [data, setData] = useState([] as VoterDTO[]);
   const [voterToDeleteId, setVoterToDeleteId] = useState("");
-  const { onOpen: onOpenDialog } = useDisclosure();
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { role } = useAuth();
 
   const openDialog = (voter_id: string) => {
     setVoterToDeleteId(voter_id);
@@ -145,12 +145,14 @@ export default function Voter() {
           Eleitor
           {loading && <Spinner color="blue.600" ml="4" size="sm" />}
         </Text>
-        <Button
-          onClick={() => navigate("/eleitor/registrar-eleitor")}
-          w={["160px", "280px"]}
-        >
-          Cadastrar eleitor
-        </Button>
+        {role?.eleitor_page > 1 && (
+          <Button
+            onClick={() => navigate("/eleitor/registrar-eleitor")}
+            w={["160px", "280px"]}
+          >
+            Cadastrar eleitor
+          </Button>
+        )}
       </Flex>
       <Box
         maxH="calc(100vh - 340px)"
@@ -186,9 +188,11 @@ export default function Voter() {
               <Th color="gray.600">Data de nascimento</Th>
               <Th color="gray.600">Telefone</Th>
               <Th color="gray.600">Endereço</Th>
-              <Th color="gray.600" w="8">
-                Ações
-              </Th>
+              {role?.eleitor_page > 1 && (
+                <Th color="gray.600" w="8">
+                  Ações
+                </Th>
+              )}
             </Tr>
           </Thead>
           <Tbody>
@@ -262,43 +266,44 @@ export default function Voter() {
                         -
                       </Td>
                     )}
+                    {role?.eleitor_page > 1 && (
+                      <Td
+                        py="4px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                      >
+                        <HStack spacing="4px">
+                          <IconButton
+                            onClick={() => handleEditVoter(voter)}
+                            aria-label="Open navigation"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24"
+                                as={IoPencilOutline}
+                                color="gray.600"
+                              />
+                            }
+                          />
 
-                    <Td
-                      py="4px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                    >
-                      <HStack spacing="4px">
-                        <IconButton
-                          onClick={() => handleEditVoter(voter)}
-                          aria-label="Open navigation"
-                          variant="unstyled"
-                          icon={
-                            <Icon
-                              cursor="pointer"
-                              fontSize="24"
-                              as={IoPencilOutline}
-                              color="gray.600"
-                            />
-                          }
-                        />
-
-                        <IconButton
-                          onClick={() => openDialog(voter?.id)}
-                          aria-label="Open alert"
-                          variant="unstyled"
-                          icon={
-                            <Icon
-                              cursor="pointer"
-                              fontSize="24"
-                              as={IoTrashOutline}
-                              color="gray.600"
-                            />
-                          }
-                        />
-                      </HStack>
-                    </Td>
+                          <IconButton
+                            onClick={() => openDialog(voter?.id)}
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24"
+                                as={IoTrashOutline}
+                                color="gray.600"
+                              />
+                            }
+                          />
+                        </HStack>
+                      </Td>
+                    )}
                   </Tr>
                 );
               })

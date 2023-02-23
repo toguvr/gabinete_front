@@ -36,7 +36,7 @@ export default function Roles() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [data, setData] = useState([] as RoleDTO[]);
-  const { role } = useAuth();
+  const { role, office } = useAuth();
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [roleToDeleteId, setRoleToDeleteId] = useState("");
@@ -54,8 +54,8 @@ export default function Roles() {
     }
   };
 
-  const openDialog = (office_id: string) => {
-    setRoleToDeleteId(office_id);
+  const openDialog = (role_id: string) => {
+    setRoleToDeleteId(role_id);
     onOpen();
   };
 
@@ -64,7 +64,7 @@ export default function Roles() {
 
     setLoading(true);
     try {
-      const response = await api.get(`/role`);
+      const response = await api.get(`/role/office/${office?.id}`);
 
       setData(response.data);
     } catch (err) {
@@ -107,8 +107,8 @@ export default function Roles() {
     }
   };
 
-  const handleEditRole = (role: RoleDTO) => {
-    navigate(`/cargo/${role?.id}`, { state: { role } });
+  const handleEditRole = (role: string) => {
+    navigate(`/cargo/${role}`);
   };
 
   return (
@@ -158,12 +158,14 @@ export default function Roles() {
           Cargos
           {loading && <Spinner color="blue.600" ml="4" size="sm" />}
         </Text>
-        <Button
-          onClick={() => navigate("/cargo/registrar-cargo")}
-          w={["160px", "280px"]}
-        >
-          Cadastrar cargo
-        </Button>
+        {role?.cargo_page > 1 && (
+          <Button
+            onClick={() => navigate("/cargo/registrar-cargo")}
+            w={["160px", "280px"]}
+          >
+            Cadastrar cargo
+          </Button>
+        )}
       </Flex>
       <Box
         maxH="calc(100vh - 340px)"
@@ -197,16 +199,18 @@ export default function Roles() {
               <Th color="gray.600">Eleitor</Th>
               <Th color="gray.600">Demandas</Th>
               <Th color="gray.600">Tarefas</Th>
-              <Th color="gray.600" w="8">
-                Ações
-              </Th>
+              {role?.cargo_page > 1 && (
+                <Th color="gray.600" w="8">
+                  Ações
+                </Th>
+              )}
             </Tr>
           </Thead>
           <Tbody>
             {Array.isArray(data) && data.length > 0 ? (
-              data.map((role) => {
+              data.map((roleData) => {
                 return (
-                  <Tr key={role.id}>
+                  <Tr key={roleData.id}>
                     <Td
                       color="gray.600"
                       fontSize="14px"
@@ -215,7 +219,7 @@ export default function Roles() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {role?.name}
+                      {roleData?.name}
                     </Td>
                     <Td
                       color="gray.600"
@@ -225,7 +229,7 @@ export default function Roles() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {getRoleStatus(role?.cargo_page)}
+                      {getRoleStatus(roleData?.cargo_page)}
                     </Td>
                     <Td
                       color="gray.600"
@@ -235,7 +239,7 @@ export default function Roles() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {getRoleStatus(role?.equipe_page)}
+                      {getRoleStatus(roleData?.equipe_page)}
                     </Td>
                     <Td
                       color="gray.600"
@@ -245,7 +249,7 @@ export default function Roles() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {getRoleStatus(role?.eleitor_page)}
+                      {getRoleStatus(roleData?.eleitor_page)}
                     </Td>
                     <Td
                       color="gray.600"
@@ -255,7 +259,7 @@ export default function Roles() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {getRoleStatus(role?.demandas_page)}
+                      {getRoleStatus(roleData?.demandas_page)}
                     </Td>
                     <Td
                       color="gray.600"
@@ -265,46 +269,48 @@ export default function Roles() {
                       borderBottomColor="gray.300"
                       py="0px"
                     >
-                      {getRoleStatus(role?.tarefas_page)}
+                      {getRoleStatus(roleData?.tarefas_page)}
                     </Td>
-                    <Td
-                      py="0px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                    >
-                      <HStack spacing="8px">
-                        <IconButton
-                          onClick={() => handleEditRole(role)}
-                          aria-label="Open navigation"
-                          variant="unstyled"
-                          minW={6}
-                          icon={
-                            <Icon
-                              cursor="pointer"
-                              fontSize="20"
-                              as={IoPencilOutline}
-                              color="gray.600"
-                            />
-                          }
-                        />
+                    {role?.cargo_page > 1 && (
+                      <Td
+                        py="0px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                      >
+                        <HStack spacing="8px">
+                          <IconButton
+                            onClick={() => handleEditRole(roleData?.id)}
+                            aria-label="Open navigation"
+                            variant="unstyled"
+                            minW={6}
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="20"
+                                as={IoPencilOutline}
+                                color="gray.600"
+                              />
+                            }
+                          />
 
-                        <IconButton
-                          onClick={() => openDialog(role?.id)}
-                          aria-label="Open alert"
-                          variant="unstyled"
-                          minW={6}
-                          icon={
-                            <Icon
-                              cursor="pointer"
-                              fontSize="20"
-                              as={IoTrashOutline}
-                              color="gray.600"
-                            />
-                          }
-                        />
-                      </HStack>
-                    </Td>
+                          <IconButton
+                            onClick={() => openDialog(role?.id)}
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            minW={6}
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="20"
+                                as={IoTrashOutline}
+                                color="gray.600"
+                              />
+                            }
+                          />
+                        </HStack>
+                      </Td>
+                    )}
                   </Tr>
                 );
               })
