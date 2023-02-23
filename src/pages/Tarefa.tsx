@@ -15,32 +15,28 @@ import {
   Thead,
   Tr,
   useDisclosure,
-} from "@chakra-ui/react";
-import { useState, useEffect } from "react";
-import Button from "../components/Form/Button";
-import HeaderSideBar from "../components/HeaderSideBar";
-import TaskCard from "../components/TaskCard";
-import TaskListStatusIcon from "../components/TaskListStatusIcon";
-import { useAuth } from "../contexts/AuthContext";
-import { TaskPropsDTO } from "../dtos";
-import api from "../services/api";
+} from '@chakra-ui/react';
+import { useState, useEffect } from 'react';
+import Button from '../components/Form/Button';
+import HeaderSideBar from '../components/HeaderSideBar';
+import TaskCard from '../components/TaskCard';
+import TaskListStatusIcon from '../components/TaskListStatusIcon';
+import { useAuth } from '../contexts/AuthContext';
+import { TaskPropsDTO } from '../dtos';
+import api from '../services/api';
 
 export default function Tarefa() {
   const [selectedTask, setSelectedTask] = useState({} as TaskPropsDTO);
   const [taskList, setTaskList] = useState<TaskPropsDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const auth = useAuth();
-  console.log("selectedTask", selectedTask);
 
   async function getOfficeList() {
     setTaskList([] as TaskPropsDTO[]);
 
     setLoading(true);
     try {
-      const response = await api.get(
-        `/task/office/${auth.office.id}/responsible`
-      );
-      console.log("response", response.data);
+      const response = await api.get(`/task/office/${auth.office.id}/responsible`);
       setTaskList(response.data);
     } catch (err) {
     } finally {
@@ -49,16 +45,38 @@ export default function Tarefa() {
   }
 
   async function statusChange(statusChange: string, id: string) {
-    console.log("statusChange", statusChange, "id", id);
     try {
-      console.log("vou fazer");
-      console.log("statusChange", statusChange, "id", id);
       const response = await api.put(`/task/status/responsible`, {
         status: statusChange,
         taskId: String(id),
       });
-      console.log("fiz");
-      getOfficeList();
+      const taskListUpdated = taskList.map((task) => {
+        if (task.id === id) {
+          task.status = statusChange;
+          console.log('task.status', task.status);
+        }
+        return task;
+      });
+
+      taskListUpdated.sort((a, b) => {
+        if (a.status === 'BACKLOG') {
+          return -1;
+        }
+        if (a.status === 'FAZENDO' && b.status === 'BACKLOG') {
+          return 1;
+        }
+        if (a.status === 'FAZENDO' && b.status === 'CONCLUIDO') {
+          return -1;
+        }
+        if (a.status === 'CONCLUIDO') {
+          return 1;
+        }
+        return 0;
+      });
+
+      setTaskList(taskListUpdated);
+
+      // getOfficeList();
     } catch (err) {
     } finally {
       setLoading(false);
@@ -67,7 +85,6 @@ export default function Tarefa() {
 
   function handleSelectTask(id: string) {
     const selectedTaskByUser = taskList.find((task) => task.id === id);
-    console.log("selectedTaskByUser", selectedTaskByUser);
     setSelectedTask(selectedTaskByUser as TaskPropsDTO);
     onOpen();
   }
@@ -79,7 +96,6 @@ export default function Tarefa() {
       getOfficeList();
     }
   }, [auth.office.id]);
-  console.log("auth", auth.office);
 
   return (
     <HeaderSideBar>
@@ -103,11 +119,7 @@ export default function Tarefa() {
               <TaskCard task={selectedTask} />
             </ModalBody>
 
-            <ModalFooter
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
+            <ModalFooter display="flex" alignItems="center" justifyContent="center">
               <Button alignSelf="center" onClick={onClose} w="85px">
                 Fechar
               </Button>
@@ -115,11 +127,11 @@ export default function Tarefa() {
           </ModalContent>
         </Modal>
         <TableContainer padding={2}>
-          <Table fontSize={{ base: "10px", md: "12px", lg: "14px" }} size="md">
+          <Table fontSize={{ base: '10px', md: '12px', lg: '14px' }} size="md">
             <Thead>
               <Tr bg="blue.600">
                 <Th
-                  fontSize={{ base: "10px", md: "12px", lg: "14px" }}
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   maxW={[1]}
                   color="white"
                   textAlign="center"
@@ -127,14 +139,14 @@ export default function Tarefa() {
                   Id
                 </Th>
                 <Th
-                  fontSize={{ base: "10px", md: "12px", lg: "14px" }}
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   color="white"
                   textAlign="center"
                 >
                   Status
                 </Th>
                 <Th
-                  fontSize={{ base: "10px", md: "12px", lg: "14px" }}
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   color="white"
                   textAlign="center"
                 >
@@ -142,7 +154,7 @@ export default function Tarefa() {
                 </Th>
 
                 <Th
-                  fontSize={{ base: "10px", md: "12px", lg: "14px" }}
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   maxW={[1, 4, 4]}
                   color="white"
                   textAlign="center"
