@@ -165,7 +165,6 @@ export default function PermissionRegister() {
       setLoading(false);
     }
   };
-  console.log("values?.role_id", values?.role_id);
   useEffect(() => {
     getRoles();
   }, []);

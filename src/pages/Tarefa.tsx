@@ -68,7 +68,6 @@ export default function Tarefa() {
       const taskListUpdated = taskList.map((task) => {
         if (task.id === id) {
           task.status = statusChange;
-          console.log('task.status', task.status);
         }
         return task;
       });
@@ -90,8 +89,6 @@ export default function Tarefa() {
       });
 
       setTaskList(taskListUpdated);
-
-      // getOfficeList();
     } catch (err) {
     } finally {
       setLoading(false);
@@ -126,7 +123,7 @@ export default function Tarefa() {
           <ModalOverlay />
           <ModalContent p={6} alignSelf="center" justifyItems="center">
             <ModalHeader color="blue.600" textAlign="center" py={2}>
-              Título da Demanda
+              {selectedTask.title}
             </ModalHeader>
             <ModalCloseButton />
 
