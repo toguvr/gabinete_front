@@ -37,6 +37,21 @@ export default function Tarefa() {
     setLoading(true);
     try {
       const response = await api.get(`/task/office/${auth.office.id}/responsible`);
+      response.data.sort((a: any, b: any) => {
+        if (a.status === 'BACKLOG') {
+          return -1;
+        }
+        if (a.status === 'FAZENDO' && b.status === 'BACKLOG') {
+          return 1;
+        }
+        if (a.status === 'FAZENDO' && b.status === 'CONCLUIDO') {
+          return -1;
+        }
+        if (a.status === 'CONCLUIDO') {
+          return 1;
+        }
+        return 0;
+      });
       setTaskList(response.data);
     } catch (err) {
     } finally {
