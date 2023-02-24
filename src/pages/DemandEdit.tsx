@@ -329,7 +329,7 @@ export default function DemandEdit() {
           </Box>
 
           <Select
-            placeholder="Selecionar responsável"
+            placeholder="Selecionar responsável*"
             borderColor="gray.500"
             bg="gray.50"
             _placeholder={{ color: "gray.500" }}
@@ -349,7 +349,7 @@ export default function DemandEdit() {
           <Flex alignItems={"flex-end"} gap="36px">
             <Input
               labelColor="gray.500"
-              label="Prazo:"
+              label="Prazo*:"
               name="date"
               type="date"
               error={errors?.date}
@@ -367,7 +367,7 @@ export default function DemandEdit() {
               w="220px"
             />
             <Select
-              placeholder="Prioridade"
+              placeholder="Prioridade*"
               borderColor="gray.500"
               bg="gray.50"
               _placeholder={{ color: "gray.500" }}

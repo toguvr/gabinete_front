@@ -18,6 +18,8 @@ import api from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocation, useNavigate, useParams } from "react-router";
 import Button from "../components/Form/Button";
+import { getFormatDate } from "../utils/date";
+import { parse } from "date-fns";
 
 type EditFormData = {
   address_number: string;
@@ -39,11 +41,11 @@ type EditFormData = {
 };
 
 export default function VoterEdit() {
-  const location = useLocation();
-  const { voter } = location.state;
+  const { id } = useParams();
   const [values, setValues] = useState<EditFormData>({} as EditFormData);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
+  const [cepLoading, setCepLoading] = useState(false);
   const toast = useToast();
   const { office } = useAuth();
   const navigate = useNavigate();
@@ -82,7 +84,7 @@ export default function VoterEdit() {
           street: values?.street,
           zip: values?.zip,
           document: values?.document,
-          voter_id: voter?.id,
+          voter_id: id,
         };
 
         await api.put("/voter", body);
@@ -131,6 +133,7 @@ export default function VoterEdit() {
   );
 
   const getCep = async () => {
+    setCepLoading(true);
     try {
       const response = await axios.get(
         `https://viacep.com.br/ws/${values?.zip}/json/`
@@ -153,13 +156,16 @@ export default function VoterEdit() {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setCepLoading(false);
     }
   };
 
   const getVoterById = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/voter/${voter?.id}`);
+      const response = await api.get(`/voter/${id}`);
+
       setValues({
         ddd: response?.data?.cellphone.slice(0, 2),
         cellphone: response?.data?.cellphone.slice(2),
@@ -197,7 +203,7 @@ export default function VoterEdit() {
         <Stack spacing={[5, 8]} mt={["24px", "40px"]} w="852px">
           <Flex flexDir={"column"}>
             <Text color="gray.500" fontWeight="400" margin="0">
-              Telefone:
+              Telefone*:
             </Text>
             <Flex>
               <Input
@@ -244,7 +250,7 @@ export default function VoterEdit() {
           </Flex>
 
           <Input
-            label="Nome:"
+            label="Nome*:"
             placeholder="Nome completo"
             name="name"
             type="text"
@@ -256,7 +262,7 @@ export default function VoterEdit() {
             borderColor="gray.500"
           />
           <Input
-            label="E-mail:"
+            label="E-mail*:"
             placeholder="E-mail"
             name="email"
             type="email"
@@ -333,9 +339,14 @@ export default function VoterEdit() {
             </Flex>
           </Box>
           <Box>
-            <Text color="gray.500" fontWeight="400" margin="0">
-              Endereço:
-            </Text>
+            <Flex>
+              <Text color="gray.500" fontWeight="400" margin="0">
+                Endereço:
+              </Text>
+              {cepLoading && (
+                <Spinner color={office?.primary_color} size="sm" />
+              )}
+            </Flex>
             <Flex
               mb="24px"
               justifyContent={["flex-start", "space-between"]}

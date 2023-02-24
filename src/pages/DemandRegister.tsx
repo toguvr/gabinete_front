@@ -343,7 +343,7 @@ export default function DemandRegister() {
           </Box>
 
           <Select
-            placeholder="Selecionar responsável"
+            placeholder="Selecionar responsável*"
             borderColor="gray.500"
             bg="gray.50"
             _placeholder={{ color: "gray.500" }}
@@ -364,7 +364,7 @@ export default function DemandRegister() {
           <Flex alignItems={"flex-end"} gap="36px">
             <Input
               labelColor="gray.500"
-              label="Prazo:"
+              label="Prazo*:"
               name="deadline"
               type="date"
               error={errors?.deadline}
@@ -383,7 +383,7 @@ export default function DemandRegister() {
               isDisabled={!verify || notVerify}
             />
             <Select
-              placeholder="Prioridade"
+              placeholder="Prioridade*"
               borderColor="gray.500"
               bg="gray.50"
               _placeholder={{ color: "gray.500" }}

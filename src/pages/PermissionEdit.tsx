@@ -88,7 +88,6 @@ export default function PermissionEdit() {
         const body = {
           role_id: values?.role_id,
           permissionId: id,
-          active: values?.active,
         };
 
         await api.put("/permission", body);
@@ -181,6 +180,7 @@ export default function PermissionEdit() {
               }
               borderColor="gray.500"
               w="100%"
+              disabled
             />
           </Flex>
           <Input
@@ -195,6 +195,7 @@ export default function PermissionEdit() {
               setValues({ ...values, [e.target.name]: e.target.value })
             }
             borderColor="gray.500"
+            disabled
           />
           <Box w="100%">
             <Text color="gray.500" fontWeight="400" margin="0">
@@ -208,6 +209,7 @@ export default function PermissionEdit() {
               color="gray.600"
               value={values?.gender}
               name="gender"
+              disabled
               onChange={(e) =>
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
@@ -231,6 +233,7 @@ export default function PermissionEdit() {
                 w="72px"
                 mr="8px"
                 borderColor="gray.500"
+                disabled
               />
               <Input
                 name="cellphone"
@@ -243,6 +246,7 @@ export default function PermissionEdit() {
                 placeholder="00000-0000"
                 w="180px"
                 borderColor="gray.500"
+                disabled
               />
             </Flex>
           </Flex>

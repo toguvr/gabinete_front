@@ -20,16 +20,24 @@ import {
   useToast,
   Button as ChakraButton,
   Spinner,
+  Select,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import HeaderSideBar from "../components/HeaderSideBar";
-import { PermissionByIdDTO, RoleDTO } from "../dtos";
-import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
+import { PermissionByIdDTO, RoleDTO, StateProps } from "../dtos";
+import {
+  IoPencilOutline,
+  IoSearchSharp,
+  IoTrashOutline,
+} from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/Form/Button";
-import { RoleStatus } from "../utils/roleStatus";
+import { roleStatus, RoleStatus, roleStatusTasks } from "../utils/roleStatus";
+import Input from "../components/Form/Input";
+import { privateRoute } from "../routes";
+import { roleTable } from "../utils/columnTables";
 
 export default function Roles() {
   const navigate = useNavigate();
@@ -40,6 +48,10 @@ export default function Roles() {
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [roleToDeleteId, setRoleToDeleteId] = useState("");
+  const [errors, setErrors] = useState({} as StateProps);
+  const [selectFilter, setSelectFilter] = useState("name");
+  const [filterField, setFilterField] = useState("");
+  const [selectPageFilter, setSelectPageFilter] = useState("");
 
   const getRoleStatus = (id: number) => {
     switch (id) {
@@ -111,6 +123,51 @@ export default function Roles() {
     navigate(`/cargo/${role}`);
   };
 
+  // const handleUpdateActive = async() => {
+  //     setLoading(true);
+  //     try {
+  //       const body = {
+  //         role_id: values?.role_id,
+  //         permissionId: id,
+  //       };
+
+  //       await api.put("/permission", body);
+
+  //       return toast({
+  //         title: "Ataulizado com sucesso",
+  //         description: "Você atualizou uma equipe.",
+  //         status: "success",
+  //         duration: 3000,
+  //         isClosable: true,
+  //         position: "top-right",
+  //       });
+  //     } catch (err: any) {
+
+  //       if (err.response) {
+  //         return toast({
+  //           title:
+  //             err.response.data.message ||
+  //             "Ocorreu um erro ao atualizar a equipe, cheque as credenciais",
+
+  //           status: "error",
+  //           position: "top-right",
+  //           duration: 3000,
+  //           isClosable: true,
+  //         });
+  //       }
+  //       return toast({
+  //         title: "Ocorreu um erro ao atualizar a equipe, cheque as credenciais",
+
+  //         status: "error",
+  //         position: "top-right",
+  //         duration: 3000,
+  //         isClosable: true,
+  //       });
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+
   return (
     <HeaderSideBar>
       <AlertDialog
@@ -167,6 +224,73 @@ export default function Roles() {
           </Button>
         )}
       </Flex>
+      <Text mt="36px" color="gray.500">
+        Filtar por:
+      </Text>
+      <Flex gap={["12px", "24px"]}>
+        <Select
+          w="220px"
+          borderColor="gray.500"
+          name="filterType"
+          value={selectFilter}
+          onChange={(e) => {
+            setSelectFilter(e.target.value);
+          }}
+        >
+          {roleTable.map((role) => {
+            return (
+              <option key={role?.key} value={role?.value}>
+                {role?.label}
+              </option>
+            );
+          })}
+        </Select>
+        {selectFilter === "name" ? (
+          <Input
+            maxW="600px"
+            type="text"
+            name="filterField"
+            placeholder="Buscar"
+            error={errors?.filterField}
+            value={filterField}
+            mb="24px"
+            onChange={(e) => {
+              setFilterField(e.target.value);
+            }}
+            borderColor="gray.500"
+            rightIcon={
+              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+            }
+          />
+        ) : (
+          <Select
+            borderColor="gray.500"
+            bg="gray.50"
+            _placeholder={{ color: "gray.500" }}
+            color="gray.600"
+            maxW="600px"
+            name="selectPageFilter"
+            value={selectPageFilter}
+            onChange={(e) => setSelectPageFilter(e.target.value)}
+          >
+            {selectFilter === "tarefas_page"
+              ? roleStatusTasks.map((role) => {
+                  return (
+                    <option key={role?.key} value={role?.key}>
+                      {role?.value}
+                    </option>
+                  );
+                })
+              : roleStatus.map((role) => {
+                  return (
+                    <option key={role?.key} value={role?.key}>
+                      {role?.value}
+                    </option>
+                  );
+                })}
+          </Select>
+        )}
+      </Flex>
       <Box
         maxH="calc(100vh - 340px)"
         overflow="auto"
@@ -208,112 +332,133 @@ export default function Roles() {
           </Thead>
           <Tbody>
             {Array.isArray(data) && data.length > 0 ? (
-              data.map((roleData) => {
-                return (
-                  <Tr key={roleData.id} h="45px">
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="0px"
-                    >
-                      {roleData?.name}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="0px"
-                    >
-                      {getRoleStatus(roleData?.cargo_page)}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="0px"
-                    >
-                      {getRoleStatus(roleData?.equipe_page)}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="0px"
-                    >
-                      {getRoleStatus(roleData?.eleitor_page)}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="0px"
-                    >
-                      {getRoleStatus(roleData?.demandas_page)}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="0px"
-                    >
-                      {getRoleStatus(roleData?.tarefas_page)}
-                    </Td>
-                    {role?.cargo_page > 1 && (
+              data
+                .filter((currentValue: any) => {
+                  if (selectFilter === "name") {
+                    if (filterField?.length >= 3) {
+                      return (
+                        currentValue[selectFilter]
+                          .toLowerCase()
+                          .indexOf(filterField?.toLowerCase()) > -1
+                      );
+                    } else {
+                      return currentValue;
+                    }
+                  } else {
+                    if (selectPageFilter) {
+                      return (
+                        Number(currentValue[selectFilter]) ===
+                        Number(selectPageFilter)
+                      );
+                    }
+                  }
+                })
+                .map((roleData) => {
+                  return (
+                    <Tr key={roleData.id} h="45px">
                       <Td
-                        py="0px"
+                        color="gray.600"
+                        fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
                         borderBottomColor="gray.300"
+                        py="0px"
                       >
-                        <HStack spacing="8px">
-                          <IconButton
-                            onClick={() => handleEditRole(roleData?.id)}
-                            aria-label="Open navigation"
-                            variant="unstyled"
-                            minW={6}
-                            icon={
-                              <Icon
-                                cursor="pointer"
-                                fontSize="20"
-                                as={IoPencilOutline}
-                                color="gray.600"
-                              />
-                            }
-                          />
-
-                          <IconButton
-                            onClick={() => openDialog(roleData?.id)}
-                            aria-label="Open alert"
-                            variant="unstyled"
-                            minW={6}
-                            icon={
-                              <Icon
-                                cursor="pointer"
-                                fontSize="20"
-                                as={IoTrashOutline}
-                                color="gray.600"
-                              />
-                            }
-                          />
-                        </HStack>
+                        {roleData?.name}
                       </Td>
-                    )}
-                  </Tr>
-                );
-              })
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        {getRoleStatus(roleData?.cargo_page)}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        {getRoleStatus(roleData?.equipe_page)}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        {getRoleStatus(roleData?.eleitor_page)}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        {getRoleStatus(roleData?.demandas_page)}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        {getRoleStatus(roleData?.tarefas_page)}
+                      </Td>
+                      {role?.cargo_page > 1 && (
+                        <Td
+                          py="0px"
+                          borderBottomWidth="1px"
+                          borderBottomStyle="solid"
+                          borderBottomColor="gray.300"
+                        >
+                          <HStack spacing="8px">
+                            <IconButton
+                              onClick={() => handleEditRole(roleData?.id)}
+                              aria-label="Open navigation"
+                              variant="unstyled"
+                              minW={6}
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="20"
+                                  as={IoPencilOutline}
+                                  color="gray.600"
+                                />
+                              }
+                            />
+
+                            <IconButton
+                              onClick={() => openDialog(roleData?.id)}
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              minW={6}
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="20"
+                                  as={IoTrashOutline}
+                                  color="gray.600"
+                                />
+                              }
+                            />
+                          </HStack>
+                        </Td>
+                      )}
+                    </Tr>
+                  );
+                })
             ) : (
               <Tr>Nenhum dado cadastrado</Tr>
             )}

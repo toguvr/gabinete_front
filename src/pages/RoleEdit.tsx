@@ -272,7 +272,7 @@ export default function RoleEdit() {
         <Stack spacing={[5, 10]} mt={["24px", "40px"]} w="852px">
           <Input
             labelColor="gray.500"
-            label="Nome:"
+            label="Nome*:"
             placeholder="Nome do cargo"
             name="name"
             type="text"
