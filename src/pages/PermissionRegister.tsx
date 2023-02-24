@@ -24,14 +24,17 @@ import { useAuth } from "../contexts/AuthContext";
 import api from "../services/api";
 import Button from "../components/Form/Button";
 import { useNavigate } from "react-router-dom";
+import { PatternFormat } from "react-number-format";
 
 type RegisterFormData = {
   name: string;
   cellphone: string;
+  cellphoneMask?: string;
   email: string;
   office_id: string;
   role_id: string;
   ddd: string;
+  dddMask?: string;
   gender: string;
 };
 
@@ -239,29 +242,43 @@ export default function PermissionRegister() {
           <Flex flexDir={"column"}>
             <Text color={!verify ? "gray.300" : "gray.500"}>Telefone:</Text>
             <Flex>
-              <Input
+              <PatternFormat
+                customInput={Input}
                 name="ddd"
-                type="number"
+                type="text"
                 error={errors?.ddd}
-                value={values.ddd}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                value={values?.dddMask}
+                onValueChange={(value) => {
+                  setValues({
+                    ...values,
+                    ddd: value?.value,
+                    dddMask: value?.formattedValue,
+                  });
+                }}
                 placeholder="DDD"
                 w="72px"
                 mr="8px"
                 borderColor="gray.500"
                 isDisabled={!verify}
+                format="##"
+                mask="_"
               />
-              <Input
+              <PatternFormat
+                customInput={Input}
+                format="#####-####"
+                mask="_"
                 name="cellphone"
-                type="number"
+                type="tel"
                 error={errors?.cellphone}
-                value={values.cellphone}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
-                placeholder="000000000"
+                value={values.cellphoneMask}
+                onValueChange={(value) => {
+                  setValues({
+                    ...values,
+                    cellphone: value?.value,
+                    cellphoneMask: value?.formattedValue,
+                  });
+                }}
+                placeholder="00000-0000"
                 w="180px"
                 borderColor="gray.500"
                 isDisabled={!verify}

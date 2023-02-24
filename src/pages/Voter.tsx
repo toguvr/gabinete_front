@@ -39,12 +39,12 @@ export default function Voter() {
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { role } = useAuth();
+  const auth = useAuth();
 
   const openDialog = (voter_id: string) => {
     setVoterToDeleteId(voter_id);
     onOpen();
   };
-  const auth = useAuth();
 
   const getVoterList = async () => {
     setData([] as VoterDTO[]);

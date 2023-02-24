@@ -23,7 +23,7 @@ import Input from "../components/Form/Input";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../services/api";
 import Button from "../components/Form/Button";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 type RegisterFormData = {
   name: string;
@@ -39,8 +39,7 @@ type RegisterFormData = {
 };
 
 export default function PermissionEdit() {
-  const location = useLocation();
-  const { role, permission } = location.state;
+  const { id } = useParams();
   const [values, setValues] = useState<RegisterFormData>(
     {} as RegisterFormData
   );
@@ -93,7 +92,7 @@ export default function PermissionEdit() {
           office_id: values?.email,
           role_id: values?.role_id,
           user_id: values?.user_id,
-          permissionId: permission?.id,
+          permissionId: id,
           active: values?.active,
         };
 
@@ -143,18 +142,18 @@ export default function PermissionEdit() {
   const getPermissionById = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/permission/${permission?.id}`);
+      const response = await api.get(`/permission/${id}`);
       setValues({
-        ddd: response?.data?.cellphone.slice(0, 2),
-        cellphone: response?.data?.cellphone.slice(2),
-        name: response?.data?.name,
-        email: response?.data?.email,
-        permissionId: permission?.id,
+        ddd: response?.data?.user?.cellphone.slice(0, 2),
+        cellphone: response?.data?.user?.cellphone.slice(2),
+        name: response?.data?.user?.name,
+        email: response?.data?.user?.email,
+        permissionId: response?.data?.id,
         user_id: response?.data?.user_id,
         role_id: response?.data?.role_id,
         office_id: response?.data?.office_id,
         active: response?.data?.active,
-        gender: response?.data?.gender,
+        gender: response?.data?.user?.gender,
       });
     } catch (err) {
     } finally {

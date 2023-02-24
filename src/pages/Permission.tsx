@@ -94,8 +94,8 @@ export default function Permission() {
     }
   };
 
-  const handleEditPermission = (permission: PermissionByIdDTO) => {
-    navigate(`/equipe/${permission?.id}`, { state: { permission } });
+  const handleEditPermission = (permission_id: string) => {
+    navigate(`/equipe/${permission_id}`);
   };
 
   return (
@@ -246,7 +246,9 @@ export default function Permission() {
                         {role?.equipe_page > 1 && (
                           <>
                             <IconButton
-                              onClick={() => handleEditPermission(permission)}
+                              onClick={() =>
+                                handleEditPermission(permission?.id)
+                              }
                               aria-label="Open navigation"
                               variant="unstyled"
                               minW={6}

@@ -19,6 +19,7 @@ import DemandRegister from "../pages/DemandRegister";
 import Roles from "../pages/Roles";
 import RoleRegister from "../pages/RoleRegister";
 import RoleEdit from "../pages/RoleEdit";
+import DemandEdit from "../pages/DemandEdit";
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -52,6 +53,7 @@ export default function AppRoutes() {
         <Route path="/eleitor/registrar-eleitor" element={<VoterRegister />} />
 
         <Route path="/demanda" element={<Demand />} />
+        <Route path="/demanda/:id" element={<DemandEdit />} />
         <Route path="/demanda/registrar-demanda" element={<DemandRegister />} />
 
         <Route path="/cargo" element={<Roles />} />

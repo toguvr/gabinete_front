@@ -1,4 +1,9 @@
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
   Box,
   Flex,
   HStack,
@@ -11,9 +16,11 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
+  Button as ChakraButton,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Form/Button";
@@ -29,6 +36,44 @@ export default function Demand() {
   const toast = useToast();
   const [data, setData] = useState([] as TaskPropsDTO[]);
   const { office, role } = useAuth();
+  const [demandToDeleteId, setDemandToDeleteId] = useState("");
+  const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const openDialog = (task_id: string) => {
+    setDemandToDeleteId(task_id);
+    onOpen();
+  };
+
+  const deleteDemand = async () => {
+    setLoading(true);
+    try {
+      await api.delete(`/task/${demandToDeleteId}`);
+
+      toast({
+        title: "Demanda excluída com sucesso",
+        status: "success",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+      getTasks();
+      setDemandToDeleteId("");
+      onClose();
+    } catch (err: any) {
+      return toast({
+        title:
+          err?.response?.data?.message ||
+          "Ocorreu um erro ao excluir a demanda, tente novamente",
+        status: "error",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   async function getTasks() {
     setData([] as TaskPropsDTO[]);
@@ -49,8 +94,43 @@ export default function Demand() {
     }
   }, [office?.id]);
 
+  const handleEditTask = (task_id: string) => {
+    navigate(`/demanda/${task_id}`);
+  };
+
   return (
     <HeaderSideBar>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
+        {/* <AlertDialogOverlay > */}
+        <AlertDialogContent mx="12px">
+          <AlertDialogHeader fontSize="lg" fontWeight="bold">
+            Deseja excluir esta demanda?
+          </AlertDialogHeader>
+
+          <AlertDialogBody>
+            Essa ação é irreversível, ao deletar não será possível desfazer.
+            Você deseja apagar mesmo assim?
+          </AlertDialogBody>
+
+          <AlertDialogFooter>
+            <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
+            <ChakraButton
+              colorScheme={"red"}
+              isLoading={loading}
+              onClick={deleteDemand}
+              ml={3}
+            >
+              Continuar
+            </ChakraButton>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+        {/* </AlertDialogOverlay> */}
+      </AlertDialog>
       <Flex
         justifyContent={"space-between"}
         gap={["20px", "0"]}
@@ -156,7 +236,7 @@ export default function Demand() {
                       >
                         <HStack spacing="4px">
                           <IconButton
-                            onClick={() => {}}
+                            onClick={() => handleEditTask(task?.id)}
                             aria-label="Open navigation"
                             variant="unstyled"
                             icon={
@@ -170,7 +250,7 @@ export default function Demand() {
                           />
 
                           <IconButton
-                            onClick={() => {}}
+                            onClick={() => openDialog(task?.id)}
                             aria-label="Open alert"
                             variant="unstyled"
                             icon={
