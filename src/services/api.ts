@@ -1,6 +1,5 @@
 import { key } from "../config/key";
 import axios, { AxiosError, AxiosInstance } from "axios";
-import { appUrl } from "../config/urls";
 
 let isRefreshing = false;
 let failedRequestQueue = [] as Array<{
@@ -13,7 +12,7 @@ type ModifyAxiosInstance = AxiosInstance & {
 };
 
 const api = axios.create({
-  baseURL: appUrl.apiDev,
+  baseURL: process.env.REACT_APP_API,
 }) as ModifyAxiosInstance;
 
 api.registerInterceptTokenManager = (signOut: () => void) => {
