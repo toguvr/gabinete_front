@@ -19,16 +19,23 @@ import {
   useDisclosure,
   useToast,
   Button as ChakraButton,
+  Select,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
+import {
+  IoPencilOutline,
+  IoSearchSharp,
+  IoTrashOutline,
+} from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Form/Button";
+import Input from "../components/Form/Input";
 import HeaderSideBar from "../components/HeaderSideBar";
 import { useAuth } from "../contexts/AuthContext";
-import { TaskPropsDTO } from "../dtos";
+import { StateProps, TaskPropsDTO } from "../dtos";
 import api from "../services/api";
 import { getFormatDate } from "../utils/date";
+import { demandPage } from "../utils/filterTables";
 
 export default function Demand() {
   const navigate = useNavigate();
@@ -39,6 +46,9 @@ export default function Demand() {
   const [demandToDeleteId, setDemandToDeleteId] = useState("");
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectFilter, setSelectFilter] = useState("title");
+  const [filterField, setFilterField] = useState("");
+  const [errors, setErrors] = useState({} as StateProps);
 
   const openDialog = (task_id: string) => {
     setDemandToDeleteId(task_id);
@@ -153,10 +163,49 @@ export default function Demand() {
           </Button>
         )}
       </Flex>
+      <Text mt="36px" color="gray.500">
+        Filtar por:
+      </Text>
+      <Flex gap={["12px", "24px"]}>
+        <Select
+          w="220px"
+          borderColor="gray.500"
+          name="filterType"
+          value={selectFilter}
+          onChange={(e) => {
+            setSelectFilter(e.target.value);
+          }}
+        >
+          {demandPage.map((task) => {
+            return (
+              <option key={task?.key} value={task?.value}>
+                {task?.label}
+              </option>
+            );
+          })}
+        </Select>
+
+        <Input
+          maxW="600px"
+          type="text"
+          name="filterField"
+          placeholder="Buscar"
+          error={errors?.filterField}
+          value={filterField}
+          mb="24px"
+          onChange={(e) => {
+            setFilterField(e.target.value);
+          }}
+          borderColor="gray.500"
+          rightIcon={
+            <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+          }
+        />
+      </Flex>
       <Box
         maxH="calc(100vh - 340px)"
         overflow="auto"
-        mt="84px"
+        mt="16px"
         sx={{
           "::-webkit-scrollbar": {
             bg: "gray.50",
@@ -194,80 +243,117 @@ export default function Demand() {
           </Thead>
           <Tbody>
             {Array.isArray(data) && data.length > 0 ? (
-              data.map((task) => {
-                return (
-                  <Tr key={task.id} whiteSpace="nowrap">
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {task?.title}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {task?.voter?.name}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {getFormatDate(task?.date)}
-                    </Td>
-                    {role?.equipe_page > 1 && (
+              data
+                .filter((currentValue: any) => {
+                  switch (selectFilter) {
+                    case "title":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.title
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "voter":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.voter?.name
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "deadline":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.deadline
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    default:
+                      break;
+                  }
+                })
+                .map((task) => {
+                  return (
+                    <Tr key={task.id} whiteSpace="nowrap">
                       <Td
-                        py="4px"
+                        color="gray.600"
+                        fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
                         borderBottomColor="gray.300"
+                        py="4px"
                       >
-                        <HStack spacing="4px">
-                          <IconButton
-                            onClick={() => handleEditTask(task?.id)}
-                            aria-label="Open navigation"
-                            variant="unstyled"
-                            icon={
-                              <Icon
-                                cursor="pointer"
-                                fontSize="24"
-                                as={IoPencilOutline}
-                                color="gray.600"
-                              />
-                            }
-                          />
-
-                          <IconButton
-                            onClick={() => openDialog(task?.id)}
-                            aria-label="Open alert"
-                            variant="unstyled"
-                            icon={
-                              <Icon
-                                cursor="pointer"
-                                fontSize="24"
-                                as={IoTrashOutline}
-                                color="gray.600"
-                              />
-                            }
-                          />
-                        </HStack>
+                        {task?.title}
                       </Td>
-                    )}
-                  </Tr>
-                );
-              })
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {task?.voter?.name}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {getFormatDate(task?.date)}
+                      </Td>
+                      {role?.equipe_page > 1 && (
+                        <Td
+                          py="4px"
+                          borderBottomWidth="1px"
+                          borderBottomStyle="solid"
+                          borderBottomColor="gray.300"
+                        >
+                          <HStack spacing="4px">
+                            <IconButton
+                              onClick={() => handleEditTask(task?.id)}
+                              aria-label="Open navigation"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24"
+                                  as={IoPencilOutline}
+                                  color="gray.600"
+                                />
+                              }
+                            />
+
+                            <IconButton
+                              onClick={() => openDialog(task?.id)}
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24"
+                                  as={IoTrashOutline}
+                                  color="gray.600"
+                                />
+                              }
+                            />
+                          </HStack>
+                        </Td>
+                      )}
+                    </Tr>
+                  );
+                })
             ) : (
               <Tr>Nenhum dado cadastrado</Tr>
             )}

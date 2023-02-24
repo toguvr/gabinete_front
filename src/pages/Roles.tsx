@@ -36,8 +36,7 @@ import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/Form/Button";
 import { roleStatus, RoleStatus, roleStatusTasks } from "../utils/roleStatus";
 import Input from "../components/Form/Input";
-import { privateRoute } from "../routes";
-import { roleTable } from "../utils/columnTables";
+import { rolePage } from "../utils/filterTables";
 
 export default function Roles() {
   const navigate = useNavigate();
@@ -237,7 +236,7 @@ export default function Roles() {
             setSelectFilter(e.target.value);
           }}
         >
-          {roleTable.map((role) => {
+          {rolePage.map((role) => {
             return (
               <option key={role?.key} value={role?.value}>
                 {role?.label}
@@ -294,7 +293,7 @@ export default function Roles() {
       <Box
         maxH="calc(100vh - 340px)"
         overflow="auto"
-        mt="84px"
+        mt="16px"
         sx={{
           "::-webkit-scrollbar": {
             bg: "gray.50",

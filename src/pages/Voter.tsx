@@ -20,15 +20,22 @@ import {
   useDisclosure,
   useToast,
   Button as ChakraButton,
+  Select,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
-import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
+import {
+  IoPencilOutline,
+  IoSearchSharp,
+  IoTrashOutline,
+} from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Form/Button";
+import Input from "../components/Form/Input";
 import HeaderSideBar from "../components/HeaderSideBar";
 import { useAuth } from "../contexts/AuthContext";
-import { VoterDTO } from "../dtos";
+import { StateProps, VoterDTO } from "../dtos";
 import api from "../services/api";
+import { voterPage } from "../utils/filterTables";
 
 export default function Voter() {
   const navigate = useNavigate();
@@ -40,6 +47,9 @@ export default function Voter() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { role } = useAuth();
   const auth = useAuth();
+  const [selectFilter, setSelectFilter] = useState("name");
+  const [filterField, setFilterField] = useState("");
+  const [errors, setErrors] = useState({} as StateProps);
 
   const openDialog = (voter_id: string) => {
     setVoterToDeleteId(voter_id);
@@ -154,10 +164,49 @@ export default function Voter() {
           </Button>
         )}
       </Flex>
+      <Text mt="36px" color="gray.500">
+        Filtar por:
+      </Text>
+      <Flex gap={["12px", "24px"]}>
+        <Select
+          w="220px"
+          borderColor="gray.500"
+          name="filterType"
+          value={selectFilter}
+          onChange={(e) => {
+            setSelectFilter(e.target.value);
+          }}
+        >
+          {voterPage.map((voter) => {
+            return (
+              <option key={voter?.key} value={voter?.value}>
+                {voter?.label}
+              </option>
+            );
+          })}
+        </Select>
+
+        <Input
+          maxW="600px"
+          type="text"
+          name="filterField"
+          placeholder="Buscar"
+          error={errors?.filterField}
+          value={filterField}
+          mb="24px"
+          onChange={(e) => {
+            setFilterField(e.target.value);
+          }}
+          borderColor="gray.500"
+          rightIcon={
+            <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+          }
+        />
+      </Flex>
       <Box
         maxH="calc(100vh - 340px)"
         overflow="auto"
-        mt="84px"
+        mt="16px"
         sx={{
           "::-webkit-scrollbar": {
             bg: "gray.50",
@@ -197,64 +246,76 @@ export default function Voter() {
           </Thead>
           <Tbody>
             {Array.isArray(data) && data.length > 0 ? (
-              data.map((voter) => {
-                return (
-                  <Tr key={voter.id} whiteSpace="nowrap">
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {voter?.name}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {voter?.email}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {voter?.birthdate ? voter?.birthdate : "-"}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {voter?.cellphone ? voter?.cellphone : "-"}
-                    </Td>
-                    {voter?.street ? (
+              data
+                .filter((currentValue: any) => {
+                  switch (selectFilter) {
+                    case "name":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.name
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "email":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.email
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "birthdate":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.birthdate
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "cellphone":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.cellphone
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "address":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.neighborhood
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    default:
+                      break;
+                  }
+                })
+                .map((voter) => {
+                  return (
+                    <Tr key={voter.id} whiteSpace="nowrap">
                       <Td
                         color="gray.600"
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
                         borderBottomColor="gray.300"
-                        w="120px"
                         py="4px"
                       >
-                        {voter?.street} - {voter?.address_number} -{" "}
-                        {voter?.neighborhood} - {voter?.complement} -{" "}
-                        {voter?.city} - {voter?.state}
+                        {voter?.name}
                       </Td>
-                    ) : (
                       <Td
                         color="gray.600"
                         fontSize="14px"
@@ -263,50 +324,95 @@ export default function Voter() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
-                        -
+                        {voter?.email}
                       </Td>
-                    )}
-                    {role?.eleitor_page > 1 && (
                       <Td
-                        py="4px"
+                        color="gray.600"
+                        fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
                         borderBottomColor="gray.300"
+                        py="4px"
                       >
-                        <HStack spacing="4px">
-                          <IconButton
-                            onClick={() => handleEditVoter(voter)}
-                            aria-label="Open navigation"
-                            variant="unstyled"
-                            icon={
-                              <Icon
-                                cursor="pointer"
-                                fontSize="24"
-                                as={IoPencilOutline}
-                                color="gray.600"
-                              />
-                            }
-                          />
+                        {voter?.birthdate ? voter?.birthdate : "-"}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {voter?.cellphone ? voter?.cellphone : "-"}
+                      </Td>
+                      {voter?.street ? (
+                        <Td
+                          color="gray.600"
+                          fontSize="14px"
+                          borderBottomWidth="1px"
+                          borderBottomStyle="solid"
+                          borderBottomColor="gray.300"
+                          w="120px"
+                          py="4px"
+                        >
+                          {voter?.street} - {voter?.address_number} -{" "}
+                          {voter?.neighborhood} - {voter?.complement} -{" "}
+                          {voter?.city} - {voter?.state}
+                        </Td>
+                      ) : (
+                        <Td
+                          color="gray.600"
+                          fontSize="14px"
+                          borderBottomWidth="1px"
+                          borderBottomStyle="solid"
+                          borderBottomColor="gray.300"
+                          py="4px"
+                        >
+                          -
+                        </Td>
+                      )}
+                      {role?.eleitor_page > 1 && (
+                        <Td
+                          py="4px"
+                          borderBottomWidth="1px"
+                          borderBottomStyle="solid"
+                          borderBottomColor="gray.300"
+                        >
+                          <HStack spacing="4px">
+                            <IconButton
+                              onClick={() => handleEditVoter(voter)}
+                              aria-label="Open navigation"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24"
+                                  as={IoPencilOutline}
+                                  color="gray.600"
+                                />
+                              }
+                            />
 
-                          <IconButton
-                            onClick={() => openDialog(voter?.id)}
-                            aria-label="Open alert"
-                            variant="unstyled"
-                            icon={
-                              <Icon
-                                cursor="pointer"
-                                fontSize="24"
-                                as={IoTrashOutline}
-                                color="gray.600"
-                              />
-                            }
-                          />
-                        </HStack>
-                      </Td>
-                    )}
-                  </Tr>
-                );
-              })
+                            <IconButton
+                              onClick={() => openDialog(voter?.id)}
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24"
+                                  as={IoTrashOutline}
+                                  color="gray.600"
+                                />
+                              }
+                            />
+                          </HStack>
+                        </Td>
+                      )}
+                    </Tr>
+                  );
+                })
             ) : (
               <Tr>Nenhum dado cadastrado</Tr>
             )}

@@ -21,15 +21,22 @@ import {
   Button as ChakraButton,
   Spinner,
   Switch,
+  Select,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import HeaderSideBar from "../components/HeaderSideBar";
-import { PermissionByIdDTO } from "../dtos";
-import { IoPencilOutline, IoTrashOutline } from "react-icons/io5";
+import { PermissionByIdDTO, StateProps } from "../dtos";
+import {
+  IoPencilOutline,
+  IoSearchSharp,
+  IoTrashOutline,
+} from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/Form/Button";
+import Input from "../components/Form/Input";
+import { permissionPage } from "../utils/filterTables";
 
 export default function Permission() {
   const navigate = useNavigate();
@@ -40,6 +47,10 @@ export default function Permission() {
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [permissionToDeleteId, setPermissionToDeleteId] = useState("");
+  const [selectFilter, setSelectFilter] = useState("name");
+  const [filterField, setFilterField] = useState("");
+  const [errors, setErrors] = useState({} as StateProps);
+  const [selectPageFilter, setSelectPageFilter] = useState("");
 
   const openDialog = (permission_id: string) => {
     setPermissionToDeleteId(permission_id);
@@ -154,10 +165,68 @@ export default function Permission() {
           </Button>
         )}
       </Flex>
+      <Text mt="36px" color="gray.500">
+        Filtar por:
+      </Text>
+      <Flex gap={["12px", "24px"]}>
+        <Select
+          w="220px"
+          borderColor="gray.500"
+          name="filterType"
+          value={selectFilter}
+          onChange={(e) => {
+            setSelectFilter(e.target.value);
+          }}
+        >
+          {permissionPage.map((permission) => {
+            return (
+              <option key={permission?.key} value={permission?.value}>
+                {permission?.label}
+              </option>
+            );
+          })}
+        </Select>
+        {selectFilter === "active" ? (
+          <Select
+            borderColor="gray.500"
+            bg="gray.50"
+            _placeholder={{ color: "gray.500" }}
+            color="gray.600"
+            maxW="600px"
+            name="selectPageFilter"
+            value={selectPageFilter}
+            onChange={(e) => setSelectPageFilter(e.target.value)}
+          >
+            <option key="active" value="active">
+              Ativo
+            </option>
+            <option key="inactive" value="inactive">
+              Desativado
+            </option>
+          </Select>
+        ) : (
+          <Input
+            maxW="600px"
+            type="text"
+            name="filterField"
+            placeholder="Buscar"
+            error={errors?.filterField}
+            value={filterField}
+            mb="24px"
+            onChange={(e) => {
+              setFilterField(e.target.value);
+            }}
+            borderColor="gray.500"
+            rightIcon={
+              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+            }
+          />
+        )}
+      </Flex>
       <Box
         maxH="calc(100vh - 340px)"
         overflow="auto"
-        mt="84px"
+        mt="16px"
         sx={{
           "::-webkit-scrollbar": {
             bg: "gray.50",
@@ -180,6 +249,7 @@ export default function Permission() {
               borderBottomStyle="solid"
               borderBottomColor={"gray.300"}
             >
+              <Th color="gray.600">Ativo</Th>
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Telefone</Th>
@@ -193,96 +263,160 @@ export default function Permission() {
           </Thead>
           <Tbody>
             {Array.isArray(data) && data.length > 0 ? (
-              data.map((permission) => {
-                return (
-                  <Tr key={permission.id} h="45px" py="4px">
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="0px"
-                    >
-                      {permission?.user?.name}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="0px"
-                    >
-                      {permission?.user?.email}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="0px"
-                    >
-                      {permission?.user?.cellphone}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="0px"
-                    >
-                      {permission?.role?.name}
-                    </Td>
-                    <Td
-                      py="0px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                    >
-                      <HStack spacing="8px">
-                        {role?.equipe_page > 1 && (
-                          <>
-                            <IconButton
-                              onClick={() =>
-                                handleEditPermission(permission?.id)
-                              }
-                              aria-label="Open navigation"
-                              variant="unstyled"
-                              minW={6}
-                              icon={
-                                <Icon
-                                  cursor="pointer"
-                                  fontSize="20"
-                                  as={IoPencilOutline}
-                                  color="gray.600"
-                                />
-                              }
-                            />
-                            <IconButton
-                              onClick={() => openDialog(permission?.id)}
-                              aria-label="Open alert"
-                              variant="unstyled"
-                              minW={6}
-                              icon={
-                                <Icon
-                                  cursor="pointer"
-                                  fontSize="20"
-                                  as={IoTrashOutline}
-                                  color="gray.600"
-                                />
-                              }
-                            />
-                            <Switch isChecked={permission?.active} />
-                          </>
-                        )}
-                      </HStack>
-                    </Td>
-                  </Tr>
-                );
-              })
+              data
+                .filter((currentValue: any) => {
+                  switch (selectFilter) {
+                    case "name":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.user?.name
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "email":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.user?.email
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "role":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.role?.name
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "cellphone":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.user?.cellphone
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "active":
+                      if (selectPageFilter === "active") {
+                        return currentValue?.active === true;
+                      } else if (selectPageFilter === "inactive") {
+                        return currentValue?.active === false;
+                      } else {
+                        return currentValue;
+                      }
+                    default:
+                      break;
+                  }
+                })
+                .map((permission) => {
+                  return (
+                    <Tr key={permission.id} h="45px" py="4px">
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        <Switch isChecked={permission?.active} />
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        {permission?.user?.name}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        {permission?.user?.email}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        {permission?.user?.cellphone}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        {permission?.role?.name}
+                      </Td>
+                      <Td
+                        py="0px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                      >
+                        <HStack spacing="8px">
+                          {role?.equipe_page > 1 && (
+                            <>
+                              <IconButton
+                                onClick={() =>
+                                  handleEditPermission(permission?.id)
+                                }
+                                aria-label="Open navigation"
+                                variant="unstyled"
+                                minW={6}
+                                icon={
+                                  <Icon
+                                    cursor="pointer"
+                                    fontSize="20"
+                                    as={IoPencilOutline}
+                                    color="gray.600"
+                                  />
+                                }
+                              />
+                              <IconButton
+                                onClick={() => openDialog(permission?.id)}
+                                aria-label="Open alert"
+                                variant="unstyled"
+                                minW={6}
+                                icon={
+                                  <Icon
+                                    cursor="pointer"
+                                    fontSize="20"
+                                    as={IoTrashOutline}
+                                    color="gray.600"
+                                  />
+                                }
+                              />
+                            </>
+                          )}
+                        </HStack>
+                      </Td>
+                    </Tr>
+                  );
+                })
             ) : (
               <Tr>Nenhum dado cadastrado</Tr>
             )}
