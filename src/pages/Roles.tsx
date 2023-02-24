@@ -210,7 +210,7 @@ export default function Roles() {
             {Array.isArray(data) && data.length > 0 ? (
               data.map((roleData) => {
                 return (
-                  <Tr key={roleData.id}>
+                  <Tr key={roleData.id} h="45px">
                     <Td
                       color="gray.600"
                       fontSize="14px"
@@ -295,7 +295,7 @@ export default function Roles() {
                           />
 
                           <IconButton
-                            onClick={() => openDialog(role?.id)}
+                            onClick={() => openDialog(roleData?.id)}
                             aria-label="Open alert"
                             variant="unstyled"
                             minW={6}
