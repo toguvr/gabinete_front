@@ -66,42 +66,54 @@ export default function RoleRegister() {
       case "home_page":
         setDialogTitle("Home");
         setDialogText(
-          "Para que o usuário não tenha acesso a home, utilize o 'Desativado', para ter acesso apenas a leitura, utilizar 'Leitor' e para ele ter acesso a edição, utilizar 'Editor.'"
+          `Para que o usuário possa editar, excluir e criar, selecione 'Editor'.
+          Para que o usuário tenha acesso a leitura da página, selecione 'Leitor'.
+          Para que o usuário NÃO tenha acesso a página, selecione 'Desativado'.`
         );
         onOpen();
         break;
       case "cargo_page":
         setDialogTitle("Cargo");
         setDialogText(
-          "Para que o usuário não tenha acesso aos cargos, utilize o 'Desativado', para ter acesso apenas a leitura, utilizar 'Leitor' e para ele ter acesso a edição, utilizar 'Editor.'"
+          `Para que o usuário possa editar, excluir e criar, selecione 'Editor'.
+          Para que o usuário tenha acesso a leitura da página, selecione 'Leitor'.
+          Para que o usuário NÃO tenha acesso a página, selecione 'Desativado'.`
         );
         onOpen();
         break;
       case "equipe_page":
         setDialogTitle("Equipe");
         setDialogText(
-          "Para que o usuário não tenha acesso as equipes, utilize o 'Desativado', para ter acesso apenas a leitura, utilizar 'Leitor' e para ele ter acesso a edição, utilizar 'Editor.'"
+          `Para que o usuário possa editar, excluir e criar, selecione 'Editor'.
+          Para que o usuário tenha acesso a leitura da página, selecione 'Leitor'.
+          Para que o usuário NÃO tenha acesso a página, selecione 'Desativado'.`
         );
         onOpen();
         break;
       case "eleitor_page":
         setDialogTitle("Eleitor");
         setDialogText(
-          "Para que o usuário não tenha acesso aos eleitores, utilize o 'Desativado', para ter acesso apenas a leitura, utilizar 'Leitor' e para ele ter acesso a edição, utilizar 'Editor.'"
+          `Para que o usuário possa editar, excluir e criar, selecione 'Editor'.
+          Para que o usuário tenha acesso a leitura da página, selecione 'Leitor'.
+          Para que o usuário NÃO tenha acesso a página, selecione 'Desativado'.`
         );
         onOpen();
         break;
       case "demandas_page":
         setDialogTitle("Demanda");
         setDialogText(
-          "Para que o usuário não tenha acesso as demandas, utilize o 'Desativado', para ter acesso apenas a leitura, utilizar 'Leitor' e para ele ter acesso a edição, utilizar 'Editor.'"
+          `Para que o usuário possa editar, excluir e criar, selecione 'Editor'.
+          Para que o usuário tenha acesso a leitura da página, selecione 'Leitor'.
+          Para que o usuário NÃO tenha acesso a página, selecione 'Desativado'.`
         );
         onOpen();
         break;
       case "tarefas_page":
         setDialogTitle("Tarefa");
         setDialogText(
-          "Para que o usuário não tenha acesso as tarefas, utilize o 'Desativado', para ter acesso apenas a leitura, utilizar 'Leitor' e para ele ter acesso a edição, utilizar 'Editor.'"
+          `Para que o usuário possa editar, excluir e criar, selecione 'Editor'.
+          Para que o usuário tenha acesso a leitura da página, selecione 'Leitor'.
+          Para que o usuário NÃO tenha acesso a página, selecione 'Desativado'.`
         );
         onOpen();
         break;
@@ -243,7 +255,7 @@ export default function RoleRegister() {
         <Stack spacing={[5, 10]} mt={["24px", "40px"]} w="852px">
           <Input
             labelColor="gray.500"
-            label="Nome:"
+            label="Nome*:"
             placeholder="Nome do cargo"
             name="name"
             type="text"

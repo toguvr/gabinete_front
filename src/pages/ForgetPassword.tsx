@@ -64,7 +64,7 @@ export default function ForgetPassword() {
           isClosable: true,
           position: "top-right",
         });
-        return navigate("/signin");
+        return navigate("/");
       } catch (err: any) {
         if (err instanceof Yup.ValidationError) {
           setErrors(getValidationErrors(err));

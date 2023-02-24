@@ -86,12 +86,7 @@ export default function PermissionEdit() {
         });
 
         const body = {
-          name: values?.name,
-          cellphone: values?.ddd + values?.cellphone,
-          email: values?.email,
-          office_id: values?.email,
           role_id: values?.role_id,
-          user_id: values?.user_id,
           permissionId: id,
           active: values?.active,
         };
@@ -99,8 +94,8 @@ export default function PermissionEdit() {
         await api.put("/permission", body);
 
         return toast({
-          title: "Cadastrado com sucesso",
-          description: "Você cadastrou uma equipe.",
+          title: "Ataulizado com sucesso",
+          description: "Você atualizou uma equipe.",
           status: "success",
           duration: 3000,
           isClosable: true,

@@ -195,7 +195,7 @@ export default function Permission() {
             {Array.isArray(data) && data.length > 0 ? (
               data.map((permission) => {
                 return (
-                  <Tr key={permission.id}>
+                  <Tr key={permission.id} h="45px" py="4px">
                     <Td
                       color="gray.600"
                       fontSize="14px"

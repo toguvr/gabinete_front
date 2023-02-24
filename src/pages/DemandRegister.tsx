@@ -37,6 +37,7 @@ type RegisterFormData = {
   title: string;
   description: string;
   date: string;
+  deadline?: Date;
   priority: string;
 };
 
@@ -74,7 +75,8 @@ export default function DemandRegister() {
           title: values?.title,
           description: values?.description,
           responsible_id: responsible,
-          date: values?.date,
+          date: new Date(),
+          deadline: values?.deadline,
           priority: values?.priority,
           voter_id: voterData?.id,
           office_id: office?.id,
@@ -128,6 +130,8 @@ export default function DemandRegister() {
   const verifyPermission = async () => {
     setErrors({});
     setLoading(true);
+    setVerify(false);
+    setNotVerify(false);
     try {
       if (values?.cellphone?.length === 0 || values?.cellphone === undefined) {
         setErrors({
@@ -305,7 +309,7 @@ export default function DemandRegister() {
               >
                 <Text color="gray.400">Eleitor não encontrado</Text>
                 <Button w="220px" h="30px">
-                  Cadastrar novo eleitor
+                  Cadastrar o eleitor
                 </Button>
               </Flex>
             )}
@@ -361,10 +365,10 @@ export default function DemandRegister() {
             <Input
               labelColor="gray.500"
               label="Prazo:"
-              name="date"
+              name="deadline"
               type="date"
-              error={errors?.date}
-              value={values?.date}
+              error={errors?.deadline}
+              value={String(values?.deadline)}
               onChange={(e) =>
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
@@ -454,7 +458,7 @@ export default function DemandRegister() {
               />
             </Flex>
           </FormLabel> */}
-          <Flex gap="24px">
+          {/* <Flex gap="24px">
             <Text color={!verify || notVerify ? "gray.300" : "gray.500"}>
               Recurso:
             </Text>
@@ -467,7 +471,7 @@ export default function DemandRegister() {
                 Sim
               </Text>
             </HStack>
-          </Flex>
+          </Flex> */}
           <Flex
             w="100%"
             alignItems="center"

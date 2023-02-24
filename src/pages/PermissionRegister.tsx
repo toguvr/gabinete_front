@@ -181,7 +181,7 @@ export default function PermissionRegister() {
           <Flex display={"flex"} alignItems={"flex-end"} gap={["20px", "40px"]}>
             <Input
               color={verify ? "gray.300" : "gray.500"}
-              label="E-mail:"
+              label="E-mail*:"
               placeholder="E-mail"
               name="email"
               type="email"
@@ -201,7 +201,7 @@ export default function PermissionRegister() {
           </Flex>
           <Input
             labelColor={!verify ? "gray.300" : "gray.500"}
-            label="Nome:"
+            label="Nome*:"
             placeholder="Nome completo"
             name="name"
             type="text"
@@ -219,7 +219,7 @@ export default function PermissionRegister() {
               fontWeight="400"
               margin="0"
             >
-              Gênero:
+              Gênero*:
             </Text>
             <Select
               placeholder="Gênero"
@@ -239,7 +239,7 @@ export default function PermissionRegister() {
             </Select>
           </Box>
           <Flex flexDir={"column"}>
-            <Text color={!verify ? "gray.300" : "gray.500"}>Telefone:</Text>
+            <Text color={!verify ? "gray.300" : "gray.500"}>Telefone*:</Text>
             <Flex>
               <PatternFormat
                 customInput={Input}
@@ -285,7 +285,7 @@ export default function PermissionRegister() {
             </Flex>
           </Flex>
           <Box flexDirection={"column"}>
-            <Text color={!verify ? "gray.300" : "gray.500"}>Cargo:</Text>
+            <Text color={!verify ? "gray.300" : "gray.500"}>Cargo*:</Text>
             <Select
               borderColor={!verify ? "gray.300" : "gray.500"}
               bg="gray.50"

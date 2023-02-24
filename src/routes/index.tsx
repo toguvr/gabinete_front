@@ -25,21 +25,40 @@ interface PrivateRoutesProps {
   isPrivate: boolean;
 }
 
+export const publicRoute = {};
+
+export const privateRoute = [
+  { pathname: "/home", permissionName: "home_page" },
+  { pathname: "/cargo", permissionName: "cargo_page" },
+  { pathname: "/equipe", permissionName: "equipe_page" },
+  { pathname: "/eleitor", permissionName: "eleitor_page" },
+  { pathname: "/demanda", permissionName: "demandas_page" },
+  { pathname: "/tarefa", permissionName: "tarefas_page" },
+];
+
 export default function AppRoutes() {
   const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, role } = useAuth();
+    const userMainRoute = () => {
+      const currentRole = role as any;
+      const filteredRoutes = privateRoute.find((route) => {
+        return currentRole[route?.permissionName] > 0;
+      });
+
+      return filteredRoutes?.pathname || "/404";
+    };
 
     return isAuthenticated === isPrivate ? (
       <Outlet />
     ) : (
-      <Navigate to={isPrivate ? "/signin" : "/"} replace />
+      <Navigate to={isPrivate ? "/" : userMainRoute()} replace />
     );
   };
 
   return (
     <Routes>
       <Route element={<AuthenticatedRoutes isPrivate />}>
-        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
 
         <Route path="/equipe" element={<Permission />} />
         <Route path="/equipe/:id" element={<PermissionEdit />} />
@@ -67,7 +86,7 @@ export default function AppRoutes() {
       </Route>
 
       <Route element={<AuthenticatedRoutes isPrivate={false} />}>
-        <Route path="/signin" element={<Signin />} />
+        <Route path="/" element={<Signin />} />
         <Route path="/esqueci-senha" element={<ForgetPassword />} />
       </Route>
       <Route path="/redefinir-senha" element={<RedefinePassword />} />
