@@ -18,10 +18,7 @@ export default function SocialProfileSimple({ task }: TaskCardProps) {
 
         <Box paddingLeft="6px">
           <Text marginBottom="6px" p="0 12px" textAlign="start" fontWeight={600} color={'gray.400'}>
-            Eleitor: {task.voterId}
-          </Text>
-          <Text marginBottom="6px" p="0 12px" textAlign="start" fontWeight={600} color={'gray.400'}>
-            Criado por: {task.creator}
+            Eleitor: {task.voter.name}
           </Text>
           <Text marginBottom="6px" p="0 12px" textAlign="start" fontWeight={600} color={'gray.400'}>
             Criado há:{' '}
@@ -34,7 +31,7 @@ export default function SocialProfileSimple({ task }: TaskCardProps) {
           <Text marginBottom="6px" p="0 12px" textAlign="start" fontWeight={600} color={'gray.400'}>
             Prioridade: {task.priority}
           </Text>
-          <Flex flexDirection="column">
+          {/* <Flex flexDirection="column">
             <Text
               marginBottom="6px"
               p="0 12px"
@@ -47,7 +44,7 @@ export default function SocialProfileSimple({ task }: TaskCardProps) {
             <Text p="0 24px" textAlign="start">
               <Icon color="blue.600" fontSize="20px" as={IoDocumentTextOutline} />
             </Text>
-          </Flex>
+          </Flex> */}
         </Box>
       </Box>
     </Center>
