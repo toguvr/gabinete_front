@@ -1,25 +1,15 @@
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
-  FormControl,
-  FormLabel,
   Icon,
   Image,
-  InputGroup,
-  InputLeftAddon,
-  InputRightElement,
   Link,
   Stack,
-  useColorModeValue,
-  Input as InputChakra,
-  InputLeftElement,
   useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import { FormEvent, useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import LogoWhite from "../assets/logoWhite.png";
 import {
   IoEyeOffOutline,
@@ -31,6 +21,7 @@ import Input from "../components/Form/Input";
 import { StateProps } from "../dtos";
 import * as Yup from "yup";
 import getValidationErrors from "../utils/validationError";
+import { useAuth } from "../contexts/AuthContext";
 
 type SignInFormData = {
   email: string;
@@ -38,12 +29,12 @@ type SignInFormData = {
 };
 
 export default function Signin() {
-  const navigate = useNavigate();
   const [values, setValues] = useState<SignInFormData>({} as SignInFormData);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [showPassword, setShowPassword] = useState(false);
   const toast = useToast();
   const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
 
   const handleViewPassword = () => setShowPassword(!showPassword);
 
@@ -65,8 +56,7 @@ export default function Signin() {
           abortEarly: false,
         });
 
-        // await signIn(values);
-        localStorage.setItem("loginGabinete", JSON.stringify(values));
+        await signIn(values);
 
         return toast({
           title: "Autenticado com sucesso",
@@ -106,8 +96,7 @@ export default function Signin() {
         setLoading(false);
       }
     },
-    // [signIn, values]
-    [values]
+    [signIn, values]
   );
 
   return (
@@ -123,7 +112,12 @@ export default function Signin() {
         <Image src={LogoWhite} alt="Logo" />
       </Box>
       <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
-        <Box rounded={"lg"} bg="white" boxShadow={"lg"} p="104px 80px 88px">
+        <Box
+          rounded={"lg"}
+          bg="white"
+          boxShadow={"lg"}
+          p={["20px", "104px 80px 88px"]}
+        >
           <Stack spacing={4}>
             <Input
               name="email"
@@ -155,35 +149,33 @@ export default function Signin() {
                   onClick={handleViewPassword}
                 >
                   {showPassword ? (
-                    <Icon
-                      color="blue.600"
-                      fontSize="20px"
-                      as={IoEyeOffOutline}
-                    />
+                    <Icon fontSize="20px" as={IoEyeOffOutline} />
                   ) : (
-                    <Icon color="blue.600" fontSize="20px" as={IoEyeOutline} />
+                    <Icon fontSize="20px" as={IoEyeOutline} />
                   )}
                 </Button>
               }
               placeholder="Senha"
             />
-            <Stack spacing={10}>
+            <Stack spacing={6}>
               <Stack
                 direction={{ base: "column", sm: "row" }}
                 align={"start"}
                 justify={"space-between"}
               >
-                <Link color={"blue.600"}>Esqueceu a senha?</Link>
+                <Link href="/esqueci-senha" color={"blue.600"}>
+                  Esqueci senha
+                </Link>
               </Stack>
               <Button
                 onClick={handleSignIn}
                 bg={"blue.600"}
                 color={"white"}
                 _hover={{
-                  bg: "blue.500",
+                  bg: "blue.700",
                 }}
               >
-                Entrar
+                {loading ? <Spinner color="white" /> : "Entrar"}
               </Button>
             </Stack>
           </Stack>

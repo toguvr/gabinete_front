@@ -9,6 +9,7 @@ import {
   InputRightElement,
 } from "@chakra-ui/react";
 import { ChangeEvent, ReactNode } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface InputProps extends ChakraInputProps {
   name: string;
@@ -17,6 +18,7 @@ interface InputProps extends ChakraInputProps {
   type?: string;
   disabled?: boolean;
   borderColor?: string;
+  labelColor?: string;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
   error?: string | null;
@@ -31,6 +33,7 @@ export default function Input({
   borderColor,
   value,
   placeholder,
+  labelColor,
   onChange,
   name,
   label,
@@ -38,10 +41,19 @@ export default function Input({
   error = null,
   ...rest
 }: InputProps) {
+  const { office } = useAuth();
   return (
     <FormControl {...rest} isInvalid={!!error}>
       {label && (
-        <FormLabel color="gray.700" fontWeight="400" mb="1" htmlFor={name}>
+        <FormLabel
+          color={labelColor ? labelColor : "gray.500"}
+          fontWeight="400"
+          htmlFor={name}
+          margin="0"
+          white-space="nowrap"
+          overflow="hidden"
+          text-overflow="ellipsis"
+        >
           {label}
         </FormLabel>
       )}
@@ -49,13 +61,14 @@ export default function Input({
         {leftIcon && (
           <InputLeftElement
             pointerEvents="none"
-            color="blue.600"
+            color={office?.primary_color}
             fontSize="20px"
             children={leftIcon}
           />
         )}
         <ChakraInput
           bgColor="gray.50"
+          borderColor={borderColor}
           name={name}
           disabled={disabled}
           value={value}
@@ -63,11 +76,11 @@ export default function Input({
           color="gray.700"
           fontSize="16px"
           fontWeight="400"
-          focusBorderColor="blue.600"
+          focusBorderColor={office?.primary_color}
           type={type}
           placeholder={placeholder}
           id={name}
-          _placeholder={{ color: "gray.400" }}
+          _placeholder={{ color: "gray.500" }}
         />
         {rightIcon && <InputRightElement>{rightIcon}</InputRightElement>}
       </InputGroup>

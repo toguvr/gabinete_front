@@ -1,6 +1,5 @@
 import { key } from "../config/key";
-import axios, { AxiosError } from "axios";
-import { appUrl } from "../config/urls";
+import axios, { AxiosError, AxiosInstance } from "axios";
 
 let isRefreshing = false;
 let failedRequestQueue = [] as Array<{
@@ -8,16 +7,20 @@ let failedRequestQueue = [] as Array<{
   onFailure: (err: AxiosError) => void;
 }>;
 
+type ModifyAxiosInstance = AxiosInstance & {
+  registerInterceptTokenManager(signOut: () => void): void;
+};
+
 const api = axios.create({
-  baseURL: appUrl.apiProd,
-});
+  baseURL: process.env.REACT_APP_API,
+}) as ModifyAxiosInstance;
 
 api.registerInterceptTokenManager = (signOut: () => void) => {
   api.interceptors.response.use(
     (response: any) => {
       return response;
     },
-    async (error: AxiosError) => {
+    async (error: any) => {
       if (error.response?.status === 401) {
         if (
           error?.response?.data?.message === "Token expirou, refaça o login."
