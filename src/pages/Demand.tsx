@@ -164,7 +164,7 @@ export default function Demand() {
         )}
       </Flex>
       <Text mt="36px" color="gray.500">
-        Filtar por:
+        Filtrar por:
       </Text>
       <Flex gap={["12px", "24px"]}>
         <Select
