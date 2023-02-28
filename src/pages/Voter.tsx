@@ -22,6 +22,7 @@ import {
   Button as ChakraButton,
   Select,
 } from "@chakra-ui/react";
+import { addHours } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import {
   IoPencilOutline,
@@ -35,6 +36,7 @@ import HeaderSideBar from "../components/HeaderSideBar";
 import { useAuth } from "../contexts/AuthContext";
 import { StateProps, VoterDTO } from "../dtos";
 import api from "../services/api";
+import { getFormatDate } from "../utils/date";
 import { voterPage } from "../utils/filterTables";
 
 export default function Voter() {
@@ -63,7 +65,16 @@ export default function Voter() {
     try {
       const response = await api.get(`/voter/office/${auth.office.id}`);
 
-      setData(response.data);
+      const newDate = response.data.map((voter: VoterDTO) => {
+        return {
+          ...voter,
+          birthdate: getFormatDate(
+            addHours(new Date(voter?.birthdate), 12),
+            "dd/MM/yyyy"
+          ),
+        };
+      });
+      setData(newDate);
     } catch (err) {
     } finally {
       setLoading(false);
@@ -356,9 +367,24 @@ export default function Voter() {
                           w="120px"
                           py="4px"
                         >
-                          {voter?.street} - {voter?.address_number} -{" "}
-                          {voter?.neighborhood} - {voter?.complement} -{" "}
-                          {voter?.city} - {voter?.state}
+                          {voter?.zip
+                            ? `${voter?.street ? voter?.street + "," : ""}
+                              ${
+                                voter?.address_number
+                                  ? voter?.address_number + ","
+                                  : ""
+                              }
+                              ${
+                                voter?.neighborhood
+                                  ? voter?.neighborhood + ","
+                                  : ""
+                              }
+                              ${
+                                voter?.complement ? voter?.complement + "," : ""
+                              }
+                              ${voter?.city ? voter?.city + "," : ""}
+                              ${voter?.state ? voter?.state + "," : ""}`
+                            : "-"}
                         </Td>
                       ) : (
                         <Td

@@ -20,29 +20,11 @@ import { useLocation, useNavigate, useParams } from "react-router";
 import Button from "../components/Form/Button";
 import { getFormatDate } from "../utils/date";
 import { parse } from "date-fns";
-
-type EditFormData = {
-  address_number: string;
-  birthdate: string;
-  cellphone: string;
-  city: string;
-  reference: string;
-  email: string;
-  gender: string;
-  voter_id: string;
-  name: string;
-  neighborhood: string;
-  office_id: string;
-  state: string;
-  street: string;
-  zip: string;
-  ddd: string;
-  document: string;
-};
+import { PatternFormat } from "react-number-format";
 
 export default function VoterEdit() {
   const { id } = useParams();
-  const [values, setValues] = useState<EditFormData>({} as EditFormData);
+  const [values, setValues] = useState({} as StateProps);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
@@ -69,21 +51,39 @@ export default function VoterEdit() {
           abortEarly: false,
         });
 
+        const {
+          name,
+          cellphone,
+          email,
+          address_number,
+          birthdate,
+          city,
+          gender,
+          neighborhood,
+          complement,
+          reference,
+          state,
+          street,
+          zip,
+          document,
+        } = values;
+
         const body = {
-          name: values?.name,
-          cellphone: values?.ddd + values?.cellphone,
-          email: values?.email,
+          name,
+          cellphone,
+          email,
           office_id: office?.id,
-          address_number: values?.address_number,
-          birthdate: values?.birthdate,
-          city: values?.city,
-          gender: values?.gender,
-          neighborhood: values?.neighborhood,
-          reference: values?.reference,
-          state: values?.state,
-          street: values?.street,
-          zip: values?.zip,
-          document: values?.document,
+          address_number,
+          birthdate,
+          city,
+          gender,
+          neighborhood,
+          reference,
+          complement,
+          state,
+          street,
+          zip,
+          document,
           voter_id: id,
         };
 
@@ -167,8 +167,8 @@ export default function VoterEdit() {
       const response = await api.get(`/voter/${id}`);
 
       setValues({
-        ddd: response?.data?.cellphone.slice(0, 2),
-        cellphone: response?.data?.cellphone.slice(2),
+        dddMask: response?.data?.cellphone.slice(0, 2),
+        cellphoneMask: response?.data?.cellphone.slice(2),
         name: response?.data?.name,
         email: response?.data?.email,
         office_id: office.id,
@@ -177,11 +177,11 @@ export default function VoterEdit() {
         city: response?.data?.city,
         gender: response?.data?.gender,
         neighborhood: response?.data?.neighborhood,
-        reference: response?.data?.reference,
+        complement: response?.data?.complement,
         state: response?.data?.state,
         street: response?.data?.street,
-        zip: response?.data?.zip,
-        document: response?.data?.document,
+        zipMask: response?.data?.zip,
+        documentMask: response?.data?.document,
         voter_id: response?.data?.id,
       });
     } catch (err) {
@@ -206,46 +206,46 @@ export default function VoterEdit() {
               Telefone*:
             </Text>
             <Flex>
-              <Input
+              <PatternFormat
+                customInput={Input}
                 name="ddd"
-                type="number"
+                type="text"
                 error={errors?.ddd}
-                value={values?.ddd}
-                onChange={(e) =>
+                value={values?.dddMask}
+                onValueChange={(value) => {
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value))
-                      .toString()
-                      .slice(0, 2),
-                  })
-                }
+                    ddd: value?.value,
+                    dddMask: value?.formattedValue,
+                  });
+                }}
                 placeholder="DDD"
-                minW="72px"
-                maxW="72px"
+                w="72px"
                 mr="8px"
                 borderColor="gray.500"
+                format="##"
+                mask="_"
               />
-              <Input
+
+              <PatternFormat
+                customInput={Input}
+                format="#####-####"
+                mask="_"
                 name="cellphone"
-                type="text"
+                type="tel"
                 error={errors?.cellphone}
-                value={values?.cellphone}
-                onChange={(e) =>
+                value={values?.cellphoneMask}
+                onValueChange={(value) => {
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value))
-                      .toString()
-                      .slice(0, 9),
-                  })
-                }
-                placeholder="000000000"
+                    cellphone: value?.value,
+                    cellphoneMask: value?.formattedValue,
+                  });
+                }}
+                placeholder="00000-0000"
                 w={["100%", "180px"]}
                 borderColor="gray.500"
-                maxLength={2}
               />
-              {/* <Button onClick={() => {}} w="220px" ml="45px" isDisabled>
-                {loading ? <Spinner color="white" /> : "Verificar"}
-              </Button> */}
             </Flex>
           </Flex>
 
@@ -297,8 +297,26 @@ export default function VoterEdit() {
                   },
                 }}
               />
-
-              <Input
+              <PatternFormat
+                customInput={Input}
+                type="text"
+                label="CPF:"
+                format="###.###.###-##"
+                mask="_"
+                name="document"
+                error={errors?.document}
+                value={values?.documentMask}
+                onValueChange={(value) => {
+                  setValues({
+                    ...values,
+                    document: value?.value,
+                    documentMask: value?.formattedValue,
+                  });
+                }}
+                borderColor="gray.500"
+                placeholder="CPF"
+              />
+              {/* <Input
                 label="CPF:"
                 name="document"
                 type="number"
@@ -314,7 +332,7 @@ export default function VoterEdit() {
                 }
                 placeholder="CPF"
                 borderColor="gray.500"
-              />
+              /> */}
 
               <Box w="100%">
                 <Text color="gray.500" fontWeight="400" margin="0">
@@ -354,24 +372,27 @@ export default function VoterEdit() {
               flexDirection={["column", "row"]}
               gap={[5, "44px"]}
             >
-              <Input
+              <PatternFormat
+                customInput={Input}
+                type="text"
+                format="#####-###"
+                mask="_"
                 name="zip"
-                type="number"
                 error={errors?.zip}
-                value={values?.zip}
-                onChange={(e) =>
+                value={values?.zipMask}
+                onValueChange={(value) => {
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value))
-                      .toString()
-                      .slice(0, 8),
-                  })
-                }
-                placeholder="CEP"
-                w={["100%", "200px"]}
+                    zip: value?.value,
+                    zipMask: value?.formattedValue,
+                  });
+                }}
                 borderColor="gray.500"
                 onBlur={getCep}
+                w={["100%", "200px"]}
+                placeholder="CEP"
               />
+
               <Input
                 placeholder="Rua"
                 name="street"
@@ -426,10 +447,10 @@ export default function VoterEdit() {
             >
               <Input
                 placeholder="Complemento"
-                name="reference"
+                name="complement"
                 type="text"
-                error={errors?.reference}
-                value={values?.reference}
+                error={errors?.complement}
+                value={values?.complement}
                 onChange={(e) =>
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }

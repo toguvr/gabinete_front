@@ -47,13 +47,14 @@ export default function Permission() {
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [permissionToDeleteId, setPermissionToDeleteId] = useState("");
-  const [permissionId, setPermissionId] = useState("");
+  const [permissionId, setPermissionId] = useState({} as PermissionByIdDTO);
   const [selectFilter, setSelectFilter] = useState("name");
   const [filterField, setFilterField] = useState("");
   const [errors, setErrors] = useState({} as StateProps);
   const [selectPageFilter, setSelectPageFilter] = useState("");
   const [active, setActive] = useState(false);
-
+  console.log("permissionId", permissionId);
+  console.log("active", active);
   const openDialog = (permission_id: string) => {
     setPermissionToDeleteId(permission_id);
     onOpen();
@@ -111,13 +112,25 @@ export default function Permission() {
     navigate(`/equipe/${permission_id}`);
   };
 
-  const handleUpdateActive = async () => {
+  const handleUpdateActive = async (permission_id: string) => {
     setErrors({});
-    setLoading(true);
+
     try {
+      const selectedPermissionById = data.find(
+        (permission) => permission.id === permission_id
+      );
+
+      setPermissionId(selectedPermissionById as PermissionByIdDTO);
+
+      if (permissionId.active) {
+        setActive(false);
+      } else {
+        setActive(true);
+      }
+
       const body = {
         active: active,
-        permissionId: permissionId,
+        permissionId: permissionId?.id,
       };
 
       await api.put("/permission", body);
@@ -130,7 +143,8 @@ export default function Permission() {
         isClosable: true,
         position: "top-right",
       });
-      return getPermissions();
+      getPermissions();
+      return;
     } catch (err: any) {
       if (err.response) {
         return toast({
@@ -152,8 +166,6 @@ export default function Permission() {
         duration: 3000,
         isClosable: true,
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -379,16 +391,7 @@ export default function Permission() {
                       >
                         <Switch
                           isChecked={permission?.active}
-                          onChange={() => {
-                            console.log("permissionId antes", permissionId);
-                            setPermissionId(permission?.id);
-                            console.log("permissionId depois", permissionId);
-                            setActive(!active);
-                            if (permissionId) {
-                              handleUpdateActive();
-                            }
-                            console.log("permissionId ultimo", permissionId);
-                          }}
+                          onChange={() => handleUpdateActive(permission?.id)}
                         />
                       </Td>
                       <Td

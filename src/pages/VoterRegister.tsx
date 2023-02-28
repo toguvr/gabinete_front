@@ -19,30 +19,10 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router";
 import Button from "../components/Form/Button";
 import { getFormatDate } from "../utils/date";
-
-type RegisterFormData = {
-  address_number: string;
-  birthdate: Date;
-  cellphone: string;
-  city: string;
-  reference: string;
-  document: string;
-  email: string;
-  gender: string;
-  id: string;
-  name: string;
-  neighborhood: string;
-  office_id: string;
-  state: string;
-  street: string;
-  zip: string;
-  ddd: string;
-};
+import { PatternFormat } from "react-number-format";
 
 export default function VoterRegister() {
-  const [values, setValues] = useState<RegisterFormData>(
-    {} as RegisterFormData
-  );
+  const [values, setValues] = useState({} as StateProps);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
@@ -71,22 +51,38 @@ export default function VoterRegister() {
           abortEarly: false,
         });
 
+        const {
+          name,
+          email,
+          address_number,
+          birthdate,
+          complement,
+          city,
+          gender,
+          neighborhood,
+          reference,
+          state,
+          zip,
+          street,
+          document,
+        } = values;
+
         const body = {
-          name: values.name,
+          name,
           cellphone: values.ddd + values.cellphone,
-          email: values.email,
+          email,
           office_id: office.id,
-          address_number: values.address_number,
-          birthdate: getFormatDate(values.birthdate, "dd/MM/yyyy"),
-          city: values.city,
-          complement: values.city,
-          gender: values.gender,
-          neighborhood: values.neighborhood,
-          reference: values.reference,
-          state: values.state,
-          street: values.street,
-          zip: values.zip,
-          document: values.document,
+          address_number,
+          birthdate,
+          city,
+          complement,
+          gender,
+          neighborhood,
+          reference,
+          state,
+          street,
+          zip,
+          document,
         };
 
         await api.post("/voter", body);
@@ -226,43 +222,46 @@ export default function VoterRegister() {
               Telefone*:
             </Text>
             <Flex>
-              <Input
+              <PatternFormat
+                customInput={Input}
                 name="ddd"
-                type="number"
+                type="text"
                 error={errors?.ddd}
-                value={values?.ddd}
-                onChange={(e) =>
+                value={values?.dddMask}
+                onValueChange={(value) => {
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value))
-                      .toString()
-                      .slice(0, 2),
-                  })
-                }
+                    ddd: value?.value,
+                    dddMask: value?.formattedValue,
+                  });
+                }}
                 placeholder="DDD"
-                minW="72px"
-                maxW="72px"
+                w="72px"
                 mr="8px"
                 borderColor="gray.500"
-                disabled={verify}
+                isDisabled={verify}
+                format="##"
+                mask="_"
               />
-              <Input
+              <PatternFormat
+                customInput={Input}
+                format="#####-####"
+                mask="_"
                 name="cellphone"
-                type="text"
+                type="tel"
                 error={errors?.cellphone}
-                value={values?.cellphone}
-                onChange={(e) =>
+                value={values?.cellphoneMask}
+                onValueChange={(value) => {
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value))
-                      .toString()
-                      .slice(0, 9),
-                  })
-                }
-                placeholder="000000000"
+                    cellphone: value?.value,
+                    cellphoneMask: value?.formattedValue,
+                  });
+                }}
+                placeholder="00000-0000"
                 w={["100%", "180px"]}
                 borderColor="gray.500"
-                disabled={verify}
+                isDisabled={verify}
               />
               <Button
                 onClick={verifyVoter}
@@ -336,25 +335,26 @@ export default function VoterRegister() {
                 // }
                 disabled={!verify}
               />
-
-              <Input
-                labelColor={!verify ? "gray.300" : "gray.500"}
+              <PatternFormat
+                customInput={Input}
+                type="text"
                 label="CPF:"
+                format="###.###.###-##"
+                mask="_"
                 name="document"
-                type="number"
                 error={errors?.document}
-                value={values.document}
-                onChange={(e) =>
+                value={values?.documentMask}
+                onValueChange={(value) => {
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value))
-                      .toString()
-                      .slice(0, 11),
-                  })
-                }
-                placeholder="CPF"
+                    document: value?.value,
+                    documentMask: value?.formattedValue,
+                  });
+                }}
                 borderColor="gray.500"
                 disabled={!verify}
+                labelColor={!verify ? "gray.300" : "gray.500"}
+                placeholder="CPF"
               />
 
               <Box w="100%">
@@ -404,25 +404,28 @@ export default function VoterRegister() {
               flexDirection={["column", "row"]}
               gap={[5, "44px"]}
             >
-              <Input
+              <PatternFormat
+                customInput={Input}
+                type="text"
+                format="#####-###"
+                mask="_"
                 name="zip"
-                type="number"
                 error={errors?.zip}
-                value={values.zip}
-                onChange={(e) =>
+                value={values?.zipMask}
+                onValueChange={(value) => {
                   setValues({
                     ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value))
-                      .toString()
-                      .slice(0, 8),
-                  })
-                }
-                placeholder="CEP"
-                w={["100%", "200px"]}
+                    zip: value?.value,
+                    zipMask: value?.formattedValue,
+                  });
+                }}
                 borderColor="gray.500"
-                onBlur={getCep}
                 disabled={!verify}
+                onBlur={getCep}
+                w={["100%", "200px"]}
+                placeholder="CEP"
               />
+
               <Input
                 placeholder="Rua"
                 name="street"
@@ -480,10 +483,10 @@ export default function VoterRegister() {
             >
               <Input
                 placeholder="Complemento"
-                name="reference"
+                name="complement"
                 type="text"
-                error={errors?.reference}
-                value={values.reference}
+                error={errors?.complement}
+                value={values.complement}
                 onChange={(e) =>
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
