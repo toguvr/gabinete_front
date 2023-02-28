@@ -47,10 +47,12 @@ export default function Permission() {
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [permissionToDeleteId, setPermissionToDeleteId] = useState("");
+  const [permissionId, setPermissionId] = useState("");
   const [selectFilter, setSelectFilter] = useState("name");
   const [filterField, setFilterField] = useState("");
   const [errors, setErrors] = useState({} as StateProps);
   const [selectPageFilter, setSelectPageFilter] = useState("");
+  const [active, setActive] = useState(false);
 
   const openDialog = (permission_id: string) => {
     setPermissionToDeleteId(permission_id);
@@ -107,6 +109,52 @@ export default function Permission() {
 
   const handleEditPermission = (permission_id: string) => {
     navigate(`/equipe/${permission_id}`);
+  };
+
+  const handleUpdateActive = async () => {
+    setErrors({});
+    setLoading(true);
+    try {
+      const body = {
+        active: active,
+        permissionId: permissionId,
+      };
+
+      await api.put("/permission", body);
+
+      toast({
+        title: "Ataulizado com sucesso",
+        description: "Você atualizou uma equipe.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return getPermissions();
+    } catch (err: any) {
+      if (err.response) {
+        return toast({
+          title:
+            err.response.data.message ||
+            "Ocorreu um erro ao cadastrar a equipe, cheque as credenciais",
+
+          status: "error",
+          position: "top-right",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+      return toast({
+        title: "Ocorreu um erro ao cadastrar a equipe, cheque as credenciais",
+
+        status: "error",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -329,7 +377,19 @@ export default function Permission() {
                         borderBottomColor="gray.300"
                         py="0px"
                       >
-                        <Switch isChecked={permission?.active} />
+                        <Switch
+                          isChecked={permission?.active}
+                          onChange={() => {
+                            console.log("permissionId antes", permissionId);
+                            setPermissionId(permission?.id);
+                            console.log("permissionId depois", permissionId);
+                            setActive(!active);
+                            if (permissionId) {
+                              handleUpdateActive();
+                            }
+                            console.log("permissionId ultimo", permissionId);
+                          }}
+                        />
                       </Td>
                       <Td
                         color="gray.600"

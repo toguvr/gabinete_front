@@ -51,15 +51,7 @@ import { getFormatDate } from "../utils/date";
 import * as Yup from "yup";
 import { PatternFormat } from "react-number-format";
 import getValidationErrors from "../utils/validationError";
-
-type RegisterFormData = {
-  cellphone?: string;
-  cellphoneMask?: string;
-  title: string;
-  description: string;
-  date: Date;
-  priority: string;
-};
+import { Editor } from "primereact/editor";
 
 export type SelectProps = {
   label: string;
@@ -68,9 +60,7 @@ export type SelectProps = {
 
 export default function DemandEdit() {
   const { id } = useParams();
-  const [values, setValues] = useState<RegisterFormData>(
-    {} as RegisterFormData
-  );
+  const [values, setValues] = useState({} as StateProps);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
@@ -84,6 +74,12 @@ export default function DemandEdit() {
   const [responsible, setResponsible] = useState("");
   const [voterData, setVoterData] = useState({} as UserDTO);
   const [voterId, setVoterId] = useState("");
+  const [description, setDescription] = useState("");
+  const [resource, setResource] = useState(false);
+
+  const handleResource = () => {
+    setResource(!resource);
+  };
 
   const handleUpdateDemanda = useCallback(
     async (e: FormEvent) => {
@@ -95,15 +91,18 @@ export default function DemandEdit() {
       try {
         const body = {
           title: values?.title,
-          description: values?.description,
-          responsible_id: responsible,
+          taskId: id,
+          description: description,
           date: values?.date,
+          deadline: values?.deadline,
           priority: values?.priority,
           voter_id: voterData?.id,
           office_id: office?.id,
+          resource: resource,
+          responsible_id: responsible,
         };
 
-        await api.post("/task", body);
+        await api.put("/task", body);
 
         toast({
           title: "Cadastrado com sucesso",
@@ -152,13 +151,16 @@ export default function DemandEdit() {
     setLoading(true);
     try {
       const response = await api.get(`/task/${id}`);
-      console.log(response.data);
       setValues({
+        cellphone: response?.data?.cellphone,
         title: response?.data?.title,
         description: response?.data?.description,
         date: response?.data?.date,
+        deadline: response?.data?.deadline,
         priority: response?.data?.priority,
       });
+      setResource(response?.data?.resource);
+      setDescription(response?.data?.description);
       setResponsible(response?.data?.responsible_id);
       setVoterId(response?.data?.voter_id);
     } catch (err) {
@@ -249,6 +251,28 @@ export default function DemandEdit() {
     }
   }, []);
 
+  const renderHeader = () => {
+    return (
+      <span className="ql-formats">
+        <button className="ql-bold" aria-label="Bold"></button>
+        <button className="ql-italic" aria-label="Italic"></button>
+        <button className="ql-underline" aria-label="Underline"></button>
+        <button
+          className="ql-list"
+          aria-label="Ordered List"
+          value="ordered"
+        ></button>
+        <button
+          className="ql-list"
+          aria-label="Unordered List"
+          value="bullet"
+        ></button>
+      </span>
+    );
+  };
+
+  const header = renderHeader();
+
   return (
     <HeaderSideBar>
       <Text
@@ -315,16 +339,17 @@ export default function DemandEdit() {
               }
               borderColor="gray.500"
             />
-            <Textarea
-              placeholder="Descrição*"
-              name="description"
-              value={values?.description}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
-              borderColor="gray.500"
-              mt="8px"
-              resize="none"
+
+            <Editor
+              style={{
+                minHeight: "120px",
+                maxHeight: "120px",
+                overflow: "auto",
+              }}
+              headerTemplate={header}
+              value={description}
+              onTextChange={(e: any) => setDescription(e.htmlValue)}
+              showHeader={true}
             />
           </Box>
 
@@ -350,10 +375,10 @@ export default function DemandEdit() {
             <Input
               labelColor="gray.500"
               label="Prazo*:"
-              name="date"
+              name="deadline"
               type="date"
-              error={errors?.date}
-              value={getFormatDate(values?.date)}
+              error={errors?.deadline}
+              value={values?.deadline}
               onChange={(e) =>
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
@@ -445,7 +470,11 @@ export default function DemandEdit() {
             <Text color={"gray.500"}>Recurso:</Text>
             <HStack>
               <Text color={"gray.500"}>Não</Text>
-              <Switch />
+              <Switch
+                name="resource"
+                isChecked={resource}
+                onChange={handleResource}
+              />
               <Text color={"gray.500"}>Sim</Text>
             </HStack>
           </Flex>

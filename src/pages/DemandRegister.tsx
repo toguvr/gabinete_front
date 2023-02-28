@@ -17,6 +17,7 @@ import {
   FormEvent,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { IoSearchSharp } from "react-icons/io5";
@@ -30,16 +31,9 @@ import api from "../services/api";
 import * as Yup from "yup";
 import { PatternFormat } from "react-number-format";
 import getValidationErrors from "../utils/validationError";
-
-type RegisterFormData = {
-  cellphone: string;
-  cellphoneMask?: string;
-  title: string;
-  description: string;
-  date: string;
-  deadline?: Date;
-  priority: string;
-};
+import RichTextEditor from "../components/RichText";
+import { Editor } from "primereact/editor";
+import "../styles/editor.css";
 
 export type SelectProps = {
   label: string;
@@ -47,9 +41,7 @@ export type SelectProps = {
 };
 
 export default function DemandRegister() {
-  const [values, setValues] = useState<RegisterFormData>(
-    {} as RegisterFormData
-  );
+  const [values, setValues] = useState({} as StateProps);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
@@ -61,7 +53,13 @@ export default function DemandRegister() {
   const [image, setImage] = useState({} as File);
   const [responsibles, setResponsibles] = useState([] as SelectProps[]);
   const [responsible, setResponsible] = useState("");
+  const [description, setDescription] = useState("");
   const [voterData, setVoterData] = useState({} as UserDTO);
+  const [resource, setResource] = useState(false);
+
+  const handleResource = () => {
+    setResource(!resource);
+  };
 
   const handleRegister = useCallback(
     async (e: FormEvent) => {
@@ -71,15 +69,24 @@ export default function DemandRegister() {
 
       setLoading(true);
       try {
+        const schema = Yup.object().shape({
+          title: Yup.string().required("Título obrigatório"),
+        });
+
+        await schema.validate(values, {
+          abortEarly: false,
+        });
+
         const body = {
           title: values?.title,
-          description: values?.description,
+          description: description,
           responsible_id: responsible,
           date: new Date(),
           deadline: values?.deadline,
           priority: values?.priority,
           voter_id: voterData?.id,
           office_id: office?.id,
+          resource: resource,
         };
 
         await api.post("/task", body);
@@ -180,7 +187,8 @@ export default function DemandRegister() {
       );
 
       setResponsibles(
-        response.data.map((responsible: PermissionByIdDTO) => ({
+        response.data.map((responsible: PermissionByIdDTO, index: number) => ({
+          key: index,
           value: responsible?.user?.id,
           label: responsible?.user?.name,
         }))
@@ -228,6 +236,28 @@ export default function DemandRegister() {
       }
     }
   }, []);
+
+  const renderHeader = () => {
+    return (
+      <span className="ql-formats">
+        <button className="ql-bold" aria-label="Bold"></button>
+        <button className="ql-italic" aria-label="Italic"></button>
+        <button className="ql-underline" aria-label="Underline"></button>
+        <button
+          className="ql-list"
+          aria-label="Ordered List"
+          value="ordered"
+        ></button>
+        <button
+          className="ql-list"
+          aria-label="Unordered List"
+          value="bullet"
+        ></button>
+      </span>
+    );
+  };
+
+  const header = renderHeader();
 
   return (
     <HeaderSideBar>
@@ -327,19 +357,33 @@ export default function DemandRegister() {
               borderColor="gray.500"
               isDisabled={!verify || notVerify}
             />
-
-            <Textarea
-              placeholder="Descrição*"
-              name="description"
-              value={values?.description}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
-              borderColor="gray.500"
-              mt="8px"
-              resize="none"
-              isDisabled={!verify || notVerify}
-            />
+            {!verify ? (
+              <Textarea
+                placeholder="Descrição*"
+                name="description"
+                value={values?.description}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
+                borderColor="gray.500"
+                mt="8px"
+                resize="none"
+                isDisabled={!verify || notVerify}
+              />
+            ) : (
+              <Editor
+                style={{
+                  minHeight: "120px",
+                  maxHeight: "120px",
+                  overflow: "auto",
+                  borderRadius: "0px 0px 8px 8px",
+                }}
+                placeholder="Descrição*"
+                headerTemplate={header}
+                value={description}
+                onTextChange={(e: any) => setDescription(e.htmlValue)}
+              />
+            )}
           </Box>
 
           <Select
@@ -353,9 +397,9 @@ export default function DemandRegister() {
             onChange={(e) => setResponsible(e.target.value)}
             isDisabled={!verify || notVerify}
           >
-            {responsibles.map((responsible) => {
+            {responsibles.map((responsible, index) => {
               return (
-                <option value={responsible?.value} key={responsible?.value}>
+                <option value={responsible?.value} key={index}>
                   {responsible?.label}
                 </option>
               );
@@ -368,11 +412,10 @@ export default function DemandRegister() {
               name="deadline"
               type="date"
               error={errors?.deadline}
-              value={String(values?.deadline)}
+              value={values?.deadline}
               onChange={(e) =>
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
-              placeholder="00/00/0000"
               borderColor="gray.500"
               css={{
                 "&::-webkit-calendar-picker-indicator": {
@@ -458,7 +501,7 @@ export default function DemandRegister() {
               />
             </Flex>
           </FormLabel> */}
-          {/* <Flex gap="24px">
+          <Flex gap="24px">
             <Text color={!verify || notVerify ? "gray.300" : "gray.500"}>
               Recurso:
             </Text>
@@ -466,12 +509,17 @@ export default function DemandRegister() {
               <Text color={!verify || notVerify ? "gray.300" : "gray.500"}>
                 Não
               </Text>
-              <Switch isDisabled={!verify || notVerify} />
+              <Switch
+                name="resource"
+                isDisabled={!verify || notVerify}
+                isChecked={resource}
+                onChange={handleResource}
+              />
               <Text color={!verify || notVerify ? "gray.300" : "gray.500"}>
                 Sim
               </Text>
             </HStack>
-          </Flex> */}
+          </Flex>
           <Flex
             w="100%"
             alignItems="center"

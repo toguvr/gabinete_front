@@ -311,7 +311,7 @@ export default function Demand() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
-                        {getFormatDate(task?.date)}
+                        {getFormatDate(task?.deadline)}
                       </Td>
                       {role?.equipe_page > 1 && (
                         <Td

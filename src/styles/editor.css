@@ -1,0 +1,23 @@
+.p-editor-container{
+  border-radius: 6px;
+  margin-top: 8px;
+  border: 1px solid #718096;
+}
+
+.p-editor-container:hover{  
+  border: 1px solid #CBD5E0;
+}
+
+
+
+.p-editor-content{
+  border: none !important;
+
+}
+
+
+.p-editor-toolbar{
+  border: none !important;
+}
+
+
