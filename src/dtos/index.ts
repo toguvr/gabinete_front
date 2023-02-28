@@ -1,12 +1,12 @@
 export enum TaskPriority {
-  ALTA = 'ALTA',
-  MEDIA = 'MEDIA',
-  BAIXA = 'BAIXA',
+  ALTA = "ALTA",
+  MEDIA = "MEDIA",
+  BAIXA = "BAIXA",
 }
 
 export enum UserGender {
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
+  MALE = "MALE",
+  FEMALE = "FEMALE",
 }
 
 export interface StateProps {
@@ -69,7 +69,7 @@ export interface TaskPropsDTO {
   title: string;
   description: string;
   createdAt: Date;
-  deadline: Date;
+  deadline: string;
   doneDate: Date;
   date: Date;
   status: string;

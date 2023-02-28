@@ -47,14 +47,11 @@ export default function Permission() {
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [permissionToDeleteId, setPermissionToDeleteId] = useState("");
-  const [permissionId, setPermissionId] = useState({} as PermissionByIdDTO);
   const [selectFilter, setSelectFilter] = useState("name");
   const [filterField, setFilterField] = useState("");
   const [errors, setErrors] = useState({} as StateProps);
   const [selectPageFilter, setSelectPageFilter] = useState("");
-  const [active, setActive] = useState(false);
-  console.log("permissionId", permissionId);
-  console.log("active", active);
+
   const openDialog = (permission_id: string) => {
     setPermissionToDeleteId(permission_id);
     onOpen();
@@ -112,25 +109,16 @@ export default function Permission() {
     navigate(`/equipe/${permission_id}`);
   };
 
-  const handleUpdateActive = async (permission_id: string) => {
+  const handleUpdateActive = async (
+    permission_id: string,
+    permission_active: boolean
+  ) => {
     setErrors({});
 
     try {
-      const selectedPermissionById = data.find(
-        (permission) => permission.id === permission_id
-      );
-
-      setPermissionId(selectedPermissionById as PermissionByIdDTO);
-
-      if (permissionId.active) {
-        setActive(false);
-      } else {
-        setActive(true);
-      }
-
       const body = {
-        active: active,
-        permissionId: permissionId?.id,
+        active: !permission_active,
+        permissionId: permission_id,
       };
 
       await api.put("/permission", body);
@@ -391,7 +379,12 @@ export default function Permission() {
                       >
                         <Switch
                           isChecked={permission?.active}
-                          onChange={() => handleUpdateActive(permission?.id)}
+                          onChange={() =>
+                            handleUpdateActive(
+                              permission?.id,
+                              permission?.active
+                            )
+                          }
                         />
                       </Td>
                       <Td

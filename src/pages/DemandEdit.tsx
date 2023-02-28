@@ -52,6 +52,7 @@ import * as Yup from "yup";
 import { PatternFormat } from "react-number-format";
 import getValidationErrors from "../utils/validationError";
 import { Editor } from "primereact/editor";
+import { addHours } from "date-fns";
 
 export type SelectProps = {
   label: string;
@@ -64,16 +65,13 @@ export default function DemandEdit() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
-  const [verify, setVerify] = useState(false);
-  const [notVerify, setNotVerify] = useState(false);
+  const [verify, setVerify] = useState(true);
   const { role, office } = useAuth();
   const toast = useToast();
-  const auth = useAuth();
   const [image, setImage] = useState({} as File);
   const [responsibles, setResponsibles] = useState([] as SelectProps[]);
   const [responsible, setResponsible] = useState("");
   const [voterData, setVoterData] = useState({} as UserDTO);
-  const [voterId, setVoterId] = useState("");
   const [description, setDescription] = useState("");
   const [resource, setResource] = useState(false);
 
@@ -94,7 +92,7 @@ export default function DemandEdit() {
           taskId: id,
           description: description,
           date: values?.date,
-          deadline: values?.deadline,
+          deadline: addHours(new Date(values?.deadline), 12),
           priority: values?.priority,
           voter_id: voterData?.id,
           office_id: office?.id,
@@ -151,34 +149,22 @@ export default function DemandEdit() {
     setLoading(true);
     try {
       const response = await api.get(`/task/${id}`);
+
       setValues({
-        cellphone: response?.data?.cellphone,
+        cellphoneMask: response?.data?.voter?.cellphone,
         title: response?.data?.title,
         description: response?.data?.description,
         date: response?.data?.date,
-        deadline: response?.data?.deadline,
+        deadline: getFormatDate(
+          new Date(response?.data?.deadline),
+          "yyyy-MM-dd"
+        ),
         priority: response?.data?.priority,
       });
       setResource(response?.data?.resource);
       setDescription(response?.data?.description);
       setResponsible(response?.data?.responsible_id);
-      setVoterId(response?.data?.voter_id);
-    } catch (err) {
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getVoterById = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get(`/voter/${voterId}`);
-      setVoterData(response.data);
-      setValues({
-        ...values,
-        cellphoneMask: voterData?.cellphone,
-        cellphone: voterData?.cellphone,
-      });
+      setVoterData(response?.data?.voter);
     } catch (err) {
     } finally {
       setLoading(false);
@@ -210,12 +196,6 @@ export default function DemandEdit() {
     getPermissions();
     getDemandaById();
   }, []);
-
-  useEffect(() => {
-    if (voterId) {
-      getVoterById();
-    }
-  }, [voterId]);
 
   const postDocument = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -295,12 +275,15 @@ export default function DemandEdit() {
             >
               <PatternFormat
                 name="cellphone"
-                placeholder={values?.cellphone}
                 customInput={Input}
-                value={values?.cellphone}
                 error={errors?.cellphone}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
+                value={values?.cellphoneMask}
+                onValueChange={(value) =>
+                  setValues({
+                    ...values,
+                    cellphone: value?.value,
+                    cellphoneMask: value?.formattedValue,
+                  })
                 }
                 type="tel"
                 format="(##) #####-####"
@@ -374,7 +357,7 @@ export default function DemandEdit() {
           <Flex alignItems={"flex-end"} gap="36px">
             <Input
               labelColor="gray.500"
-              label="Prazo*:"
+              label="Prazo:"
               name="deadline"
               type="date"
               error={errors?.deadline}
@@ -382,7 +365,6 @@ export default function DemandEdit() {
               onChange={(e) =>
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
-              placeholder="Prazo"
               borderColor="gray.500"
               css={{
                 "&::-webkit-calendar-picker-indicator": {

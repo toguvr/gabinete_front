@@ -315,7 +315,7 @@ export default function VoterRegister() {
                 name="birthdate"
                 type="date"
                 error={errors?.birthdate}
-                value={String(values.birthdate)}
+                value={values.birthdate}
                 onChange={(e) =>
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }

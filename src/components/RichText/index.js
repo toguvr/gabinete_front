@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   MdFormatListBulleted,
   MdFormatListNumbered,
@@ -6,9 +6,6 @@ import {
   MdFormatUnderlined,
   MdFormatBold,
   MdFormatItalic,
-  MdSave,
-  MdFullscreen,
-  MdFullscreenExit,
 } from "react-icons/md";
 import PropTypes from "prop-types";
 import {
@@ -19,16 +16,10 @@ import {
 } from "draftail";
 import "draft-js/dist/Draft.css";
 import "draftail/dist/draftail.css";
-import "./styles.css";
+import "./styles.js";
 import { EditorState } from "draft-js";
-import { getDate, getMonth, getYear } from "date-fns";
-import api from "../../services/api";
 import { createEditorStateFromRaw, serialiseEditorStateToRaw } from "draftail";
-import { convertToRaw, convertFromRaw } from "draft-js";
-import { convertFromHTML, convertToHTML } from "draft-convert";
 import { Container } from "./styles";
-import EnterpriseImg from "../../assets/nahora192.png";
-import { useToast } from "@chakra-ui/react";
 
 const exporterConfig = {
   blockToHTML: (block) => {
@@ -64,9 +55,6 @@ const exporterConfig = {
   },
 };
 
-const toHTML = (raw) =>
-  raw ? convertToHTML(exporterConfig)(convertFromRaw(raw)) : "";
-
 const importerConfig = {
   htmlToEntity: (nodeName, node, createEntity) => {
     // a tags will become LINK entities, marked as mutable, with only the URL as data.
@@ -96,33 +84,9 @@ const importerConfig = {
   },
 };
 
-const fromHTML = (html) => convertToRaw(convertFromHTML(importerConfig)(html));
-
-function RichTextEditor({
-  onChange,
-  defaultValue,
-  readOnly,
-  date,
-  type,
-  thisEnterprise,
-  fullScreen,
-  setFullScreen,
-}) {
-  const toast = useToast();
+function RichTextEditor({ onChange, readOnly }) {
   const [values, setValues] = useState(null);
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
-
-  const getPermission = useCallback(async () => {
-    try {
-      const response = await api.get(`/permission/${id}`);
-
-      setEditorState(
-        createEditorStateFromRaw(
-          fromHTML(JSON.parse(response?.data?.description))
-        )
-      );
-    } catch {}
-  }, [date, thisEnterprise]);
 
   function onChange(e) {
     // console.log(toHTML(e));
@@ -131,7 +95,6 @@ function RichTextEditor({
   }
 
   useEffect(() => {
-    getTraining();
     setEditorState(
       createEditorStateFromRaw(
         !readOnly
@@ -266,7 +229,7 @@ function RichTextEditor({
             }
       )
     );
-  }, [date]);
+  }, []);
 
   useEffect(() => {
     if (readOnly) {
@@ -277,20 +240,7 @@ function RichTextEditor({
   }, [readOnly]);
 
   return (
-    <Container fullScreen={fullScreen}>
-      {fullScreen && <img src={EnterpriseImg} alt="NaHora" />}
-      {fullScreen ? (
-        <MdFullscreenExit
-          size={25}
-          cursor="pointer"
-          onClick={() => setFullScreen(!fullScreen)}
-        />
-      ) : (
-        <MdFullscreen
-          cursor="pointer"
-          onClick={() => setFullScreen(!fullScreen)}
-        />
-      )}
+    <Container>
       <DraftailEditor
         editorState={editorState}
         onChange={onChange}
@@ -331,19 +281,11 @@ function RichTextEditor({
 }
 
 RichTextEditor.propTypes = {
-  type: PropTypes.string,
-  date: PropTypes.string,
   onChange: PropTypes.func,
-  defaultValue: PropTypes.object,
-  thisEnterprise: PropTypes.object,
   readOnly: PropTypes.bool,
 };
 
 RichTextEditor.defaultProps = {
-  defaultValue: null,
-  thisEnterprise: null,
-  type: "amrap",
-  date: new Date(),
   readOnly: false,
   onChange: () => {},
 };

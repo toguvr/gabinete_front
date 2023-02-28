@@ -34,6 +34,7 @@ import getValidationErrors from "../utils/validationError";
 import RichTextEditor from "../components/RichText";
 import { Editor } from "primereact/editor";
 import "../styles/editor.css";
+import { addHours } from "date-fns";
 
 export type SelectProps = {
   label: string;
@@ -61,65 +62,56 @@ export default function DemandRegister() {
     setResource(!resource);
   };
 
-  const handleRegister = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault();
+  const handleRegister = async (e: FormEvent) => {
+    e.preventDefault();
 
-      setErrors({});
+    setErrors({});
 
-      setLoading(true);
-      try {
-        const schema = Yup.object().shape({
-          title: Yup.string().required("Título obrigatório"),
-        });
+    setLoading(true);
+    try {
+      const schema = Yup.object().shape({
+        title: Yup.string().required("Título obrigatório"),
+      });
 
-        await schema.validate(values, {
-          abortEarly: false,
-        });
+      await schema.validate(values, {
+        abortEarly: false,
+      });
 
-        const body = {
-          title: values?.title,
-          description: description,
-          responsible_id: responsible,
-          date: new Date(),
-          deadline: values?.deadline,
-          priority: values?.priority,
-          voter_id: voterData?.id,
-          office_id: office?.id,
-          resource: resource,
-        };
+      const { title, priority } = values;
 
-        await api.post("/task", body);
+      const body = {
+        title,
+        description: description,
+        responsible_id: responsible,
+        date: new Date(),
+        deadline: addHours(new Date(values?.deadline), 12),
+        priority,
+        voter_id: voterData?.id,
+        office_id: office?.id,
+        resource: resource,
+      };
 
-        toast({
-          title: "Cadastrado com sucesso",
-          description: "Você cadastrou uma demanda.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
-        return navigate("/demanda");
-      } catch (err: any) {
-        if (err instanceof Yup.ValidationError) {
-          setErrors(getValidationErrors(err));
+      await api.post("/task", body);
 
-          return;
-        }
-        if (err.response) {
-          return toast({
-            title:
-              err.response.data.message ||
-              "Ocorreu um erro ao cadastrar a demanda, cheque as credenciais",
+      toast({
+        title: "Cadastrado com sucesso",
+        description: "Você cadastrou uma demanda.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return navigate("/demanda");
+    } catch (err: any) {
+      if (err instanceof Yup.ValidationError) {
+        setErrors(getValidationErrors(err));
 
-            status: "error",
-            position: "top-right",
-            duration: 3000,
-            isClosable: true,
-          });
-        }
+        return;
+      }
+      if (err.response) {
         return toast({
           title:
+            err.response.data.message ||
             "Ocorreu um erro ao cadastrar a demanda, cheque as credenciais",
 
           status: "error",
@@ -127,12 +119,19 @@ export default function DemandRegister() {
           duration: 3000,
           isClosable: true,
         });
-      } finally {
-        setLoading(false);
       }
-    },
-    [values]
-  );
+      return toast({
+        title: "Ocorreu um erro ao cadastrar a demanda, cheque as credenciais",
+
+        status: "error",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const verifyPermission = async () => {
     setErrors({});
@@ -361,28 +360,25 @@ export default function DemandRegister() {
               <Textarea
                 placeholder="Descrição*"
                 name="description"
-                value={values?.description}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
                 borderColor="gray.500"
                 mt="8px"
                 resize="none"
                 isDisabled={!verify || notVerify}
               />
             ) : (
-              <Editor
-                style={{
-                  minHeight: "120px",
-                  maxHeight: "120px",
-                  overflow: "auto",
-                  borderRadius: "0px 0px 8px 8px",
-                }}
-                placeholder="Descrição*"
-                headerTemplate={header}
-                value={description}
-                onTextChange={(e: any) => setDescription(e.htmlValue)}
-              />
+              // <Editor
+              //   style={{
+              //     minHeight: "120px",
+              //     maxHeight: "120px",
+              //     overflow: "auto",
+              //     borderRadius: "0px 0px 8px 8px",
+              //   }}
+              //   placeholder="Descrição*"
+              //   headerTemplate={header}
+              //   value={description}
+              //   onTextChange={(e: any) => setDescription(e.htmlValue)}
+              // />
+              <RichTextEditor onChange={() => {}} readOnly={!verify} />
             )}
           </Box>
 
@@ -408,7 +404,7 @@ export default function DemandRegister() {
           <Flex alignItems={"flex-end"} gap="36px">
             <Input
               labelColor="gray.500"
-              label="Prazo*:"
+              label="Prazo:"
               name="deadline"
               type="date"
               error={errors?.deadline}

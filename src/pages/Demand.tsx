@@ -21,6 +21,7 @@ import {
   Button as ChakraButton,
   Select,
 } from "@chakra-ui/react";
+import { addHours } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import {
   IoPencilOutline,
@@ -91,7 +92,17 @@ export default function Demand() {
     setLoading(true);
     try {
       const response = await api.get(`/task/office/${office?.id}`);
-      setData(response?.data);
+
+      const newDate = response.data.map((task: TaskPropsDTO) => {
+        return {
+          ...task,
+          deadline: getFormatDate(
+            addHours(new Date(task?.deadline), 12),
+            "dd/MM/yyyy"
+          ),
+        };
+      });
+      setData(newDate);
     } catch (err) {
     } finally {
       setLoading(false);
@@ -311,7 +322,7 @@ export default function Demand() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
-                        {getFormatDate(task?.deadline)}
+                        {task?.deadline}
                       </Td>
                       {role?.equipe_page > 1 && (
                         <Td
