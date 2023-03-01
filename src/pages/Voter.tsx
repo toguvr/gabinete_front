@@ -68,10 +68,12 @@ export default function Voter() {
       const newDate = response.data.map((voter: VoterDTO) => {
         return {
           ...voter,
-          birthdate: getFormatDate(
-            addHours(new Date(voter?.birthdate), 12),
-            "dd/MM/yyyy"
-          ),
+          birthdate: voter?.birthdate
+            ? getFormatDate(
+                addHours(new Date(voter?.birthdate), 12),
+                "dd/MM/yyyy"
+              )
+            : null,
         };
       });
       setData(newDate);
