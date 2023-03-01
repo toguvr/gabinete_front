@@ -93,16 +93,7 @@ export default function Demand() {
     try {
       const response = await api.get(`/task/office/${office?.id}`);
 
-      const newDate = response.data.map((task: TaskPropsDTO) => {
-        return {
-          ...task,
-          deadline: getFormatDate(
-            addHours(new Date(task?.deadline), 12),
-            "dd/MM/yyyy"
-          ),
-        };
-      });
-      setData(newDate);
+      setData(response.data);
     } catch (err) {
     } finally {
       setLoading(false);
@@ -280,9 +271,10 @@ export default function Demand() {
                     case "deadline":
                       if (filterField?.length >= 3) {
                         return (
-                          currentValue?.deadline
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
+                          getFormatDate(
+                            addHours(new Date(currentValue?.deadline), 12),
+                            "dd/MM/yyyy"
+                          ).indexOf(filterField) > -1
                         );
                       } else {
                         return currentValue;
@@ -322,7 +314,12 @@ export default function Demand() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
-                        {task?.deadline}
+                        {task?.deadline
+                          ? getFormatDate(
+                              addHours(new Date(task?.deadline), 12),
+                              "dd/MM/yyyy"
+                            )
+                          : "-"}
                       </Td>
                       {role?.equipe_page > 1 && (
                         <Td

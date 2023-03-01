@@ -65,18 +65,7 @@ export default function Voter() {
     try {
       const response = await api.get(`/voter/office/${auth.office.id}`);
 
-      const newDate = response.data.map((voter: VoterDTO) => {
-        return {
-          ...voter,
-          birthdate: voter?.birthdate
-            ? getFormatDate(
-                addHours(new Date(voter?.birthdate), 12),
-                "dd/MM/yyyy"
-              )
-            : null,
-        };
-      });
-      setData(newDate);
+      setData(response.data);
     } catch (err) {
     } finally {
       setLoading(false);
@@ -285,9 +274,10 @@ export default function Voter() {
                     case "birthdate":
                       if (filterField?.length >= 3) {
                         return (
-                          currentValue?.birthdate
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
+                          getFormatDate(
+                            addHours(new Date(currentValue?.birthdate), 12),
+                            "dd/MM/yyyy"
+                          ).indexOf(filterField) > -1
                         );
                       } else {
                         return currentValue;
@@ -347,7 +337,12 @@ export default function Voter() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
-                        {voter?.birthdate ? voter?.birthdate : "-"}
+                        {voter?.birthdate
+                          ? getFormatDate(
+                              addHours(new Date(voter?.birthdate), 12),
+                              "dd/MM/yyyy"
+                            )
+                          : "-"}
                       </Td>
                       <Td
                         color="gray.600"

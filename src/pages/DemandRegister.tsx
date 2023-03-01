@@ -31,7 +31,6 @@ import api from "../services/api";
 import * as Yup from "yup";
 import { PatternFormat } from "react-number-format";
 import getValidationErrors from "../utils/validationError";
-import RichTextEditor from "../components/RichText";
 import { Editor } from "primereact/editor";
 import "../styles/editor.css";
 import { addHours } from "date-fns";

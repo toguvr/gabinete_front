@@ -2,22 +2,11 @@ import {
   Box,
   Flex,
   HStack,
-  Icon,
-  IconButton,
   Spinner,
   Stack,
-  Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
   useToast,
-  Button as ChakraButton,
   Avatar,
-  Textarea,
-  FormLabel,
   Switch,
   Select,
 } from "@chakra-ui/react";
@@ -28,24 +17,12 @@ import {
   useEffect,
   useState,
 } from "react";
-import {
-  IoCloudUpload,
-  IoPencilOutline,
-  IoSearchSharp,
-  IoTrashOutline,
-} from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../components/Form/Button";
 import Input from "../components/Form/Input";
 import HeaderSideBar from "../components/HeaderSideBar";
 import { useAuth } from "../contexts/AuthContext";
-import {
-  PermissionByIdDTO,
-  StateProps,
-  TaskPropsDTO,
-  UserDTO,
-  VoterDTO,
-} from "../dtos";
+import { PermissionByIdDTO, StateProps, UserDTO } from "../dtos";
 import api from "../services/api";
 import { getFormatDate } from "../utils/date";
 import * as Yup from "yup";
