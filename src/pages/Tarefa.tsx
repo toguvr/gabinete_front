@@ -163,20 +163,50 @@ export default function Tarefa() {
               })}
             </Select>
 
-            <Input
-              maxW="600px"
-              type="text"
-              name="filterField"
-              placeholder="Buscar"
-              error={errors?.filterField}
-              value={filterField}
-              mb="24px"
-              onChange={(e) => {
-                setFilterField(e.target.value);
-              }}
-              borderColor="gray.500"
-              rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
-            />
+            {selectFilter === 'id' || selectFilter === 'title' ? (
+              <Input
+                maxW="600px"
+                type="text"
+                name="filterField"
+                placeholder="Buscar"
+                error={errors?.filterField}
+                value={filterField}
+                mb="24px"
+                onChange={(e) => {
+                  setFilterField(e.target.value);
+                }}
+                borderColor="gray.500"
+                rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
+              />
+            ) : selectFilter === 'priority' ? (
+              <Select
+                borderColor="gray.500"
+                onChange={(e) => {
+                  setFilterField(e.target.value);
+                }}
+                mb="24px"
+                value={filterField}
+                maxW="600px"
+              >
+                <option value="ALTA">Alta</option>
+                <option value="MEDIA">Média</option>
+                <option value="BAIXA">Baixa</option>
+              </Select>
+            ) : (
+              <Select
+                borderColor="gray.500"
+                onChange={(e) => {
+                  setFilterField(e.target.value);
+                }}
+                mb="24px"
+                value={filterField}
+                maxW="600px"
+              >
+                <option value="BACKLOG">Backlog</option>
+                <option value="FAZENDO">Fazendo</option>
+                <option value="CONCLUIDO">Concluído</option>
+              </Select>
+            )}
           </Flex>
         </Flex>
 
@@ -218,7 +248,7 @@ export default function Tarefa() {
                   fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   color="gray.600"
                 >
-                  Foco
+                  Prioridade
                 </Th>
               </Tr>
             </Thead>
@@ -227,6 +257,16 @@ export default function Tarefa() {
                 taskList
                   .filter((currentValue: any) => {
                     switch (selectFilter) {
+                      case 'id':
+                        if (filterField) {
+                          return (
+                            String(currentValue?.id)
+                              .toLowerCase()
+                              .indexOf(filterField?.toLowerCase()) > -1
+                          );
+                        } else {
+                          return currentValue;
+                        }
                       case 'title':
                         if (filterField?.length >= 3) {
                           return (

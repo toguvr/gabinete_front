@@ -20,7 +20,6 @@ export const voterPage = [
   { key: 1, value: 'email', label: 'E-mail' },
   { key: 2, value: 'birthdate', label: 'Nascimento' },
   { key: 3, value: 'cellphone', label: 'Telefone' },
-  { key: 4, value: 'address', label: 'Bairro' },
 ];
 
 export const demandPage = [
@@ -30,7 +29,8 @@ export const demandPage = [
 ];
 
 export const taskPage = [
-  { key: 0, value: 'title', label: 'Título' },
-  { key: 1, value: 'status', label: 'Status' },
-  { key: 2, value: 'priority', label: 'Prioridade' },
+  { key: 0, value: 'id', label: 'Id' },
+  { key: 1, value: 'title', label: 'Título' },
+  { key: 2, value: 'status', label: 'Status' },
+  { key: 3, value: 'priority', label: 'Prioridade' },
 ];
