@@ -167,7 +167,7 @@ export default function Demand() {
         </Text>
         {role?.demandas_page > 1 && (
           <Button
-            onClick={() => navigate("/demanda/registrar-demanda")}
+            onClick={() => navigate("/registrar-demanda")}
             w={["160px", "280px"]}
           >
             Cadastrar Demanda

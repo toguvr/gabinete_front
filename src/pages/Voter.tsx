@@ -168,7 +168,7 @@ export default function Voter() {
         </Text>
         {role?.eleitor_page > 1 && (
           <Button
-            onClick={() => navigate("/eleitor/registrar-eleitor")}
+            onClick={() => navigate("/registrar-eleitor")}
             w={["160px", "280px"]}
           >
             Cadastrar eleitor

@@ -206,7 +206,7 @@ export default function Permission() {
         </Text>
         {role?.equipe_page > 1 && (
           <Button
-            onClick={() => navigate("/equipe/registrar-equipe")}
+            onClick={() => navigate("/registrar-equipe")}
             w={["160px", "280px"]}
           >
             Cadastrar equipe

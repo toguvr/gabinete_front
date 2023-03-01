@@ -62,6 +62,10 @@ export default function DemandRegister() {
     setResource(!resource);
   };
 
+  const handleCreateVoter = (cellphone: string) => {
+    navigate("/demanda/registrar-eleitor", { state: { cellphone } });
+  };
+
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -337,7 +341,11 @@ export default function DemandRegister() {
                 cursor="pointer"
               >
                 <Text color="gray.400">Eleitor não encontrado</Text>
-                <Button w="220px" h="30px">
+                <Button
+                  w="220px"
+                  h="30px"
+                  onClick={() => handleCreateVoter(values?.cellphone)}
+                >
                   Cadastrar o eleitor
                 </Button>
               </Flex>
@@ -366,19 +374,19 @@ export default function DemandRegister() {
                 isDisabled={!verify || notVerify}
               />
             ) : (
-              // <Editor
-              //   style={{
-              //     minHeight: "120px",
-              //     maxHeight: "120px",
-              //     overflow: "auto",
-              //     borderRadius: "0px 0px 8px 8px",
-              //   }}
-              //   placeholder="Descrição*"
-              //   headerTemplate={header}
-              //   value={description}
-              //   onTextChange={(e: any) => setDescription(e.htmlValue)}
-              // />
-              <RichTextEditor onChange={() => {}} readOnly={!verify} />
+              <Editor
+                style={{
+                  minHeight: "120px",
+                  maxHeight: "120px",
+                  overflow: "auto",
+                  borderRadius: "0px 0px 8px 8px",
+                }}
+                placeholder="Descrição*"
+                headerTemplate={header}
+                value={description}
+                onTextChange={(e: any) => setDescription(e.htmlValue)}
+              />
+              // <RichTextEditor onChange={() => {}} readOnly={!verify} />
             )}
           </Box>
 
