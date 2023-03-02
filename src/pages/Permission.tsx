@@ -25,7 +25,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import HeaderSideBar from "../components/HeaderSideBar";
-import { PermissionByIdDTO, StateProps } from "../dtos";
+import { PermissionByIdDTO, RoleDTO, StateProps } from "../dtos";
 import {
   IoPencilOutline,
   IoSearchSharp,
@@ -43,7 +43,7 @@ export default function Permission() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [data, setData] = useState([] as PermissionByIdDTO[]);
-  const { role } = useAuth();
+  const { role, office } = useAuth();
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [permissionToDeleteId, setPermissionToDeleteId] = useState("");
@@ -51,6 +51,8 @@ export default function Permission() {
   const [filterField, setFilterField] = useState("");
   const [errors, setErrors] = useState({} as StateProps);
   const [selectPageFilter, setSelectPageFilter] = useState("");
+  const [selectRoleFilter, setSelectRoleFilter] = useState("");
+  const [roles, setRoles] = useState([] as RoleDTO[]);
 
   const openDialog = (permission_id: string) => {
     setPermissionToDeleteId(permission_id);
@@ -71,8 +73,23 @@ export default function Permission() {
     }
   };
 
+  const getRoles = async () => {
+    setRoles([] as RoleDTO[]);
+
+    setLoading(true);
+    try {
+      const response = await api.get(`/role/office/${office?.id}`);
+
+      setRoles(response.data);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     getPermissions();
+    getRoles();
   }, []);
 
   const deletePermission = async () => {
@@ -109,6 +126,54 @@ export default function Permission() {
     navigate(`/equipe/${permission_id}`);
   };
 
+  const handleUpdateActive = async (
+    permission_id: string,
+    permission_active: boolean
+  ) => {
+    setErrors({});
+
+    try {
+      const body = {
+        active: !permission_active,
+        permissionId: permission_id,
+      };
+
+      await api.put("/permission", body);
+
+      toast({
+        title: "Ataulizado com sucesso",
+        description: "Você atualizou uma equipe.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      getPermissions();
+      return;
+    } catch (err: any) {
+      if (err.response) {
+        return toast({
+          title:
+            err.response.data.message ||
+            "Ocorreu um erro ao cadastrar a equipe, cheque as credenciais",
+
+          status: "error",
+          position: "top-right",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+      return toast({
+        title: "Ocorreu um erro ao cadastrar a equipe, cheque as credenciais",
+
+        status: "error",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+  console.log(filterField);
   return (
     <HeaderSideBar>
       <AlertDialog
@@ -158,7 +223,7 @@ export default function Permission() {
         </Text>
         {role?.equipe_page > 1 && (
           <Button
-            onClick={() => navigate("/equipe/registrar-equipe")}
+            onClick={() => navigate("/registrar-equipe")}
             w={["160px", "280px"]}
           >
             Cadastrar equipe
@@ -203,6 +268,23 @@ export default function Permission() {
             <option key="inactive" value="inactive">
               Desativado
             </option>
+          </Select>
+        ) : selectFilter === "role" ? (
+          <Select
+            borderColor="gray.500"
+            bg="gray.50"
+            _placeholder={{ color: "gray.500" }}
+            color="gray.600"
+            maxW="600px"
+            name="selectRoleFilter"
+            value={selectRoleFilter}
+            onChange={(e) => setSelectRoleFilter(e.target.value)}
+          >
+            {roles.map((role) => (
+              <option key={role.id} value={role.name}>
+                {role.name}
+              </option>
+            ))}
           </Select>
         ) : (
           <Input
@@ -287,11 +369,11 @@ export default function Permission() {
                         return currentValue;
                       }
                     case "role":
-                      if (filterField?.length >= 3) {
+                      if (selectRoleFilter?.length >= 3) {
                         return (
                           currentValue?.role?.name
                             .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
+                            .indexOf(selectRoleFilter?.toLowerCase()) > -1
                         );
                       } else {
                         return currentValue;
@@ -329,7 +411,15 @@ export default function Permission() {
                         borderBottomColor="gray.300"
                         py="0px"
                       >
-                        <Switch isChecked={permission?.active} />
+                        <Switch
+                          isChecked={permission?.active}
+                          onChange={() =>
+                            handleUpdateActive(
+                              permission?.id,
+                              permission?.active
+                            )
+                          }
+                        />
                       </Td>
                       <Td
                         color="gray.600"

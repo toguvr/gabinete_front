@@ -21,6 +21,7 @@ import {
   Button as ChakraButton,
   Select,
 } from "@chakra-ui/react";
+import { addHours } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import {
   IoPencilOutline,
@@ -91,7 +92,8 @@ export default function Demand() {
     setLoading(true);
     try {
       const response = await api.get(`/task/office/${office?.id}`);
-      setData(response?.data);
+
+      setData(response.data);
     } catch (err) {
     } finally {
       setLoading(false);
@@ -156,7 +158,7 @@ export default function Demand() {
         </Text>
         {role?.demandas_page > 1 && (
           <Button
-            onClick={() => navigate("/demanda/registrar-demanda")}
+            onClick={() => navigate("/registrar-demanda")}
             w={["160px", "280px"]}
           >
             Cadastrar Demanda
@@ -164,7 +166,7 @@ export default function Demand() {
         )}
       </Flex>
       <Text mt="36px" color="gray.500">
-        Filtar por:
+        Filtrar por:
       </Text>
       <Flex gap={["12px", "24px"]}>
         <Select
@@ -269,9 +271,10 @@ export default function Demand() {
                     case "deadline":
                       if (filterField?.length >= 3) {
                         return (
-                          currentValue?.deadline
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
+                          getFormatDate(
+                            addHours(new Date(currentValue?.deadline), 12),
+                            "dd/MM/yyyy"
+                          ).indexOf(filterField) > -1
                         );
                       } else {
                         return currentValue;
@@ -311,7 +314,12 @@ export default function Demand() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
-                        {getFormatDate(task?.date)}
+                        {task?.deadline
+                          ? getFormatDate(
+                              addHours(new Date(task?.deadline), 12),
+                              "dd/MM/yyyy"
+                            )
+                          : "-"}
                       </Td>
                       {role?.equipe_page > 1 && (
                         <Td

@@ -23,7 +23,7 @@ import Input from "../components/Form/Input";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../services/api";
 import Button from "../components/Form/Button";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 type RegisterFormData = {
   name: string;
@@ -48,6 +48,7 @@ export default function PermissionEdit() {
   const toast = useToast();
   const [roles, setRoles] = useState([] as RoleDTO[]);
   const { office } = useAuth();
+  const navigate = useNavigate();
 
   const getRoles = async () => {
     setRoles([] as RoleDTO[]);
@@ -92,7 +93,7 @@ export default function PermissionEdit() {
 
         await api.put("/permission", body);
 
-        return toast({
+        toast({
           title: "Ataulizado com sucesso",
           description: "Você atualizou uma equipe.",
           status: "success",
@@ -100,6 +101,7 @@ export default function PermissionEdit() {
           isClosable: true,
           position: "top-right",
         });
+        navigate("/equipe");
       } catch (err: any) {
         if (err instanceof Yup.ValidationError) {
           setErrors(getValidationErrors(err));

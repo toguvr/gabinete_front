@@ -2,22 +2,11 @@ import {
   Box,
   Flex,
   HStack,
-  Icon,
-  IconButton,
   Spinner,
   Stack,
-  Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
   useToast,
-  Button as ChakraButton,
   Avatar,
-  Textarea,
-  FormLabel,
   Switch,
   Select,
 } from "@chakra-ui/react";
@@ -28,38 +17,19 @@ import {
   useEffect,
   useState,
 } from "react";
-import {
-  IoCloudUpload,
-  IoPencilOutline,
-  IoSearchSharp,
-  IoTrashOutline,
-} from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../components/Form/Button";
 import Input from "../components/Form/Input";
 import HeaderSideBar from "../components/HeaderSideBar";
 import { useAuth } from "../contexts/AuthContext";
-import {
-  PermissionByIdDTO,
-  StateProps,
-  TaskPropsDTO,
-  UserDTO,
-  VoterDTO,
-} from "../dtos";
+import { PermissionByIdDTO, StateProps, UserDTO } from "../dtos";
 import api from "../services/api";
 import { getFormatDate } from "../utils/date";
 import * as Yup from "yup";
 import { PatternFormat } from "react-number-format";
 import getValidationErrors from "../utils/validationError";
-
-type RegisterFormData = {
-  cellphone?: string;
-  cellphoneMask?: string;
-  title: string;
-  description: string;
-  date: Date;
-  priority: string;
-};
+import { Editor } from "primereact/editor";
+import { addHours } from "date-fns";
 
 export type SelectProps = {
   label: string;
@@ -68,22 +38,23 @@ export type SelectProps = {
 
 export default function DemandEdit() {
   const { id } = useParams();
-  const [values, setValues] = useState<RegisterFormData>(
-    {} as RegisterFormData
-  );
+  const [values, setValues] = useState({} as StateProps);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
-  const [verify, setVerify] = useState(false);
-  const [notVerify, setNotVerify] = useState(false);
+  const [verify, setVerify] = useState(true);
   const { role, office } = useAuth();
   const toast = useToast();
-  const auth = useAuth();
   const [image, setImage] = useState({} as File);
   const [responsibles, setResponsibles] = useState([] as SelectProps[]);
   const [responsible, setResponsible] = useState("");
   const [voterData, setVoterData] = useState({} as UserDTO);
-  const [voterId, setVoterId] = useState("");
+  const [description, setDescription] = useState("");
+  const [resource, setResource] = useState(false);
+
+  const handleResource = () => {
+    setResource(!resource);
+  };
 
   const handleUpdateDemanda = useCallback(
     async (e: FormEvent) => {
@@ -95,15 +66,18 @@ export default function DemandEdit() {
       try {
         const body = {
           title: values?.title,
-          description: values?.description,
-          responsible_id: responsible,
+          taskId: id,
+          description: description,
           date: values?.date,
+          deadline: addHours(new Date(values?.deadline), 12),
           priority: values?.priority,
           voter_id: voterData?.id,
           office_id: office?.id,
+          resource: resource,
+          responsible_id: responsible,
         };
 
-        await api.post("/task", body);
+        await api.put("/task", body);
 
         toast({
           title: "Cadastrado com sucesso",
@@ -152,31 +126,22 @@ export default function DemandEdit() {
     setLoading(true);
     try {
       const response = await api.get(`/task/${id}`);
-      console.log(response.data);
+
       setValues({
+        cellphoneMask: response?.data?.voter?.cellphone,
         title: response?.data?.title,
         description: response?.data?.description,
         date: response?.data?.date,
+        deadline: getFormatDate(
+          new Date(response?.data?.deadline),
+          "yyyy-MM-dd"
+        ),
         priority: response?.data?.priority,
       });
+      setResource(response?.data?.resource);
+      setDescription(response?.data?.description);
       setResponsible(response?.data?.responsible_id);
-      setVoterId(response?.data?.voter_id);
-    } catch (err) {
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getVoterById = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get(`/voter/${voterId}`);
-      setVoterData(response.data);
-      setValues({
-        ...values,
-        cellphoneMask: voterData?.cellphone,
-        cellphone: voterData?.cellphone,
-      });
+      setVoterData(response?.data?.voter);
     } catch (err) {
     } finally {
       setLoading(false);
@@ -208,12 +173,6 @@ export default function DemandEdit() {
     getPermissions();
     getDemandaById();
   }, []);
-
-  useEffect(() => {
-    if (voterId) {
-      getVoterById();
-    }
-  }, [voterId]);
 
   const postDocument = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -249,6 +208,28 @@ export default function DemandEdit() {
     }
   }, []);
 
+  const renderHeader = () => {
+    return (
+      <span className="ql-formats">
+        <button className="ql-bold" aria-label="Bold"></button>
+        <button className="ql-italic" aria-label="Italic"></button>
+        <button className="ql-underline" aria-label="Underline"></button>
+        <button
+          className="ql-list"
+          aria-label="Ordered List"
+          value="ordered"
+        ></button>
+        <button
+          className="ql-list"
+          aria-label="Unordered List"
+          value="bullet"
+        ></button>
+      </span>
+    );
+  };
+
+  const header = renderHeader();
+
   return (
     <HeaderSideBar>
       <Text
@@ -271,12 +252,15 @@ export default function DemandEdit() {
             >
               <PatternFormat
                 name="cellphone"
-                placeholder={values?.cellphone}
                 customInput={Input}
-                value={values?.cellphone}
                 error={errors?.cellphone}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
+                value={values?.cellphoneMask}
+                onValueChange={(value) =>
+                  setValues({
+                    ...values,
+                    cellphone: value?.value,
+                    cellphoneMask: value?.formattedValue,
+                  })
                 }
                 type="tel"
                 format="(##) #####-####"
@@ -315,16 +299,17 @@ export default function DemandEdit() {
               }
               borderColor="gray.500"
             />
-            <Textarea
-              placeholder="Descrição*"
-              name="description"
-              value={values?.description}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
-              borderColor="gray.500"
-              mt="8px"
-              resize="none"
+
+            <Editor
+              style={{
+                minHeight: "120px",
+                maxHeight: "120px",
+                overflow: "auto",
+              }}
+              headerTemplate={header}
+              value={description}
+              onTextChange={(e: any) => setDescription(e.htmlValue)}
+              showHeader={true}
             />
           </Box>
 
@@ -349,15 +334,14 @@ export default function DemandEdit() {
           <Flex alignItems={"flex-end"} gap="36px">
             <Input
               labelColor="gray.500"
-              label="Prazo*:"
-              name="date"
+              label="Prazo:"
+              name="deadline"
               type="date"
-              error={errors?.date}
-              value={getFormatDate(values?.date)}
+              error={errors?.deadline}
+              value={values?.deadline}
               onChange={(e) =>
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
-              placeholder="Prazo"
               borderColor="gray.500"
               css={{
                 "&::-webkit-calendar-picker-indicator": {
@@ -445,7 +429,11 @@ export default function DemandEdit() {
             <Text color={"gray.500"}>Recurso:</Text>
             <HStack>
               <Text color={"gray.500"}>Não</Text>
-              <Switch />
+              <Switch
+                name="resource"
+                isChecked={resource}
+                onChange={handleResource}
+              />
               <Text color={"gray.500"}>Sim</Text>
             </HStack>
           </Flex>
