@@ -161,7 +161,7 @@ export default function Perfil() {
         ml={[0, "28px"]}
       >
         Perfil
-        {loading && <Spinner color="blue.600" ml="4" size="sm" />}
+        {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
       </Text>
       <Flex
         w="100%"

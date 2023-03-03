@@ -219,7 +219,9 @@ export default function Permission() {
           ml={[0, "28px"]}
         >
           Equipe
-          {loading && <Spinner color="blue.600" ml="4" size="sm" />}
+          {loading && (
+            <Spinner color={office?.primary_color} ml="4" size="sm" />
+          )}
         </Text>
         {role?.equipe_page > 1 && (
           <Button

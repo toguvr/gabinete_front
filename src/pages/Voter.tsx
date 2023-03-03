@@ -21,32 +21,36 @@ import {
   useToast,
   Button as ChakraButton,
   Select,
-} from '@chakra-ui/react';
-import { addHours } from 'date-fns';
-import { useEffect, useRef, useState } from 'react';
-import { IoPencilOutline, IoSearchSharp, IoTrashOutline } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
-import Button from '../components/Form/Button';
-import Input from '../components/Form/Input';
-import HeaderSideBar from '../components/HeaderSideBar';
-import { useAuth } from '../contexts/AuthContext';
-import { StateProps, VoterDTO } from '../dtos';
-import api from '../services/api';
-import { getFormatDate } from '../utils/date';
-import { voterPage } from '../utils/filterTables';
+} from "@chakra-ui/react";
+import { addHours } from "date-fns";
+import { useEffect, useRef, useState } from "react";
+import {
+  IoPencilOutline,
+  IoSearchSharp,
+  IoTrashOutline,
+} from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+import Button from "../components/Form/Button";
+import Input from "../components/Form/Input";
+import HeaderSideBar from "../components/HeaderSideBar";
+import { useAuth } from "../contexts/AuthContext";
+import { StateProps, VoterDTO } from "../dtos";
+import api from "../services/api";
+import { getFormatDate } from "../utils/date";
+import { voterPage } from "../utils/filterTables";
 
 export default function Voter() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [data, setData] = useState([] as VoterDTO[]);
-  const [voterToDeleteId, setVoterToDeleteId] = useState('');
+  const [voterToDeleteId, setVoterToDeleteId] = useState("");
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { role } = useAuth();
+  const { role, office } = useAuth();
   const auth = useAuth();
-  const [selectFilter, setSelectFilter] = useState('name');
-  const [filterField, setFilterField] = useState('');
+  const [selectFilter, setSelectFilter] = useState("name");
+  const [filterField, setFilterField] = useState("");
   const [errors, setErrors] = useState({} as StateProps);
 
   const openDialog = (voter_id: string) => {
@@ -78,21 +82,22 @@ export default function Voter() {
       await api.delete(`/voter/${voterToDeleteId}`);
 
       toast({
-        title: 'Usuário excluído com sucesso',
-        status: 'success',
-        position: 'top-right',
+        title: "Usuário excluído com sucesso",
+        status: "success",
+        position: "top-right",
         duration: 3000,
         isClosable: true,
       });
       getVoterList();
-      setVoterToDeleteId('');
+      setVoterToDeleteId("");
       onClose();
     } catch (err: any) {
       return toast({
         title:
-          err?.response?.data?.message || 'Ocorreu um erro ao excluir o eleitor, tente novamente',
-        status: 'error',
-        position: 'top-right',
+          err?.response?.data?.message ||
+          "Ocorreu um erro ao excluir o eleitor, tente novamente",
+        status: "error",
+        position: "top-right",
         duration: 3000,
         isClosable: true,
       });
@@ -107,7 +112,12 @@ export default function Voter() {
 
   return (
     <HeaderSideBar>
-      <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose} isCentered>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
         {/* <AlertDialogOverlay > */}
         <AlertDialogContent mx="12px">
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -115,13 +125,18 @@ export default function Voter() {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            Essa ação é irreversível, ao deletar não será possível desfazer. Você deseja apagar
-            mesmo assim?
+            Essa ação é irreversível, ao deletar não será possível desfazer.
+            Você deseja apagar mesmo assim?
           </AlertDialogBody>
 
           <AlertDialogFooter>
             <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
-            <ChakraButton colorScheme={'red'} isLoading={loading} onClick={deleteVoter} ml={3}>
+            <ChakraButton
+              colorScheme={"red"}
+              isLoading={loading}
+              onClick={deleteVoter}
+              ml={3}
+            >
               Continuar
             </ChakraButton>
           </AlertDialogFooter>
@@ -129,16 +144,26 @@ export default function Voter() {
         {/* </AlertDialogOverlay> */}
       </AlertDialog>
       <Flex
-        justifyContent={'space-between'}
-        gap={['20px', '0']}
-        alignItems={['center', 'flex-start']}
+        justifyContent={"space-between"}
+        gap={["20px", "0"]}
+        alignItems={["center", "flex-start"]}
       >
-        <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
+        <Text
+          color="gray.500"
+          fontWeight="semibold"
+          fontSize="20px"
+          ml={[0, "28px"]}
+        >
           Eleitor
-          {loading && <Spinner color="blue.600" ml="4" size="sm" />}
+          {loading && (
+            <Spinner color={office?.primary_color} ml="4" size="sm" />
+          )}
         </Text>
         {role?.eleitor_page > 1 && (
-          <Button onClick={() => navigate('/registrar-eleitor')} w={['160px', '280px']}>
+          <Button
+            onClick={() => navigate("/registrar-eleitor")}
+            w={["160px", "280px"]}
+          >
             Cadastrar eleitor
           </Button>
         )}
@@ -146,7 +171,7 @@ export default function Voter() {
       <Text mt="36px" color="gray.500">
         Filtar por:
       </Text>
-      <Flex gap={['12px', '24px']}>
+      <Flex gap={["12px", "24px"]}>
         <Select
           w="220px"
           borderColor="gray.500"
@@ -177,7 +202,9 @@ export default function Voter() {
             setFilterField(e.target.value);
           }}
           borderColor="gray.500"
-          rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
+          rightIcon={
+            <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+          }
         />
       </Flex>
       <Box
@@ -185,17 +212,17 @@ export default function Voter() {
         overflow="auto"
         mt="16px"
         sx={{
-          '::-webkit-scrollbar': {
-            bg: 'gray.50',
-            width: '8px',
-            height: '8px',
+          "::-webkit-scrollbar": {
+            bg: "gray.50",
+            width: "8px",
+            height: "8px",
           },
-          '&::-webkit-scrollbar-track': {
-            width: '2px',
+          "&::-webkit-scrollbar-track": {
+            width: "2px",
           },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'gray.600',
-            borderRadius: '8px',
+          "&::-webkit-scrollbar-thumb": {
+            background: "gray.600",
+            borderRadius: "8px",
           },
         }}
       >
@@ -204,9 +231,9 @@ export default function Voter() {
             position="sticky"
             top="0px"
             background="white"
-            borderBottomWidth={'4px'}
+            borderBottomWidth={"4px"}
             borderBottomStyle="solid"
-            borderBottomColor={'gray.300'}
+            borderBottomColor={"gray.300"}
           >
             <Tr>
               <Th color="gray.600">Nome</Th>
@@ -226,34 +253,38 @@ export default function Voter() {
               data
                 .filter((currentValue: any) => {
                   switch (selectFilter) {
-                    case 'name':
+                    case "name":
                       if (filterField?.length >= 3) {
                         return (
-                          currentValue?.name.toLowerCase().indexOf(filterField?.toLowerCase()) > -1
+                          currentValue?.name
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
                         );
                       } else {
                         return currentValue;
                       }
-                    case 'email':
+                    case "email":
                       if (filterField?.length >= 3) {
                         return (
-                          currentValue?.email.toLowerCase().indexOf(filterField?.toLowerCase()) > -1
+                          currentValue?.email
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
                         );
                       } else {
                         return currentValue;
                       }
-                    case 'birthdate':
+                    case "birthdate":
                       if (filterField?.length >= 3) {
                         return (
                           getFormatDate(
                             addHours(new Date(currentValue?.birthdate), 12),
-                            'dd/MM/yyyy'
+                            "dd/MM/yyyy"
                           ).indexOf(filterField) > -1
                         );
                       } else {
                         return currentValue;
                       }
-                    case 'cellphone':
+                    case "cellphone":
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.cellphone
@@ -300,8 +331,11 @@ export default function Voter() {
                         py="4px"
                       >
                         {voter?.birthdate
-                          ? getFormatDate(addHours(new Date(voter?.birthdate), 12), 'dd/MM/yyyy')
-                          : '-'}
+                          ? getFormatDate(
+                              addHours(new Date(voter?.birthdate), 12),
+                              "dd/MM/yyyy"
+                            )
+                          : "-"}
                       </Td>
                       <Td
                         color="gray.600"
@@ -311,7 +345,7 @@ export default function Voter() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
-                        {voter?.cellphone ? voter?.cellphone : '-'}
+                        {voter?.cellphone ? voter?.cellphone : "-"}
                       </Td>
                       {voter?.street ? (
                         <Td
@@ -324,13 +358,23 @@ export default function Voter() {
                           py="4px"
                         >
                           {voter?.zip
-                            ? `${voter?.street ? voter?.street + ',' : ''}
-                              ${voter?.address_number ? voter?.address_number + ',' : ''}
-                              ${voter?.neighborhood ? voter?.neighborhood + ',' : ''}
-                              ${voter?.complement ? voter?.complement + ',' : ''}
-                              ${voter?.city ? voter?.city + ',' : ''}
-                              ${voter?.state ? voter?.state + ',' : ''}`
-                            : '-'}
+                            ? `${voter?.street ? voter?.street + "," : ""}
+                              ${
+                                voter?.address_number
+                                  ? voter?.address_number + ","
+                                  : ""
+                              }
+                              ${
+                                voter?.neighborhood
+                                  ? voter?.neighborhood + ","
+                                  : ""
+                              }
+                              ${
+                                voter?.complement ? voter?.complement + "," : ""
+                              }
+                              ${voter?.city ? voter?.city + "," : ""}
+                              ${voter?.state ? voter?.state + "," : ""}`
+                            : "-"}
                         </Td>
                       ) : (
                         <Td

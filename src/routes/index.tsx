@@ -11,6 +11,8 @@ import Voter from "../pages/Voter";
 import VoterEdit from "../pages/VoterEdit";
 import Demand from "../pages/Demand";
 import PermissionEdit from "../pages/PermissionEdit";
+import NotFound from "../pages/NotFound";
+import NotPermission from "../pages/NotPermission";
 
 import { useAuth } from "../contexts/AuthContext";
 import Perfil from "../pages/Perfil";
@@ -29,7 +31,7 @@ interface PrivateRoutesProps {
 export const publicRoute = {};
 
 export const privateRoute = [
-  { pathname: "/home", permissionName: "home_page" },
+  // { pathname: "/home", permissionName: "home_page" },
   { pathname: "/cargo", permissionName: "cargo_page" },
   { pathname: "/equipe", permissionName: "equipe_page" },
   { pathname: "/eleitor", permissionName: "eleitor_page" },
@@ -59,7 +61,7 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route element={<AuthenticatedRoutes isPrivate />}>
-        <Route path="/home" element={<Home />} />
+        {/* <Route path="/home" element={<Home />} /> */}
 
         <Route path="/equipe" element={<Permission />} />
         <Route path="/equipe/:id" element={<PermissionEdit />} />
@@ -85,6 +87,7 @@ export default function AppRoutes() {
 
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/trocar-senha" element={<ChangePassword />} />
+        <Route path="/sem-permissao" element={<NotPermission />} />
       </Route>
 
       <Route element={<AuthenticatedRoutes isPrivate={false} />}>
@@ -92,6 +95,7 @@ export default function AppRoutes() {
         <Route path="/esqueci-senha" element={<ForgetPassword />} />
       </Route>
       <Route path="/redefinir-senha" element={<RedefinePassword />} />
+      {/* <Route path="*" element={<NotFound />} /> */}
     </Routes>
   );
 }

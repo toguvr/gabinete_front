@@ -30,7 +30,6 @@ import { IoAlbumsOutline } from "react-icons/io5";
 import { RiTeamLine } from "react-icons/ri";
 import { SiMicrosoftteams } from "react-icons/si";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
-import Logo from "../assets/logo.png";
 import LogoWhite from "../assets/logoWhite.png";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -42,7 +41,7 @@ interface LinkItemProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: "Home", route: "/home", icon: FiHome, permissionName: "home_page" },
+  // { name: "Home", route: "/home", icon: FiHome, permissionName: "home_page" },
   {
     name: "Cargos",
     route: "/cargo",
@@ -149,10 +148,27 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
       h="full"
       {...rest}
     >
-      <Flex alignItems="center" mx="8" my={4} justifyContent="space-between">
-        <Box>
-          <Image src={office?.logo_url ? office?.logo_url : Logo} alt="Logo" />
-        </Box>
+      <Flex alignItems="center" my={4} justifyContent="center">
+        <Flex
+          bgColor={office?.primary_color}
+          borderRadius={"50%"}
+          w="200px"
+          h="200px"
+          alignItems="center"
+          justifyContent="center"
+        >
+          {office?.logo_url ? (
+            <Image src={office?.logo_url} alt="Logo" width={{ md: 40 }} />
+          ) : (
+            <Text
+              color={office?.secondary_color}
+              fontSize={"24px"}
+              textAlign="center"
+            >
+              {office?.name}
+            </Text>
+          )}
+        </Flex>
         <CloseButton
           display={{ base: "flex", md: "none" }}
           onClick={onClose}
@@ -299,11 +315,9 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
               <HStack>
                 <Avatar
                   size={"sm"}
-                  src={
-                    user?.avatar_url
-                      ? user?.avatar_url
-                      : "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                  }
+                  src={user?.avatar_url}
+                  borderWidth="2px"
+                  borderColor="white"
                 />
               </HStack>
             </MenuButton>
