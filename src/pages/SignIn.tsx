@@ -138,6 +138,7 @@ export default function Signin() {
                 placeholder="E-mail"
               />
               <Input
+                onKeyPress={handleKeyPress}
                 mt="6"
                 mb="2"
                 name="password"
@@ -175,7 +176,6 @@ export default function Signin() {
                   </Link>
                 </Stack>
                 <Button
-                  onKeyPress={handleKeyPress}
                   onClick={handleSignIn}
                   bg={"blue.600"}
                   color={"white"}
