@@ -35,7 +35,6 @@ export default function Perfil() {
 
   const callback = async (image: any) => {
     setLoading(true);
-    // criando um formData para upload do arquivo
     const formData = new FormData();
     formData.append("avatar", image);
 
