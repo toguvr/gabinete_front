@@ -25,6 +25,7 @@ import { useNavigate } from "react-router";
 
 export default function Perfil() {
   const [loading, setLoading] = useState(false);
+  const [loadingPhoto, setLoadingPhoto] = useState(false);
   const navigate = useNavigate();
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const { user, office, updateUser } = useAuth();
@@ -34,7 +35,7 @@ export default function Perfil() {
   } as UserDTO);
 
   const callback = async (image: any) => {
-    setLoading(true);
+    setLoadingPhoto(true);
     const formData = new FormData();
     formData.append("avatar", image);
 
@@ -59,7 +60,7 @@ export default function Perfil() {
         isClosable: true,
       });
     } finally {
-      setLoading(false);
+      setLoadingPhoto(false);
     }
   };
 
@@ -191,7 +192,7 @@ export default function Perfil() {
               height="32px"
               cursor={"pointer"}
             >
-              {loading ? (
+              {loadingPhoto ? (
                 <Spinner />
               ) : (
                 <Icon

@@ -30,7 +30,6 @@ import { IoAlbumsOutline } from "react-icons/io5";
 import { RiTeamLine } from "react-icons/ri";
 import { SiMicrosoftteams } from "react-icons/si";
 import { useLocation, useNavigate } from "react-router-dom";
-import LogoWhite from "../assets/logoWhite.png";
 import { useAuth } from "../contexts/AuthContext";
 
 interface LinkItemProps {
@@ -42,7 +41,7 @@ interface LinkItemProps {
 
 const LinkItems: Array<LinkItemProps> = [
   {
-    name: "Cargos",
+    name: "Cargo",
     route: "/cargo",
     icon: IoAlbumsOutline,
     permissionName: "cargo_page",
@@ -60,13 +59,13 @@ const LinkItems: Array<LinkItemProps> = [
     permissionName: "eleitor_page",
   },
   {
-    name: "Demandas",
+    name: "Demanda",
     route: "/demanda",
     icon: BsListTask,
     permissionName: "demandas_page",
   },
   {
-    name: "Tarefas",
+    name: "Tarefa",
     route: "/tarefa",
     icon: BiTask,
     permissionName: "tarefas_page",
@@ -89,42 +88,38 @@ export default function SidebarWithHeader({
   }, []);
 
   return (
-    <>
-      {true && (
-        <Box minH={["100%", "100vh"]} bg="white">
-          <SidebarContent
-            onClose={() => onClose}
-            display={{ base: "none", md: "block" }}
-          />
-          <Drawer
-            autoFocus={false}
-            isOpen={isOpen}
-            placement="left"
-            onClose={onClose}
-            returnFocusOnClose={false}
-            onOverlayClick={onClose}
-            size="full"
-          >
-            <DrawerContent>
-              <SidebarContent onClose={onClose} />
-            </DrawerContent>
-          </Drawer>
-          <MobileNav onOpen={onOpen} backRoute={backRoute} />
-          <Box ml={{ base: 0, md: 60 }} p="26px" bg="gray.100" h={screenHeight}>
-            <Box
-              bgColor="white"
-              h={["100%", `calc(100vh - 112px)`]}
-              borderRadius="8px"
-              px="24px"
-              py="40px"
-              overflow={"auto"}
-            >
-              {children}
-            </Box>
-          </Box>
+    <Box minH={["100%", "100vh"]} bg="white">
+      <SidebarContent
+        onClose={() => onClose}
+        display={{ base: "none", md: "block" }}
+      />
+      <Drawer
+        autoFocus={false}
+        isOpen={isOpen}
+        placement="left"
+        onClose={onClose}
+        returnFocusOnClose={false}
+        onOverlayClick={onClose}
+        size="full"
+      >
+        <DrawerContent>
+          <SidebarContent onClose={onClose} />
+        </DrawerContent>
+      </Drawer>
+      <MobileNav onOpen={onOpen} backRoute={backRoute} />
+      <Box ml={{ base: 0, md: 60 }} p="26px" bg="gray.100" h={screenHeight}>
+        <Box
+          bgColor="white"
+          h={["100%", `calc(100vh - 112px)`]}
+          borderRadius="8px"
+          px="24px"
+          py="40px"
+          overflow={"auto"}
+        >
+          {children}
         </Box>
-      )}
-    </>
+      </Box>
+    </Box>
   );
 }
 
@@ -160,7 +155,12 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
           justifyContent="center"
         >
           {office?.logo_url ? (
-            <Image src={office?.logo_url} alt="Logo" width={{ md: 40 }} />
+            <Image
+              src={office.logo_url}
+              alt="Logo"
+              sx={{ maxW: "140px" }}
+              width={{ md: 40 }}
+            />
           ) : (
             <Text
               color={office?.secondary_color}

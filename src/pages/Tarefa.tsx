@@ -165,10 +165,7 @@ export default function Tarefa() {
               <Spinner color={office?.primary_color} ml="4" size="sm" />
             )}
           </Text>
-          <Button
-            onClick={() => window.location.reload()}
-            w={["160px", "280px"]}
-          >
+          <Button onClick={getOfficeList} w={["160px", "280px"]}>
             Atualizar
           </Button>
         </Flex>
