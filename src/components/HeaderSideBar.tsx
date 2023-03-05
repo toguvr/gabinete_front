@@ -21,17 +21,15 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ReactNode, ReactText, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { IconType } from "react-icons";
 import { BiArrowBack, BiTask } from "react-icons/bi";
 import { BsListTask } from "react-icons/bs";
-import { FiHome, FiMenu } from "react-icons/fi";
+import { FiMenu } from "react-icons/fi";
 import { IoAlbumsOutline } from "react-icons/io5";
 import { RiTeamLine } from "react-icons/ri";
 import { SiMicrosoftteams } from "react-icons/si";
-import { matchPath, useLocation, useNavigate } from "react-router-dom";
-import Logo from "../assets/logo.png";
-import LogoWhite from "../assets/logoWhite.png";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 interface LinkItemProps {
@@ -42,9 +40,8 @@ interface LinkItemProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-  { name: "Home", route: "/home", icon: FiHome, permissionName: "home_page" },
   {
-    name: "Cargos",
+    name: "Cargo",
     route: "/cargo",
     icon: IoAlbumsOutline,
     permissionName: "cargo_page",
@@ -62,13 +59,13 @@ const LinkItems: Array<LinkItemProps> = [
     permissionName: "eleitor_page",
   },
   {
-    name: "Demandas",
+    name: "Demanda",
     route: "/demanda",
     icon: BsListTask,
     permissionName: "demandas_page",
   },
   {
-    name: "Tarefas",
+    name: "Tarefa",
     route: "/tarefa",
     icon: BiTask,
     permissionName: "tarefas_page",
@@ -109,7 +106,6 @@ export default function SidebarWithHeader({
           <SidebarContent onClose={onClose} />
         </DrawerContent>
       </Drawer>
-      {/* mobilenav */}
       <MobileNav onOpen={onOpen} backRoute={backRoute} />
       <Box ml={{ base: 0, md: 60 }} p="26px" bg="gray.100" h={screenHeight}>
         <Box
@@ -135,7 +131,7 @@ interface SidebarProps extends BoxProps {
 
 const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
   const navigate = useNavigate();
-  const { office, role } = useAuth();
+  const { office, role, updateUser, user } = useAuth();
   const { pathname } = useLocation();
 
   const teste = role as any;
@@ -149,10 +145,32 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
       h="full"
       {...rest}
     >
-      <Flex alignItems="center" mx="8" my={4} justifyContent="space-between">
-        <Box>
-          <Image src={office?.logo_url ? office?.logo_url : Logo} alt="Logo" />
-        </Box>
+      <Flex alignItems="center" my={4} justifyContent="center">
+        <Flex
+          bgColor={office?.primary_color}
+          borderRadius={"50%"}
+          w="200px"
+          h="200px"
+          alignItems="center"
+          justifyContent="center"
+        >
+          {office?.logo_url ? (
+            <Image
+              src={office.logo_url}
+              alt="Logo"
+              sx={{ maxW: "140px" }}
+              width={{ md: 40 }}
+            />
+          ) : (
+            <Text
+              color={office?.secondary_color}
+              fontSize={"24px"}
+              textAlign="center"
+            >
+              {office?.name}
+            </Text>
+          )}
+        </Flex>
         <CloseButton
           display={{ base: "flex", md: "none" }}
           onClick={onClose}
@@ -167,7 +185,10 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
             <Link
               style={{ textDecoration: "none" }}
               _focus={{ boxShadow: "none" }}
-              onClick={() => navigate(link?.route)}
+              onClick={() => {
+                updateUser(user);
+                navigate(link?.route);
+              }}
               key={link?.name}
             >
               <Flex
@@ -239,7 +260,7 @@ interface MobileProps extends FlexProps {
 }
 const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
   const navigate = useNavigate();
-  const { signOut, user } = useAuth();
+  const { signOut, user, office } = useAuth();
 
   const handleNavigatePerfil = () => {
     navigate(`/perfil`);
@@ -285,7 +306,17 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
       />
 
       <Box height="40px" display={{ base: "flex", md: "none" }}>
-        <Image src={LogoWhite} alt="Logo" />
+        {office?.logo_url ? (
+          <Image src={office?.logo_url} alt="Logo" width={{ md: 40 }} />
+        ) : (
+          <Text
+            color={office?.secondary_color}
+            fontSize={"24px"}
+            textAlign="center"
+          >
+            {office?.name}
+          </Text>
+        )}
       </Box>
 
       <HStack spacing={{ base: "0", md: "6" }}>
@@ -299,11 +330,9 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
               <HStack>
                 <Avatar
                   size={"sm"}
-                  src={
-                    user?.avatar_url
-                      ? user?.avatar_url
-                      : "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                  }
+                  src={user?.avatar_url}
+                  borderWidth="2px"
+                  borderColor="white"
                 />
               </HStack>
             </MenuButton>

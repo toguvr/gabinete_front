@@ -36,7 +36,7 @@ interface UserPassword extends UserDTO {
 export default function ChangePassword() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, office } = useAuth();
   const toast = useToast();
   const [values, setValues] = useState({
     ...user,
@@ -140,7 +140,7 @@ export default function ChangePassword() {
         ml={[0, "28px"]}
       >
         Trocar senha
-        {loading && <Spinner color="blue.600" ml="4" size="sm" />}
+        {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
       </Text>
 
       <Flex alignItems="center" justifyContent="center" as="form">

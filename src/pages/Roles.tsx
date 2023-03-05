@@ -212,7 +212,9 @@ export default function Roles() {
           ml={[0, "28px"]}
         >
           Cargos
-          {loading && <Spinner color="blue.600" ml="4" size="sm" />}
+          {loading && (
+            <Spinner color={office?.primary_color} ml="4" size="sm" />
+          )}
         </Text>
         {role?.cargo_page > 1 && (
           <Button

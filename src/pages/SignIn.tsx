@@ -99,6 +99,12 @@ export default function Signin() {
     [signIn, values]
   );
 
+  const handleKeyPress = (event: any) => {
+    if (event.key === "Enter") {
+      handleSignIn(event);
+    }
+  };
+
   return (
     <Flex
       minH={"100vh"}
@@ -111,76 +117,79 @@ export default function Signin() {
       <Box height="40px" margin={"0 4px 40px 0"}>
         <Image src={LogoWhite} alt="Logo" />
       </Box>
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
-        <Box
-          rounded={"lg"}
-          bg="white"
-          boxShadow={"lg"}
-          p={["20px", "104px 80px 88px"]}
-        >
-          <Stack spacing={4}>
-            <Input
-              name="email"
-              type="email"
-              error={errors?.email}
-              value={values.email}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
-              leftIcon={<Icon as={IoMailOutline} />}
-              placeholder="E-mail"
-            />
-            <Input
-              mt="6"
-              mb="2"
-              name="password"
-              value={values.password}
-              error={errors?.password}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
-              type={showPassword ? "text" : "password"}
-              leftIcon={<Icon as={IoLockClosedOutline} />}
-              rightIcon={
-                <Button
-                  _focus={{ outline: "none" }}
-                  size="sm"
-                  variant="ghost"
-                  onClick={handleViewPassword}
+      <Flex>
+        <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+          <Box
+            rounded={"lg"}
+            bg="white"
+            boxShadow={"lg"}
+            p={["20px", "104px 80px 88px"]}
+          >
+            <Stack spacing={4}>
+              <Input
+                name="email"
+                type="email"
+                error={errors?.email}
+                value={values.email}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
+                leftIcon={<Icon as={IoMailOutline} />}
+                placeholder="E-mail"
+              />
+              <Input
+                onKeyPress={handleKeyPress}
+                mt="6"
+                mb="2"
+                name="password"
+                value={values.password}
+                error={errors?.password}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
+                type={showPassword ? "text" : "password"}
+                leftIcon={<Icon as={IoLockClosedOutline} />}
+                rightIcon={
+                  <Button
+                    _focus={{ outline: "none" }}
+                    size="sm"
+                    variant="ghost"
+                    onClick={handleViewPassword}
+                  >
+                    {showPassword ? (
+                      <Icon fontSize="20px" as={IoEyeOffOutline} />
+                    ) : (
+                      <Icon fontSize="20px" as={IoEyeOutline} />
+                    )}
+                  </Button>
+                }
+                placeholder="Senha"
+              />
+              <Stack spacing={6}>
+                <Stack
+                  direction={{ base: "column", sm: "row" }}
+                  align={"start"}
+                  justify={"space-between"}
                 >
-                  {showPassword ? (
-                    <Icon fontSize="20px" as={IoEyeOffOutline} />
-                  ) : (
-                    <Icon fontSize="20px" as={IoEyeOutline} />
-                  )}
+                  <Link href="/esqueci-senha" color={"blue.600"}>
+                    Esqueci senha
+                  </Link>
+                </Stack>
+                <Button
+                  onClick={handleSignIn}
+                  bg={"blue.600"}
+                  color={"white"}
+                  _hover={{
+                    bg: "blue.700",
+                  }}
+                >
+                  {loading ? <Spinner color="white" /> : "Entrar"}
                 </Button>
-              }
-              placeholder="Senha"
-            />
-            <Stack spacing={6}>
-              <Stack
-                direction={{ base: "column", sm: "row" }}
-                align={"start"}
-                justify={"space-between"}
-              >
-                <Link href="/esqueci-senha" color={"blue.600"}>
-                  Esqueci senha
-                </Link>
               </Stack>
-              <Button
-                onClick={handleSignIn}
-                bg={"blue.600"}
-                color={"white"}
-                _hover={{
-                  bg: "blue.700",
-                }}
-              >
-                {loading ? <Spinner color="white" /> : "Entrar"}
-              </Button>
             </Stack>
-          </Stack>
-        </Box>
-      </Stack>
+          </Box>
+        </Stack>
+      </Flex>
     </Flex>
   );
 }

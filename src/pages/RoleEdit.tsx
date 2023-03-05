@@ -266,7 +266,7 @@ export default function RoleEdit() {
       </AlertDialog>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
         Editar Cargo
-        {roleLoading && <Spinner color="white" />}
+        {roleLoading && <Spinner color={office?.primary_color} />}
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
         <Stack spacing={[5, 10]} mt={["24px", "40px"]} w="852px">

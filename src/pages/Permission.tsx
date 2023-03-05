@@ -173,7 +173,6 @@ export default function Permission() {
       });
     }
   };
-  console.log(filterField);
   return (
     <HeaderSideBar>
       <AlertDialog
@@ -219,7 +218,9 @@ export default function Permission() {
           ml={[0, "28px"]}
         >
           Equipe
-          {loading && <Spinner color="blue.600" ml="4" size="sm" />}
+          {loading && (
+            <Spinner color={office?.primary_color} ml="4" size="sm" />
+          )}
         </Text>
         {role?.equipe_page > 1 && (
           <Button
@@ -331,7 +332,7 @@ export default function Permission() {
               borderBottomStyle="solid"
               borderBottomColor={"gray.300"}
             >
-              <Th color="gray.600">Ativo</Th>
+              {/* <Th color="gray.600">Ativo</Th> */}
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Telefone</Th>
@@ -403,7 +404,7 @@ export default function Permission() {
                 .map((permission) => {
                   return (
                     <Tr key={permission.id} h="45px" py="4px">
-                      <Td
+                      {/* <Td
                         color="gray.600"
                         fontSize="14px"
                         borderBottomWidth="1px"
@@ -420,7 +421,7 @@ export default function Permission() {
                             )
                           }
                         />
-                      </Td>
+                      </Td> */}
                       <Td
                         color="gray.600"
                         fontSize="14px"
