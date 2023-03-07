@@ -42,9 +42,6 @@ export default function VoterEdit() {
       try {
         const schema = Yup.object().shape({
           name: Yup.string().required("Nome completo obrigatório"),
-          email: Yup.string()
-            .email("E-mail inválido")
-            .required("E-mail obrigatório"),
         });
 
         await schema.validate(values, {
@@ -53,7 +50,6 @@ export default function VoterEdit() {
 
         const {
           name,
-          cellphone,
           email,
           address_number,
           birthdate,
@@ -70,7 +66,7 @@ export default function VoterEdit() {
 
         const body = {
           name,
-          cellphone,
+          cellphone: values.ddd + values.cellphone,
           email,
           office_id: office?.id,
           address_number,
@@ -262,7 +258,7 @@ export default function VoterEdit() {
             borderColor="gray.500"
           />
           <Input
-            label="E-mail*:"
+            label="E-mail:"
             placeholder="E-mail"
             name="email"
             type="email"

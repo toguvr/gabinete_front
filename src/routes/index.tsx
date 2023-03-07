@@ -12,6 +12,7 @@ import Demand from "../pages/Demand";
 import PermissionEdit from "../pages/PermissionEdit";
 import NotFound from "../pages/NotFound";
 import NotPermission from "../pages/NotPermission";
+import api from "../services/api";
 
 import { useAuth } from "../contexts/AuthContext";
 import Perfil from "../pages/Perfil";
@@ -24,7 +25,7 @@ import DemandEdit from "../pages/DemandEdit";
 import DemandaRegisterVoter from "../pages/DemandRegisterVoter";
 import NoBond from "../pages/NoBond";
 import { useEffect } from "react";
-import api from "../services/api";
+import Solicitations from "../pages/Solicitations";
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -39,6 +40,7 @@ export const privateRoute = [
   { pathname: "/eleitor", permissionName: "eleitor_page" },
   { pathname: "/demanda", permissionName: "demandas_page" },
   { pathname: "/tarefa", permissionName: "tarefas_page" },
+  { pathname: "/solicitacoes", permissionName: "tarefas_page" },
 ];
 
 const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
@@ -97,6 +99,8 @@ export default function AppRoutes() {
     <Routes>
       <Route element={<AuthenticatedRoutes isPrivate />}>
         {/* <Route path="/home" element={<Home />} /> */}
+
+        <Route path="/solicitacoes" element={<Solicitations />} />
 
         <Route path="/equipe" element={<Permission />} />
         <Route path="/equipe/:id" element={<PermissionEdit />} />

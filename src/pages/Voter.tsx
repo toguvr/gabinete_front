@@ -21,14 +21,22 @@ import {
   useToast,
   Button as ChakraButton,
   Select,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "@chakra-ui/react";
 import { addHours } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import {
   IoPencilOutline,
+  IoPrintOutline,
   IoSearchSharp,
   IoTrashOutline,
 } from "react-icons/io5";
+import { NumericFormat, PatternFormat } from "react-number-format";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Form/Button";
 import Input from "../components/Form/Input";
@@ -38,6 +46,17 @@ import { StateProps, VoterDTO } from "../dtos";
 import api from "../services/api";
 import { getFormatDate } from "../utils/date";
 import { voterPage } from "../utils/filterTables";
+import ReactPDF, {
+  Page,
+  Text as TextPDF,
+  View,
+  Document,
+  StyleSheet,
+  PDFViewer,
+  PDFDownloadLink,
+  Image,
+} from "@react-pdf/renderer";
+import { paginationArray } from "../utils/pdfPagination";
 
 export default function Voter() {
   const navigate = useNavigate();
@@ -46,16 +65,26 @@ export default function Voter() {
   const [data, setData] = useState([] as VoterDTO[]);
   const [voterToDeleteId, setVoterToDeleteId] = useState("");
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenAlert,
+    onOpen: onOpenAlert,
+    onClose: onCloseAlert,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenModal,
+    onOpen: onOpenModal,
+    onClose: onCloseModal,
+  } = useDisclosure();
   const { role, office } = useAuth();
   const auth = useAuth();
   const [selectFilter, setSelectFilter] = useState("name");
   const [filterField, setFilterField] = useState("");
+  const [numberOfLines, setNumberOfLines] = useState(14);
   const [errors, setErrors] = useState({} as StateProps);
 
   const openDialog = (voter_id: string) => {
     setVoterToDeleteId(voter_id);
-    onOpen();
+    onOpenAlert();
   };
 
   const getVoterList = async () => {
@@ -90,7 +119,7 @@ export default function Voter() {
       });
       getVoterList();
       setVoterToDeleteId("");
-      onClose();
+      onCloseAlert();
     } catch (err: any) {
       return toast({
         title:
@@ -110,12 +139,171 @@ export default function Voter() {
     navigate(`/eleitor/${voter?.id}`, { state: { voter } });
   };
 
+  const styles = StyleSheet.create({
+    page: {
+      fontSize: 11,
+      flexDirection: "row",
+      justifyContent: "center",
+      padding: 10,
+    },
+    table: {
+      width: "90%",
+      flexDirection: "column",
+    },
+    flexBetween: {
+      width: "100%",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    columnTitle: {
+      width: "100%",
+      flexDirection: "column",
+      alignItems: "center",
+    },
+    summary: {
+      width: "100%",
+      flexDirection: "column",
+      alignItems: "center",
+      marginBottom: 10,
+    },
+    summaryTitle: {
+      flexDirection: "row",
+      justifyContent: "center",
+      textAlign: "center",
+      fontSize: 10,
+    },
+    tableTitle: {
+      flexDirection: "row",
+      justifyContent: "center",
+      textAlign: "center",
+    },
+    tableSubTitle: {
+      flexDirection: "row",
+      textAlign: "center",
+      padding: 8,
+    },
+    section: {
+      margin: 10,
+      padding: 10,
+      flexGrow: 1,
+      backgroundColor: "red",
+    },
+    tableContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      padding: 8,
+      borderTop: "1px solid black",
+      borderRight: "1px solid black",
+      borderLeft: "1px solid black",
+    },
+    rowTitle: {
+      flexDirection: "row",
+      alignItems: "center",
+      padding: 8,
+      fontWeight: 500,
+      borderTop: "1px solid black",
+      borderRight: "1px solid black",
+      borderLeft: "1px solid black",
+    },
+    finalRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      fontWeight: "bold",
+      padding: 8,
+      border: "1px solid black",
+    },
+    voter: {
+      width: "40%",
+      padding: 1,
+    },
+    descriptionBold: {
+      width: "20%",
+      fontWeight: "bold",
+    },
+    email: {
+      width: "40%",
+      padding: 1,
+    },
+    cellphone: {
+      width: "20%",
+      padding: 1,
+    },
+    xyzColumn: {
+      width: "12%",
+      flexDirection: "column",
+      display: "flex",
+    },
+    image: {
+      width: 25,
+      height: 25,
+      alignSelf: "center",
+    },
+  });
+
+  const MyDocument = () => {
+    return (
+      <Document>
+        {paginationArray(data, numberOfLines).map((pageItems, index) => {
+          return (
+            <Page key={index} size="A4" style={styles.page}>
+              <View style={styles.table}>
+                <View style={styles.flexBetween}>
+                  {office?.logo_url && (
+                    <Image style={styles.image} src={office?.logo_url} />
+                  )}
+                  <TextPDF style={styles.tableTitle}>{office?.name}</TextPDF>
+                </View>
+
+                <TextPDF style={styles.tableSubTitle}>
+                  Lista de Eleitores
+                </TextPDF>
+
+                <View style={styles.tableContainer}>
+                  <View style={styles.rowTitle}>
+                    <TextPDF style={styles.voter}>Eleitor</TextPDF>
+                    <TextPDF style={styles.email}>E-mail</TextPDF>
+                    <TextPDF style={styles.cellphone}>Telefone</TextPDF>
+                  </View>
+
+                  {pageItems.map((item: VoterDTO) => {
+                    return (
+                      <View
+                        style={
+                          item?.id === pageItems[pageItems.length - 1]?.id
+                            ? styles.finalRow
+                            : styles.row
+                        }
+                        key={item.id}
+                      >
+                        <TextPDF style={styles.voter}>{item?.name}</TextPDF>
+                        <TextPDF style={styles.email}>{item?.email}</TextPDF>
+                        <TextPDF style={styles.cellphone}>
+                          {item?.cellphone}
+                        </TextPDF>
+                      </View>
+                    );
+                  })}
+                  {/*<TableFooter items={data.items} />*/}
+                </View>
+              </View>
+            </Page>
+          );
+        })}
+      </Document>
+    );
+  };
+
   return (
     <HeaderSideBar>
       <AlertDialog
         leastDestructiveRef={cancelRef}
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={isOpenAlert}
+        onClose={onCloseAlert}
         isCentered
       >
         {/* <AlertDialogOverlay > */}
@@ -130,7 +318,7 @@ export default function Voter() {
           </AlertDialogBody>
 
           <AlertDialogFooter>
-            <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
+            <ChakraButton onClick={onCloseAlert}>Cancelar</ChakraButton>
             <ChakraButton
               colorScheme={"red"}
               isLoading={loading}
@@ -143,6 +331,57 @@ export default function Voter() {
         </AlertDialogContent>
         {/* </AlertDialogOverlay> */}
       </AlertDialog>
+      <Modal isOpen={isOpenModal} onClose={onCloseModal} size="lg" isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader
+            alignItems="center"
+            display="flex"
+            justifyContent="space-between"
+          >
+            <Text fontSize="20px" fontWeight="700" color="green.1000">
+              Impressão de documento
+            </Text>
+          </ModalHeader>
+
+          <ModalBody>
+            <span>Atenção, digite o número de linhas desejados na página.</span>
+            <NumericFormat
+              required
+              customInput={Input}
+              decimalScale={2}
+              label=""
+              name="numberOfLines"
+              suffix=" linhas"
+              type="text"
+              value={numberOfLines}
+              onValueChange={(value) => {
+                setNumberOfLines(Number(value.value));
+              }}
+            />
+          </ModalBody>
+
+          <ModalFooter>
+            <ChakraButton variant="outline" mr={3} onClick={onCloseModal}>
+              Cancelar
+            </ChakraButton>
+
+            {data.length > 0 && (
+              <PDFDownloadLink
+                document={<MyDocument />}
+                fileName={`eleitores-${office?.name}.pdf`}
+              >
+                <Button
+                  colorScheme="teal"
+                  leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
+                >
+                  Imprimir
+                </Button>
+              </PDFDownloadLink>
+            )}
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <Flex
         justifyContent={"space-between"}
         gap={["20px", "0"]}
@@ -171,41 +410,51 @@ export default function Voter() {
       <Text mt="36px" color="gray.500">
         Filtar por:
       </Text>
-      <Flex gap={["12px", "24px"]}>
-        <Select
-          w="220px"
-          borderColor="gray.500"
-          name="filterType"
-          value={selectFilter}
-          onChange={(e) => {
-            setSelectFilter(e.target.value);
-          }}
-        >
-          {voterPage.map((voter) => {
-            return (
-              <option key={voter?.key} value={voter?.value}>
-                {voter?.label}
-              </option>
-            );
-          })}
-        </Select>
+      <Flex justifyContent="space-between">
+        <Flex gap={["12px", "24px"]} flex="1" mr={["0", "24px"]}>
+          <Select
+            w="220px"
+            borderColor="gray.500"
+            name="filterType"
+            value={selectFilter}
+            onChange={(e) => {
+              setSelectFilter(e.target.value);
+            }}
+          >
+            {voterPage.map((voter) => {
+              return (
+                <option key={voter?.key} value={voter?.value}>
+                  {voter?.label}
+                </option>
+              );
+            })}
+          </Select>
 
-        <Input
-          maxW="600px"
-          type="text"
-          name="filterField"
-          placeholder="Buscar"
-          error={errors?.filterField}
-          value={filterField}
-          mb="24px"
-          onChange={(e) => {
-            setFilterField(e.target.value);
-          }}
-          borderColor="gray.500"
-          rightIcon={
-            <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-          }
-        />
+          <Input
+            maxW="600px"
+            type="text"
+            name="filterField"
+            placeholder="Buscar"
+            error={errors?.filterField}
+            value={filterField}
+            mb="24px"
+            onChange={(e) => {
+              setFilterField(e.target.value);
+            }}
+            borderColor="gray.500"
+            rightIcon={
+              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+            }
+          />
+        </Flex>
+
+        <Button
+          onClick={() => onOpenModal()}
+          leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
+          w={["160px", "280px"]}
+        >
+          Imprimir
+        </Button>
       </Flex>
       <Box
         maxH="calc(100vh - 340px)"
@@ -294,6 +543,26 @@ export default function Voter() {
                       } else {
                         return currentValue;
                       }
+                    case "city":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.city
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "neighborhood":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.neighborhood
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
 
                     default:
                       break;
@@ -320,7 +589,7 @@ export default function Voter() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
-                        {voter?.email}
+                        {voter?.email ? voter?.email : "-"}
                       </Td>
                       <Td
                         color="gray.600"
@@ -430,7 +699,16 @@ export default function Voter() {
                   );
                 })
             ) : (
-              <Tr>Nenhum dado cadastrado</Tr>
+              <Tr>
+                <Td fontSize={"14px"} w="100%">
+                  Nenhum dado cadastrado
+                </Td>
+                <Td></Td>
+                <Td></Td>
+                <Td></Td>
+                <Td></Td>
+                <Td></Td>
+              </Tr>
             )}
           </Tbody>
         </Table>
