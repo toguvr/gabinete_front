@@ -29,7 +29,6 @@ export default function VoterRegister() {
   const [verify, setVerify] = useState(false);
   const { office, role } = useAuth();
   const navigate = useNavigate();
-  const [openCepInputs, setOpenCepInputs] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
 
   const handleRegister = useCallback(
@@ -42,9 +41,6 @@ export default function VoterRegister() {
       try {
         const schema = Yup.object().shape({
           name: Yup.string().required("Nome completo obrigatório"),
-          email: Yup.string()
-            .email("E-mail inválido")
-            .required("E-mail obrigatório"),
         });
 
         await schema.validate(values, {
@@ -137,8 +133,24 @@ export default function VoterRegister() {
         `https://viacep.com.br/ws/${values?.zip}/json/`
       );
 
+      if (response.data.erro) {
+        setValues({
+          ...values,
+          street: "",
+          neighborhood: "",
+          city: "",
+          state: "",
+        });
+        return toast({
+          title: "Cep não encontrado, tente novamente",
+          status: "error",
+          position: "top-right",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+
       const { bairro, localidade, logradouro, uf } = response.data;
-      setOpenCepInputs(true);
       setValues({
         ...values,
         street: logradouro,
@@ -290,7 +302,7 @@ export default function VoterRegister() {
           />
           <Input
             labelColor={!verify ? "gray.300" : "gray.500"}
-            label="E-mail*:"
+            label="E-mail:"
             placeholder="E-mail"
             name="email"
             type="email"
@@ -399,7 +411,7 @@ export default function VoterRegister() {
             </Flex>
             <Flex
               mb="24px"
-              justifyContent={["flex-start", "space-between"]}
+              justifyContent={["flex-start"]}
               alignItems={["flex-start", "flex-end"]}
               flexDirection={["column", "row"]}
               gap={[5, "44px"]}
@@ -421,11 +433,21 @@ export default function VoterRegister() {
                 }}
                 borderColor="gray.500"
                 disabled={!verify}
-                onBlur={getCep}
                 w={["100%", "200px"]}
                 placeholder="CEP"
               />
+              <Button onClick={getCep} width="280px" isDisabled={!verify}>
+                {loading ? <Spinner color="white" /> : "Buscar"}
+              </Button>
+            </Flex>
 
+            <Flex
+              mb="24px"
+              justifyContent={["flex-start", "space-between"]}
+              alignItems={["flex-start", "flex-end"]}
+              flexDirection={["column", "row"]}
+              gap={[5, "44px"]}
+            >
               <Input
                 placeholder="Rua"
                 name="street"
@@ -437,16 +459,8 @@ export default function VoterRegister() {
                 }
                 borderColor="gray.500"
                 flex={1}
-                disabled={!verify || !openCepInputs}
+                disabled={!verify}
               />
-            </Flex>
-            <Flex
-              mb="24px"
-              justifyContent={["flex-start", "space-between"]}
-              alignItems={["flex-start", "flex-end"]}
-              flexDirection={["column", "row"]}
-              gap={[5, "44px"]}
-            >
               <Input
                 placeholder="Bairro"
                 name="neighborhood"
@@ -458,7 +472,7 @@ export default function VoterRegister() {
                 }
                 borderColor="gray.500"
                 flex={1}
-                disabled={!verify || !openCepInputs}
+                disabled={!verify}
               />
               <Input
                 name="address_number"
@@ -471,7 +485,7 @@ export default function VoterRegister() {
                 placeholder="Numero"
                 w={["100%", "200px"]}
                 borderColor="gray.500"
-                disabled={!verify || !openCepInputs}
+                disabled={!verify}
               />
             </Flex>
             <Flex
@@ -491,7 +505,7 @@ export default function VoterRegister() {
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 borderColor="gray.500"
-                disabled={!verify || !openCepInputs}
+                disabled={!verify}
               />
               <Input
                 placeholder="Cidade"
@@ -503,7 +517,7 @@ export default function VoterRegister() {
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 borderColor="gray.500"
-                disabled={!verify || !openCepInputs}
+                disabled={!verify}
               />
               <Input
                 placeholder="UF"
@@ -515,7 +529,7 @@ export default function VoterRegister() {
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 borderColor="gray.500"
-                disabled={!verify || !openCepInputs}
+                disabled={!verify}
               />
             </Flex>
           </Box>

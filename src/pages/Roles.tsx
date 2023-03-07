@@ -322,7 +322,7 @@ export default function Roles() {
               <Th color="gray.600">Cargos</Th>
               <Th color="gray.600">Equipe</Th>
               <Th color="gray.600">Eleitor</Th>
-              <Th color="gray.600">Demandas</Th>
+              <Th color="gray.600">Demanda</Th>
               <Th color="gray.600">Tarefas</Th>
               {role?.cargo_page > 1 && (
                 <Th color="gray.600" w="8">

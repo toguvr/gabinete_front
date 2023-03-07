@@ -20,7 +20,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { IoSearchSharp } from "react-icons/io5";
+import { IoCheckmarkCircle, IoSearchSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Form/Button";
 import Input from "../components/Form/Input";
@@ -34,6 +34,8 @@ import getValidationErrors from "../utils/validationError";
 import { Editor } from "primereact/editor";
 import "../styles/editor.css";
 import { addHours } from "date-fns";
+import { CheckIcon } from "@chakra-ui/icons";
+import { getFormatDate } from "../utils/date";
 
 export type SelectProps = {
   label: string;
@@ -41,7 +43,9 @@ export type SelectProps = {
 };
 
 export default function DemandRegister() {
-  const [values, setValues] = useState({} as StateProps);
+  const [values, setValues] = useState({
+    date: getFormatDate(new Date(), "yyyy-MM-dd"),
+  } as StateProps);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
@@ -273,7 +277,11 @@ export default function DemandRegister() {
       </Text>
 
       <Flex alignItems="center" justifyContent="center" as="form">
-        <Stack spacing={["16px", "30px"]} mt={["24px", "40px"]} w="852px">
+        <Stack
+          spacing={["16px", "30px"]}
+          mt={["24px", "40px"]}
+          w={["100%", "852px"]}
+        >
           <Box>
             <Flex
               display={"flex"}
@@ -312,19 +320,30 @@ export default function DemandRegister() {
               <Flex
                 mt="8px"
                 borderWidth={"1px"}
-                borderColor="gray.200"
+                borderColor="gray.500"
                 px={"20px"}
                 py={"8px"}
                 alignItems="center"
-                gap="16px"
                 borderRadius="4px"
                 cursor="pointer"
+                justifyContent={"space-between"}
               >
-                <Avatar boxSize="10" src={voterData?.avatar_url} />
-                <Box>
-                  <Text color="gray.400">{voterData?.name}</Text>
-                  <Text color="gray.400">{voterData?.cellphone}</Text>
-                </Box>
+                <Flex alignItems="center" gap="16px">
+                  <Avatar boxSize="10" src={voterData?.avatar_url} />
+                  <Box>
+                    <Text color="gray.500">{voterData?.name}</Text>
+                    <Text color="gray.500">{voterData?.cellphone}</Text>
+                  </Box>
+                </Flex>
+                <Icon
+                  mr="4"
+                  color={"green.400"}
+                  fontSize="24"
+                  _groupHover={{
+                    color: office?.secondary_color,
+                  }}
+                  as={IoCheckmarkCircle}
+                />
               </Flex>
             )}
             {notVerify && (
@@ -408,7 +427,11 @@ export default function DemandRegister() {
               );
             })}
           </Select>
-          <Flex alignItems={"flex-end"} gap="36px">
+          <Flex
+            alignItems={["flex-start", "flex-end"]}
+            gap={["24px", "36px"]}
+            flexDir={["column", "row"]}
+          >
             <Input
               labelColor="gray.500"
               label="Prazo:"
@@ -445,6 +468,25 @@ export default function DemandRegister() {
               <option value="MEDIA">Media</option>
               <option value="ALTA">Alta</option>
             </Select>
+            <Input
+              labelColor="gray.500"
+              label="Data de criação*:"
+              name="date"
+              type="date"
+              error={errors?.date}
+              value={values?.date}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+              borderColor="gray.500"
+              css={{
+                "&::-webkit-calendar-picker-indicator": {
+                  color: "gray.500",
+                },
+              }}
+              w="220px"
+              isDisabled={!verify || notVerify}
+            />
           </Flex>
           {/* <FormLabel htmlFor="document" m="0" cursor="pointer">
             <Flex

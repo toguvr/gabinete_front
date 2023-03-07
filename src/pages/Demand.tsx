@@ -154,7 +154,7 @@ export default function Demand() {
           fontSize="20px"
           ml={[0, "28px"]}
         >
-          Demandas
+          Demanda
         </Text>
         {role?.demandas_page > 1 && (
           <Button
@@ -275,6 +275,26 @@ export default function Demand() {
                             addHours(new Date(currentValue?.deadline), 12),
                             "dd/MM/yyyy"
                           ).indexOf(filterField) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "city":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.voter?.city
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case "neighborhood":
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.voter?.neighborhood
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
                         );
                       } else {
                         return currentValue;
