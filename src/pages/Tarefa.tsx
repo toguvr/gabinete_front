@@ -160,7 +160,7 @@ export default function Tarefa() {
             fontSize="20px"
             ml={[0, "28px"]}
           >
-            Tarefas
+            Tarefa
             {loading && (
               <Spinner color={office?.primary_color} ml="4" size="sm" />
             )}

@@ -211,7 +211,7 @@ export default function Roles() {
           fontSize="20px"
           ml={[0, "28px"]}
         >
-          Cargos
+          Cargo
           {loading && (
             <Spinner color={office?.primary_color} ml="4" size="sm" />
           )}
@@ -319,11 +319,11 @@ export default function Roles() {
               borderBottomColor={"gray.300"}
             >
               <Th color="gray.600">Nome</Th>
-              <Th color="gray.600">Cargos</Th>
+              <Th color="gray.600">Cargo</Th>
               <Th color="gray.600">Equipe</Th>
               <Th color="gray.600">Eleitor</Th>
               <Th color="gray.600">Demanda</Th>
-              <Th color="gray.600">Tarefas</Th>
+              <Th color="gray.600">Tarefa</Th>
               {role?.cargo_page > 1 && (
                 <Th color="gray.600" w="8">
                   Ações
