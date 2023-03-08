@@ -61,7 +61,6 @@ export default function VoterEdit() {
           state,
           street,
           zip,
-          document,
         } = values;
 
         const body = {
@@ -79,7 +78,6 @@ export default function VoterEdit() {
           state,
           street,
           zip,
-          document,
           voter_id: id,
         };
 
@@ -177,7 +175,6 @@ export default function VoterEdit() {
         state: response?.data?.state,
         street: response?.data?.street,
         zipMask: response?.data?.zip,
-        documentMask: response?.data?.document,
         voter_id: response?.data?.id,
       });
     } catch (err) {
@@ -293,42 +290,6 @@ export default function VoterEdit() {
                   },
                 }}
               />
-              <PatternFormat
-                customInput={Input}
-                type="text"
-                label="CPF:"
-                format="###.###.###-##"
-                mask="_"
-                name="document"
-                error={errors?.document}
-                value={values?.documentMask}
-                onValueChange={(value) => {
-                  setValues({
-                    ...values,
-                    document: value?.value,
-                    documentMask: value?.formattedValue,
-                  });
-                }}
-                borderColor="gray.500"
-                placeholder="CPF"
-              />
-              {/* <Input
-                label="CPF:"
-                name="document"
-                type="number"
-                error={errors?.document}
-                value={values?.document}
-                onChange={(e) =>
-                  setValues({
-                    ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value))
-                      .toString()
-                      .slice(0, 11),
-                  })
-                }
-                placeholder="CPF"
-                borderColor="gray.500"
-              /> */}
 
               <Box w="100%">
                 <Text color="gray.500" fontWeight="400" margin="0">

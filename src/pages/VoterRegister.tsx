@@ -60,7 +60,6 @@ export default function VoterRegister() {
           state,
           zip,
           street,
-          document,
         } = values;
 
         const body = {
@@ -78,7 +77,6 @@ export default function VoterRegister() {
           state,
           street,
           zip,
-          document,
         };
 
         await api.post("/voter", body);
@@ -346,27 +344,6 @@ export default function VoterRegister() {
                 //   />
                 // }
                 disabled={!verify}
-              />
-              <PatternFormat
-                customInput={Input}
-                type="text"
-                label="CPF:"
-                format="###.###.###-##"
-                mask="_"
-                name="document"
-                error={errors?.document}
-                value={values?.documentMask}
-                onValueChange={(value) => {
-                  setValues({
-                    ...values,
-                    document: value?.value,
-                    documentMask: value?.formattedValue,
-                  });
-                }}
-                borderColor="gray.500"
-                disabled={!verify}
-                labelColor={!verify ? "gray.300" : "gray.500"}
-                placeholder="CPF"
               />
 
               <Box w="100%">

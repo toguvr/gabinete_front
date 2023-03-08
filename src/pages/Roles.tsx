@@ -218,7 +218,7 @@ export default function Roles() {
         </Text>
         {role?.cargo_page > 1 && (
           <Button
-            onClick={() => navigate("/registrar-cargo")}
+            onClick={() => navigate("/cargo/registrar-cargo")}
             w={["160px", "280px"]}
           >
             Cadastrar cargo
