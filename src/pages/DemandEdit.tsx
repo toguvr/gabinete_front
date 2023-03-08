@@ -132,10 +132,9 @@ export default function DemandEdit() {
         title: response?.data?.title,
         description: response?.data?.description,
         date: getFormatDate(new Date(response?.data?.date), "yyyy-MM-dd"),
-        deadline: getFormatDate(
-          new Date(response?.data?.deadline),
-          "yyyy-MM-dd"
-        ),
+        deadline:
+          response?.data?.deadline &&
+          getFormatDate(new Date(response?.data?.deadline), "yyyy-MM-dd"),
         priority: response?.data?.priority,
       });
       setResource(response?.data?.resource);
