@@ -135,7 +135,7 @@ export default function RoleEdit() {
       values: values?.eleitor_page,
     },
     {
-      name: "Demandas",
+      name: "Demanda",
       fix: "demandas_page",
       values: values?.demandas_page,
     },

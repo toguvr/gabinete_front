@@ -29,6 +29,7 @@ import { FiMenu } from "react-icons/fi";
 import { IoAlbumsOutline } from "react-icons/io5";
 import { RiTeamLine } from "react-icons/ri";
 import { SiMicrosoftteams } from "react-icons/si";
+import { MdOutlineAddTask } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -40,6 +41,7 @@ interface LinkItemProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
+  // { name: "Home", route: "/home", icon: FiHome, permissionName: "home_page" },
   {
     name: "Cargo",
     route: "/cargo",
@@ -68,6 +70,12 @@ const LinkItems: Array<LinkItemProps> = [
     name: "Tarefa",
     route: "/tarefa",
     icon: BiTask,
+    permissionName: "tarefas_page",
+  },
+  {
+    name: "Solicitações",
+    route: "/solicitacoes",
+    icon: MdOutlineAddTask,
     permissionName: "tarefas_page",
   },
 ];
@@ -272,7 +280,7 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
       px={{ base: 4, md: 4 }}
       height="60px"
       alignItems="center"
-      background="blue.600"
+      background={office?.primary_color}
       justifyContent={{ base: "space-between", md: "space-between" }}
       {...rest}
     >

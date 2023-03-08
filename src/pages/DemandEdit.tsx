@@ -131,11 +131,10 @@ export default function DemandEdit() {
         cellphoneMask: response?.data?.voter?.cellphone,
         title: response?.data?.title,
         description: response?.data?.description,
-        date: response?.data?.date,
-        deadline: getFormatDate(
-          new Date(response?.data?.deadline),
-          "yyyy-MM-dd"
-        ),
+        date: getFormatDate(new Date(response?.data?.date), "yyyy-MM-dd"),
+        deadline:
+          response?.data?.deadline &&
+          getFormatDate(new Date(response?.data?.deadline), "yyyy-MM-dd"),
         priority: response?.data?.priority,
       });
       setResource(response?.data?.resource);
@@ -272,7 +271,7 @@ export default function DemandEdit() {
             <Flex
               mt="8px"
               borderWidth={"1px"}
-              borderColor="gray.200"
+              borderColor="gray.300"
               px={"20px"}
               py={"8px"}
               alignItems="center"
@@ -331,7 +330,11 @@ export default function DemandEdit() {
               );
             })}
           </Select>
-          <Flex alignItems={"flex-end"} gap="36px">
+          <Flex
+            alignItems={["flex-start", "flex-end"]}
+            gap={["24px", "36px"]}
+            flexDir={["column", "row"]}
+          >
             <Input
               labelColor="gray.500"
               label="Prazo:"
@@ -366,6 +369,25 @@ export default function DemandEdit() {
               <option value="MEDIA">Media</option>
               <option value="ALTA">Alta</option>
             </Select>
+            <Input
+              labelColor="gray.500"
+              label="Data de criação*:"
+              name="date"
+              type="date"
+              error={errors?.date}
+              value={values?.date}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+              borderColor="gray.500"
+              css={{
+                "&::-webkit-calendar-picker-indicator": {
+                  color: "gray.500",
+                },
+              }}
+              w="220px"
+              isDisabled
+            />
           </Flex>
           {/* <FormLabel htmlFor="document" m="0" cursor="pointer">
             <Flex
