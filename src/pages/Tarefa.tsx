@@ -172,7 +172,7 @@ export default function Tarefa() {
         <Text mt="36px" color="gray.500">
           Filtrar por:
         </Text>
-        <Flex height="40px">
+        <Flex height="40px" maxW="600px">
           <Flex flex={1} gap={["12px", "24px"]}>
             <Select
               w="220px"
@@ -233,8 +233,8 @@ export default function Tarefa() {
                 value={filterField}
                 maxW="600px"
               >
-                <option value="BACKLOG">Backlog</option>
-                <option value="FAZENDO">Fazendo</option>
+                <option value="BACKLOG">Pendente</option>
+                <option value="FAZENDO">Executando</option>
                 <option value="CONCLUIDO">Concluído</option>
               </Select>
             )}
