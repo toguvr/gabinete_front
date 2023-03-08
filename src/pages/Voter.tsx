@@ -464,6 +464,14 @@ export default function Voter() {
                       } else {
                         return currentValue;
                       }
+                      case 'reference':
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.reference.toLowerCase().indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
                     case 'email':
                       if (filterField?.length >= 3) {
                         return (
