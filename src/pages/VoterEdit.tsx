@@ -72,8 +72,9 @@ export default function VoterEdit() {
           document,
           voter_id: id,
         };
+        console.log('body', body);
 
-        await api.put('/voter', body);
+        // await api.put('/voter', body);
 
         toast({
           title: 'Eleitor atualizado com sucesso',
@@ -177,7 +178,6 @@ export default function VoterEdit() {
   useEffect(() => {
     getVoterById();
   }, []);
-  
 
   return (
     <HeaderSideBar backRoute={true}>

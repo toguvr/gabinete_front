@@ -278,6 +278,7 @@ export default function Voter() {
     );
   };
 
+
   return (
     <HeaderSideBar>
       <AlertDialog
@@ -459,15 +460,20 @@ export default function Voter() {
                     case 'name':
                       if (filterField?.length >= 3) {
                         return (
-                          currentValue?.name.toLowerCase().indexOf(filterField?.toLowerCase()) > -1
+                          currentValue &&
+                          currentValue.name &&
+                          currentValue.name.toLowerCase().indexOf(filterField?.toLowerCase()) > -1
                         );
                       } else {
                         return currentValue;
                       }
-                      case 'reference':
+                    case 'reference':
                       if (filterField?.length >= 3) {
                         return (
-                          currentValue?.reference.toLowerCase().indexOf(filterField?.toLowerCase()) > -1
+                          currentValue?.reference &&
+                          currentValue?.reference
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
                         );
                       } else {
                         return currentValue;
@@ -475,6 +481,7 @@ export default function Voter() {
                     case 'email':
                       if (filterField?.length >= 3) {
                         return (
+                          currentValue?.email &&
                           currentValue?.email.toLowerCase().indexOf(filterField?.toLowerCase()) > -1
                         );
                       } else {
@@ -494,6 +501,7 @@ export default function Voter() {
                     case 'cellphone':
                       if (filterField?.length >= 3) {
                         return (
+                          currentValue?.cellphone &&
                           currentValue?.cellphone
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
@@ -504,6 +512,7 @@ export default function Voter() {
                     case 'city':
                       if (filterField?.length >= 3) {
                         return (
+                          currentValue?.city &&
                           currentValue?.city.toLowerCase().indexOf(filterField?.toLowerCase()) > -1
                         );
                       } else {
@@ -512,6 +521,7 @@ export default function Voter() {
                     case 'neighborhood':
                       if (filterField?.length >= 3) {
                         return (
+                          currentValue?.neighborhood &&
                           currentValue?.neighborhood
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
