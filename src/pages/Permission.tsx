@@ -133,14 +133,25 @@ export default function Permission() {
       await api.put('/permission', body);
 
       toast({
-        title: 'Ataulizado com sucesso',
+        title: 'Atualizado com sucesso',
         description: 'Você atualizou uma equipe.',
         status: 'success',
         duration: 3000,
         isClosable: true,
         position: 'top-right',
       });
-      getPermissions();
+
+      const updatedData = data.map((permission) => {
+        if (permission.id === permission_id) {
+          return {
+            ...permission,
+            active: !permission_active,
+          };
+        }
+        return permission;
+      });
+      setData(updatedData);
+      
       return;
     } catch (err: any) {
       if (err.response) {
@@ -198,12 +209,7 @@ export default function Permission() {
           {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
         </Text>
         {role?.equipe_page > 1 && (
-
-          <Button
-            onClick={() => navigate("/equipe/registrar-equipe")}
-            w={["160px", "280px"]}
-          >
-
+          <Button onClick={() => navigate('/equipe/registrar-equipe')} w={['160px', '280px']}>
             Cadastrar equipe
           </Button>
         )}
@@ -302,12 +308,7 @@ export default function Permission() {
       >
         <Table variant="simple">
           <Thead position="sticky" top="0px">
-
-            <Tr
-              borderBottomWidth={"4px"}
-              borderBottomStyle="solid"
-              borderBottomColor={"gray.300"}
-            >
+            <Tr borderBottomWidth={'4px'} borderBottomStyle="solid" borderBottomColor={'gray.300'}>
               <Th color="gray.600">Ativo</Th>
 
               <Th color="gray.600">Nome</Th>
@@ -386,7 +387,7 @@ export default function Permission() {
                   return (
                     <Tr key={permission.id} h="45px" py="4px">
                       <Td
-                        color={permission?.active ? "gray.600" : "gray.300"}
+                        color={permission?.active ? 'gray.600' : 'gray.300'}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -395,16 +396,11 @@ export default function Permission() {
                       >
                         <Switch
                           isChecked={permission?.active}
-                          onChange={() =>
-                            handleUpdateActive(
-                              permission?.id,
-                              permission?.active
-                            )
-                          }
+                          onChange={() => handleUpdateActive(permission?.id, permission?.active)}
                         />
                       </Td>
                       <Td
-                        color={permission?.active ? "gray.600" : "gray.400"}
+                        color={permission?.active ? 'gray.600' : 'gray.400'}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -414,7 +410,7 @@ export default function Permission() {
                         {permission?.user?.name}
                       </Td>
                       <Td
-                        color={permission?.active ? "gray.600" : "gray.400"}
+                        color={permission?.active ? 'gray.600' : 'gray.400'}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -424,7 +420,7 @@ export default function Permission() {
                         {permission?.user?.email}
                       </Td>
                       <Td
-                        color={permission?.active ? "gray.600" : "gray.400"}
+                        color={permission?.active ? 'gray.600' : 'gray.400'}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -434,7 +430,7 @@ export default function Permission() {
                         {permission?.user?.cellphone}
                       </Td>
                       <Td
-                        color={permission?.active ? "gray.600" : "gray.400"}
+                        color={permission?.active ? 'gray.600' : 'gray.400'}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
