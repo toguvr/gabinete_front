@@ -297,8 +297,14 @@ export default function Permission() {
       >
         <Table variant="simple">
           <Thead position="sticky" top="0px">
-            <Tr borderBottomWidth={'4px'} borderBottomStyle="solid" borderBottomColor={'gray.300'}>
-              {/* <Th color="gray.600">Ativo</Th> */}
+
+            <Tr
+              borderBottomWidth={"4px"}
+              borderBottomStyle="solid"
+              borderBottomColor={"gray.300"}
+            >
+              <Th color="gray.600">Ativo</Th>
+
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Telefone</Th>
@@ -374,8 +380,8 @@ export default function Permission() {
                 .map((permission) => {
                   return (
                     <Tr key={permission.id} h="45px" py="4px">
-                      {/* <Td
-                        color="gray.600"
+                      <Td
+                        color={permission?.active ? "gray.600" : "gray.300"}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -391,9 +397,9 @@ export default function Permission() {
                             )
                           }
                         />
-                      </Td> */}
+                      </Td>
                       <Td
-                        color="gray.600"
+                        color={permission?.active ? "gray.600" : "gray.400"}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -403,7 +409,7 @@ export default function Permission() {
                         {permission?.user?.name}
                       </Td>
                       <Td
-                        color="gray.600"
+                        color={permission?.active ? "gray.600" : "gray.400"}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -413,7 +419,7 @@ export default function Permission() {
                         {permission?.user?.email}
                       </Td>
                       <Td
-                        color="gray.600"
+                        color={permission?.active ? "gray.600" : "gray.400"}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -423,7 +429,7 @@ export default function Permission() {
                         {permission?.user?.cellphone}
                       </Td>
                       <Td
-                        color="gray.600"
+                        color={permission?.active ? "gray.600" : "gray.400"}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
