@@ -7,20 +7,18 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { FormEvent, useCallback, useEffect, useState } from "react";
-import HeaderSideBar from "../components/HeaderSideBar";
-import { StateProps } from "../dtos";
-import * as Yup from "yup";
-import getValidationErrors from "../utils/validationError";
-import Input from "../components/Form/Input";
 import axios from "axios";
-import api from "../services/api";
-import { useAuth } from "../contexts/AuthContext";
-import { useLocation, useNavigate, useParams } from "react-router";
-import Button from "../components/Form/Button";
-import { getFormatDate } from "../utils/date";
-import { parse } from "date-fns";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { PatternFormat } from "react-number-format";
+import { useNavigate, useParams } from "react-router";
+import * as Yup from "yup";
+import Button from "../components/Form/Button";
+import Input from "../components/Form/Input";
+import HeaderSideBar from "../components/HeaderSideBar";
+import { useAuth } from "../contexts/AuthContext";
+import { StateProps } from "../dtos";
+import api from "../services/api";
+import getValidationErrors from "../utils/validationError";
 
 export default function VoterEdit() {
   const { id } = useParams();
@@ -32,88 +30,78 @@ export default function VoterEdit() {
   const { office } = useAuth();
   const navigate = useNavigate();
 
-  const handleUpdateVoter = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault();
+  const handleUpdateVoter = async (e: FormEvent) => {
+    e.preventDefault();
 
-      setErrors({});
+    setErrors({});
 
-      setLoading(true);
-      try {
-        const schema = Yup.object().shape({
-          name: Yup.string().required("Nome completo obrigatório"),
-        });
+    setLoading(true);
+    try {
+      const schema = Yup.object().shape({
+        name: Yup.string().required("Nome obrigatório"),
+        ddd: Yup.string().required("ddd obrigatório"),
+        cellphone: Yup.string().required("Telefone obrigatório"),
+      });
 
-        await schema.validate(values, {
-          abortEarly: false,
-        });
+      await schema.validate(values, {
+        abortEarly: false,
+      });
 
-        const {
-          name,
-          email,
-          address_number,
-          birthdate,
-          city,
-          gender,
-          neighborhood,
-          complement,
-          reference,
-          state,
-          street,
-          zip,
-          document,
-        } = values;
+      const {
+        name,
+        email,
+        address_number,
+        birthdate,
+        city,
+        gender,
+        neighborhood,
+        complement,
+        reference,
+        state,
+        street,
+        zip,
+        ddd,
+        cellphone,
+      } = values;
 
-        const body = {
-          name,
-          cellphone: values.ddd + values.cellphone,
-          email,
-          office_id: office?.id,
-          address_number,
-          birthdate,
-          city,
-          gender,
-          neighborhood,
-          reference,
-          complement,
-          state,
-          street,
-          zip,
-          document,
-          voter_id: id,
-        };
+      const body = {
+        name,
+        cellphone: `${ddd ?? ""}${cellphone ?? ""}`,
+        email,
+        office_id: office?.id,
+        address_number,
+        birthdate,
+        city,
+        gender,
+        neighborhood,
+        reference,
+        complement,
+        state,
+        street,
+        zip,
+        voter_id: id,
+      };
+      await api.put("/voter", body);
 
-        await api.put("/voter", body);
+      toast({
+        title: "Eleitor atualizado com sucesso",
+        description: "Você atualizou o eleitor.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return navigate("/eleitor");
+    } catch (err: any) {
+      if (err instanceof Yup.ValidationError) {
+        setErrors(getValidationErrors(err));
 
-        toast({
-          title: "Eleitor atualizado com sucesso",
-          description: "Você atualizou o eleitor.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
-        return navigate("/eleitor");
-      } catch (err: any) {
-        if (err instanceof Yup.ValidationError) {
-          setErrors(getValidationErrors(err));
-
-          return;
-        }
-        if (err.response) {
-          return toast({
-            title:
-              err.response.data.message ||
-              "Ocorreu um erro ao atualizar o eleitor, cheque as credenciais",
-
-            status: "error",
-            position: "top-right",
-            duration: 3000,
-            isClosable: true,
-          });
-        }
+        return;
+      }
+      if (err.response) {
         return toast({
           title:
+            err.response.data.message ||
             "Ocorreu um erro ao atualizar o eleitor, cheque as credenciais",
 
           status: "error",
@@ -121,12 +109,19 @@ export default function VoterEdit() {
           duration: 3000,
           isClosable: true,
         });
-      } finally {
-        setLoading(false);
       }
-    },
-    [values]
-  );
+      return toast({
+        title: "Ocorreu um erro ao atualizar o eleitor, cheque as credenciais",
+
+        status: "error",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getCep = async () => {
     setCepLoading(true);
@@ -164,20 +159,22 @@ export default function VoterEdit() {
 
       setValues({
         dddMask: response?.data?.cellphone.slice(0, 2),
+        ddd: response?.data?.cellphone.slice(0, 2),
         cellphoneMask: response?.data?.cellphone.slice(2),
+        cellphone: response?.data?.cellphone.slice(2),
         name: response?.data?.name,
         email: response?.data?.email,
         office_id: office.id,
         address_number: response?.data?.address_number,
         birthdate: response?.data?.birthdate,
         city: response?.data?.city,
+        reference: response?.data?.reference,
         gender: response?.data?.gender,
         neighborhood: response?.data?.neighborhood,
         complement: response?.data?.complement,
         state: response?.data?.state,
         street: response?.data?.street,
         zipMask: response?.data?.zip,
-        documentMask: response?.data?.document,
         voter_id: response?.data?.id,
       });
     } catch (err) {
@@ -258,6 +255,19 @@ export default function VoterEdit() {
             borderColor="gray.500"
           />
           <Input
+            label="Referência:"
+            placeholder="Referência do eleitor"
+            name="reference"
+            type="text"
+            error={errors?.reference}
+            value={values.reference}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
+            borderColor="gray.500"
+          />
+
+          <Input
             label="E-mail:"
             placeholder="E-mail"
             name="email"
@@ -293,42 +303,6 @@ export default function VoterEdit() {
                   },
                 }}
               />
-              <PatternFormat
-                customInput={Input}
-                type="text"
-                label="CPF:"
-                format="###.###.###-##"
-                mask="_"
-                name="document"
-                error={errors?.document}
-                value={values?.documentMask}
-                onValueChange={(value) => {
-                  setValues({
-                    ...values,
-                    document: value?.value,
-                    documentMask: value?.formattedValue,
-                  });
-                }}
-                borderColor="gray.500"
-                placeholder="CPF"
-              />
-              {/* <Input
-                label="CPF:"
-                name="document"
-                type="number"
-                error={errors?.document}
-                value={values?.document}
-                onChange={(e) =>
-                  setValues({
-                    ...values,
-                    [e.target.name]: Math.max(0, parseInt(e.target.value))
-                      .toString()
-                      .slice(0, 11),
-                  })
-                }
-                placeholder="CPF"
-                borderColor="gray.500"
-              /> */}
 
               <Box w="100%">
                 <Text color="gray.500" fontWeight="400" margin="0">

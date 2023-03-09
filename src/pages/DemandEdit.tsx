@@ -56,58 +56,47 @@ export default function DemandEdit() {
     setResource(!resource);
   };
 
-  const handleUpdateDemanda = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault();
+  const handleUpdateDemanda = async (e: FormEvent) => {
+    e.preventDefault();
 
-      setErrors({});
+    setErrors({});
 
-      setLoading(true);
-      try {
-        const body = {
-          title: values?.title,
-          taskId: id,
-          description: description,
-          date: values?.date,
-          deadline: addHours(new Date(values?.deadline), 12),
-          priority: values?.priority,
-          voter_id: voterData?.id,
-          office_id: office?.id,
-          resource: resource,
-          responsible_id: responsible,
-        };
+    setLoading(true);
+    try {
+      const body = {
+        title: values?.title,
+        taskId: id,
+        description: description,
+        date: values?.date,
+        deadline: addHours(new Date(values?.deadline), 12),
+        priority: values?.priority,
+        voter_id: voterData?.id,
+        office_id: office?.id,
+        resource: resource,
+        responsible_id: responsible,
+      };
 
-        await api.put("/task", body);
+      await api.put("/task", body);
 
-        toast({
-          title: "Cadastrado com sucesso",
-          description: "Você cadastrou uma demanda.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
-        return navigate("/demanda");
-      } catch (err: any) {
-        if (err instanceof Yup.ValidationError) {
-          setErrors(getValidationErrors(err));
+      toast({
+        title: "Cadastrado com sucesso",
+        description: "Você cadastrou uma demanda.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      return navigate("/demanda");
+    } catch (err: any) {
+      if (err instanceof Yup.ValidationError) {
+        setErrors(getValidationErrors(err));
 
-          return;
-        }
-        if (err.response) {
-          return toast({
-            title:
-              err.response.data.message ||
-              "Ocorreu um erro ao cadastrar a demanda, cheque as credenciais",
-
-            status: "error",
-            position: "top-right",
-            duration: 3000,
-            isClosable: true,
-          });
-        }
+        return;
+      }
+      if (err.response) {
         return toast({
           title:
+            err.response.data.message ||
             "Ocorreu um erro ao cadastrar a demanda, cheque as credenciais",
 
           status: "error",
@@ -115,12 +104,19 @@ export default function DemandEdit() {
           duration: 3000,
           isClosable: true,
         });
-      } finally {
-        setLoading(false);
       }
-    },
-    [values]
-  );
+      return toast({
+        title: "Ocorreu um erro ao cadastrar a demanda, cheque as credenciais",
+
+        status: "error",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getDemandaById = async () => {
     setLoading(true);

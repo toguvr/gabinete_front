@@ -120,7 +120,7 @@ export default function RoleEdit() {
       values: values?.home_page,
     },
     {
-      name: "Cargos",
+      name: "Cargo",
       fix: "cargo_page",
       values: values?.cargo_page,
     },
@@ -140,7 +140,7 @@ export default function RoleEdit() {
       values: values?.demandas_page,
     },
     {
-      name: "Tarefas",
+      name: "Tarefa",
       fix: "tarefas_page",
       values: values?.tarefas_page,
     },
@@ -309,7 +309,7 @@ export default function RoleEdit() {
                       setValues({ ...values, [e.target.name]: e.target.value })
                     }
                   >
-                    {page.name === "Tarefas"
+                    {page.name === "Tarefa"
                       ? roleStatusTasks.map((role) => {
                           return (
                             <option key={role?.key} value={role?.key}>

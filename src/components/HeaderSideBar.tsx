@@ -72,12 +72,12 @@ const LinkItems: Array<LinkItemProps> = [
     icon: BiTask,
     permissionName: "tarefas_page",
   },
-  {
-    name: "Solicitações",
-    route: "/solicitacoes",
-    icon: MdOutlineAddTask,
-    permissionName: "tarefas_page",
-  },
+  // {
+  //   name: "Solicitações",
+  //   route: "/solicitacoes",
+  //   icon: MdOutlineAddTask,
+  //   permissionName: "tarefas_page",
+  // },
 ];
 
 export default function SidebarWithHeader({

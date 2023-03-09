@@ -133,6 +133,16 @@ export default function Permission() {
     setErrors({});
 
     try {
+      const updatedData = data.map((permission) => {
+        if (permission.id === permission_id) {
+          return {
+            ...permission,
+            active: !permission_active,
+          };
+        }
+        return permission;
+      });
+      setData(updatedData);
       const body = {
         active: !permission_active,
         permissionId: permission_id,
@@ -141,16 +151,17 @@ export default function Permission() {
       await api.put("/permission", body);
 
       toast({
-        title: "Ataulizado com sucesso",
+        title: "Atualizado com sucesso",
         description: "Você atualizou uma equipe.",
         status: "success",
         duration: 3000,
         isClosable: true,
         position: "top-right",
       });
-      getPermissions();
+
       return;
     } catch (err: any) {
+      getPermissions();
       if (err.response) {
         return toast({
           title:
@@ -224,7 +235,7 @@ export default function Permission() {
         </Text>
         {role?.equipe_page > 1 && (
           <Button
-            onClick={() => navigate("/registrar-equipe")}
+            onClick={() => navigate("/equipe/registrar-equipe")}
             w={["160px", "280px"]}
           >
             Cadastrar equipe
@@ -332,7 +343,8 @@ export default function Permission() {
               borderBottomStyle="solid"
               borderBottomColor={"gray.300"}
             >
-              {/* <Th color="gray.600">Ativo</Th> */}
+              <Th color="gray.600">Ativo</Th>
+
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Telefone</Th>
@@ -352,6 +364,7 @@ export default function Permission() {
                     case "name":
                       if (filterField?.length >= 3) {
                         return (
+                          currentValue?.user?.name &&
                           currentValue?.user?.name
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
@@ -362,6 +375,7 @@ export default function Permission() {
                     case "email":
                       if (filterField?.length >= 3) {
                         return (
+                          currentValue?.user?.email &&
                           currentValue?.user?.email
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
@@ -372,6 +386,7 @@ export default function Permission() {
                     case "role":
                       if (selectRoleFilter?.length >= 3) {
                         return (
+                          currentValue?.role?.name &&
                           currentValue?.role?.name
                             .toLowerCase()
                             .indexOf(selectRoleFilter?.toLowerCase()) > -1
@@ -382,6 +397,7 @@ export default function Permission() {
                     case "cellphone":
                       if (filterField?.length >= 3) {
                         return (
+                          currentValue?.user?.cellphone &&
                           currentValue?.user?.cellphone
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
@@ -404,8 +420,8 @@ export default function Permission() {
                 .map((permission) => {
                   return (
                     <Tr key={permission.id} h="45px" py="4px">
-                      {/* <Td
-                        color="gray.600"
+                      <Td
+                        color={permission?.active ? "gray.600" : "gray.300"}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -421,9 +437,9 @@ export default function Permission() {
                             )
                           }
                         />
-                      </Td> */}
+                      </Td>
                       <Td
-                        color="gray.600"
+                        color={permission?.active ? "gray.600" : "gray.400"}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -433,7 +449,7 @@ export default function Permission() {
                         {permission?.user?.name}
                       </Td>
                       <Td
-                        color="gray.600"
+                        color={permission?.active ? "gray.600" : "gray.400"}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -443,7 +459,7 @@ export default function Permission() {
                         {permission?.user?.email}
                       </Td>
                       <Td
-                        color="gray.600"
+                        color={permission?.active ? "gray.600" : "gray.400"}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -453,7 +469,7 @@ export default function Permission() {
                         {permission?.user?.cellphone}
                       </Td>
                       <Td
-                        color="gray.600"
+                        color={permission?.active ? "gray.600" : "gray.400"}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -487,7 +503,7 @@ export default function Permission() {
                                   />
                                 }
                               />
-                              <IconButton
+                              {/* <IconButton
                                 onClick={() => openDialog(permission?.id)}
                                 aria-label="Open alert"
                                 variant="unstyled"
@@ -500,7 +516,7 @@ export default function Permission() {
                                     color="gray.600"
                                   />
                                 }
-                              />
+                              /> */}
                             </>
                           )}
                         </HStack>

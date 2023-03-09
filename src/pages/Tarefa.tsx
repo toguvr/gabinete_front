@@ -1,5 +1,6 @@
 import {
   Flex,
+  Icon,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -7,31 +8,29 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Icon,
-  Text,
+  Select,
+  Spinner,
   Table,
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
   useDisclosure,
-  Select,
-  Spinner,
 } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { IoSearchSharp } from "react-icons/io5";
 import Button from "../components/Form/Button";
+import Input from "../components/Form/Input";
 import HeaderSideBar from "../components/HeaderSideBar";
 import TaskCard from "../components/TaskCard";
 import TaskListStatusIcon from "../components/TaskListStatusIcon";
 import { useAuth } from "../contexts/AuthContext";
 import { StateProps, TaskPropsDTO } from "../dtos";
 import api from "../services/api";
-import { IoSearchSharp } from "react-icons/io5";
-import Input from "../components/Form/Input";
 import { taskPage } from "../utils/filterTables";
-import { useNavigate } from "react-router-dom";
 
 export default function Tarefa() {
   const [selectedTask, setSelectedTask] = useState({} as TaskPropsDTO);
@@ -75,10 +74,6 @@ export default function Tarefa() {
 
   async function statusChange(statusChange: string, id: string) {
     try {
-      const response = await api.put(`/task/status/responsible`, {
-        status: statusChange,
-        taskId: String(id),
-      });
       const taskListUpdated = taskList.map((task) => {
         if (task.id === id) {
           task.status = statusChange;
@@ -86,24 +81,13 @@ export default function Tarefa() {
         return task;
       });
 
-      taskListUpdated.sort((a, b) => {
-        if (a.status === "BACKLOG") {
-          return -1;
-        }
-        if (a.status === "FAZENDO" && b.status === "BACKLOG") {
-          return 1;
-        }
-        if (a.status === "FAZENDO" && b.status === "CONCLUIDO") {
-          return -1;
-        }
-        if (a.status === "CONCLUIDO") {
-          return 1;
-        }
-        return 0;
-      });
-
       setTaskList(taskListUpdated);
+      await api.put(`/task/status/responsible`, {
+        status: statusChange,
+        taskId: String(id),
+      });
     } catch (err) {
+      getOfficeList();
     } finally {
       setLoading(false);
     }
@@ -160,7 +144,7 @@ export default function Tarefa() {
             fontSize="20px"
             ml={[0, "28px"]}
           >
-            Tarefas
+            Tarefa
             {loading && (
               <Spinner color={office?.primary_color} ml="4" size="sm" />
             )}
@@ -172,7 +156,8 @@ export default function Tarefa() {
         <Text mt="36px" color="gray.500">
           Filtrar por:
         </Text>
-        <Flex height="40px">
+
+        <Flex height="40px" maxW="600px">
           <Flex flex={1} gap={["12px", "24px"]}>
             <Select
               w="220px"
@@ -233,8 +218,8 @@ export default function Tarefa() {
                 value={filterField}
                 maxW="600px"
               >
-                <option value="BACKLOG">Backlog</option>
-                <option value="FAZENDO">Fazendo</option>
+                <option value="BACKLOG">Pendente</option>
+                <option value="FAZENDO">Executando</option>
                 <option value="CONCLUIDO">Concluído</option>
               </Select>
             )}
@@ -291,6 +276,7 @@ export default function Tarefa() {
                       case "id":
                         if (filterField) {
                           return (
+                            currentValue?.id &&
                             String(currentValue?.id)
                               .toLowerCase()
                               .indexOf(filterField?.toLowerCase()) > -1
@@ -301,6 +287,7 @@ export default function Tarefa() {
                       case "title":
                         if (filterField?.length >= 3) {
                           return (
+                            currentValue?.title &&
                             currentValue?.title
                               .toLowerCase()
                               .indexOf(filterField?.toLowerCase()) > -1
@@ -311,6 +298,7 @@ export default function Tarefa() {
                       case "status":
                         if (filterField?.length >= 3) {
                           return (
+                            currentValue?.status &&
                             currentValue?.status
                               .toLowerCase()
                               .indexOf(filterField?.toLowerCase()) > -1
@@ -321,6 +309,7 @@ export default function Tarefa() {
                       case "priority":
                         if (filterField?.length >= 3) {
                           return (
+                            currentValue?.priority &&
                             currentValue?.priority
                               .toLowerCase()
                               .indexOf(filterField?.toLowerCase()) > -1

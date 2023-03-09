@@ -1,25 +1,17 @@
-import {
-  Box,
-  Flex,
-  Select,
-  Spinner,
-  Stack,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
-import { FormEvent, useCallback, useState } from "react";
-import HeaderSideBar from "../components/HeaderSideBar";
-import { StateProps } from "../dtos";
-import * as Yup from "yup";
-import getValidationErrors from "../utils/validationError";
-import Input from "../components/Form/Input";
-import axios from "axios";
-import api from "../services/api";
-import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router";
-import Button from "../components/Form/Button";
-import { getFormatDate } from "../utils/date";
-import { PatternFormat } from "react-number-format";
+import { Box, Flex, Select, Spinner, Stack, Text, useToast } from '@chakra-ui/react';
+import { FormEvent, useCallback, useState } from 'react';
+import HeaderSideBar from '../components/HeaderSideBar';
+import { StateProps } from '../dtos';
+import * as Yup from 'yup';
+import getValidationErrors from '../utils/validationError';
+import Input from '../components/Form/Input';
+import axios from 'axios';
+import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router';
+import Button from '../components/Form/Button';
+import { getFormatDate } from '../utils/date';
+import { PatternFormat } from 'react-number-format';
 
 export default function VoterRegister() {
   const [values, setValues] = useState({} as StateProps);
@@ -40,7 +32,7 @@ export default function VoterRegister() {
       setLoading(true);
       try {
         const schema = Yup.object().shape({
-          name: Yup.string().required("Nome completo obrigatório"),
+          name: Yup.string().required('Nome completo obrigatório'),
         });
 
         await schema.validate(values, {
@@ -60,7 +52,6 @@ export default function VoterRegister() {
           state,
           zip,
           street,
-          document,
         } = values;
 
         const body = {
@@ -78,20 +69,19 @@ export default function VoterRegister() {
           state,
           street,
           zip,
-          document,
         };
-
-        await api.post("/voter", body);
+        console.log('body', body);
+        await api.post('/voter', body);
 
         toast({
-          title: "Eleitor cadastrado com sucesso",
-          description: "Você cadastrou um eleitor.",
-          status: "success",
+          title: 'Eleitor cadastrado com sucesso',
+          description: 'Você cadastrou um eleitor.',
+          status: 'success',
           duration: 3000,
           isClosable: true,
-          position: "top-right",
+          position: 'top-right',
         });
-        return navigate("/eleitor");
+        return navigate('/eleitor');
       } catch (err: any) {
         if (err instanceof Yup.ValidationError) {
           setErrors(getValidationErrors(err));
@@ -102,20 +92,19 @@ export default function VoterRegister() {
           return toast({
             title:
               err.response.data.message ||
-              "Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais",
+              'Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais',
 
-            status: "error",
-            position: "top-right",
+            status: 'error',
+            position: 'top-right',
             duration: 3000,
             isClosable: true,
           });
         }
         return toast({
-          title:
-            "Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais",
+          title: 'Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais',
 
-          status: "error",
-          position: "top-right",
+          status: 'error',
+          position: 'top-right',
           duration: 3000,
           isClosable: true,
         });
@@ -129,22 +118,20 @@ export default function VoterRegister() {
   const getCep = async () => {
     setCepLoading(true);
     try {
-      const response = await axios.get(
-        `https://viacep.com.br/ws/${values?.zip}/json/`
-      );
+      const response = await axios.get(`https://viacep.com.br/ws/${values?.zip}/json/`);
 
       if (response.data.erro) {
         setValues({
           ...values,
-          street: "",
-          neighborhood: "",
-          city: "",
-          state: "",
+          street: '',
+          neighborhood: '',
+          city: '',
+          state: '',
         });
         return toast({
-          title: "Cep não encontrado, tente novamente",
-          status: "error",
-          position: "top-right",
+          title: 'Cep não encontrado, tente novamente',
+          status: 'error',
+          position: 'top-right',
           duration: 3000,
           isClosable: true,
         });
@@ -160,9 +147,9 @@ export default function VoterRegister() {
       });
     } catch (err) {
       return toast({
-        title: "Ocorreu um erro ao buscar o cep, tente novamente",
-        status: "error",
-        position: "top-right",
+        title: 'Ocorreu um erro ao buscar o cep, tente novamente',
+        status: 'error',
+        position: 'top-right',
         duration: 3000,
         isClosable: true,
       });
@@ -178,14 +165,11 @@ export default function VoterRegister() {
 
     try {
       const verifySchema = Yup.object().shape({
-        ddd: Yup.string()
-          .required("DDD")
-          .min(2, "Dois números.")
-          .max(2, "Dois números."),
+        ddd: Yup.string().required('DDD').min(2, 'Dois números.').max(2, 'Dois números.'),
         cellphone: Yup.string()
-          .required("Contato")
-          .min(8, "Mínimo de oito números.")
-          .max(9, "Máximo de nove números."),
+          .required('Contato')
+          .min(8, 'Mínimo de oito números.')
+          .max(9, 'Máximo de nove números.'),
       });
 
       await verifySchema.validate(values, {
@@ -206,10 +190,9 @@ export default function VoterRegister() {
         return;
       }
       return toast({
-        title:
-          err?.response?.data?.message || "Eleitor registrado no gabinete.",
-        status: "warning",
-        position: "top-right",
+        title: err?.response?.data?.message || 'Eleitor registrado no gabinete.',
+        status: 'warning',
+        position: 'top-right',
         duration: 3000,
         isClosable: true,
       });
@@ -224,13 +207,9 @@ export default function VoterRegister() {
         Cadastrar Eleitor
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
-        <Stack spacing={[5, 8]} mt={["24px", "40px"]} w="852px">
-          <Flex flexDir={"column"}>
-            <Text
-              color={verify ? "gray.300" : "gray.500"}
-              fontWeight="400"
-              margin="0"
-            >
+        <Stack spacing={[5, 8]} mt={['24px', '40px']} w="852px">
+          <Flex flexDir={'column'}>
+            <Text color={verify ? 'gray.300' : 'gray.500'} fontWeight="400" margin="0">
               Telefone*:
             </Text>
             <Flex>
@@ -271,71 +250,72 @@ export default function VoterRegister() {
                   });
                 }}
                 placeholder="00000-0000"
-                w={["100%", "180px"]}
+                w={['100%', '180px']}
                 borderColor="gray.500"
                 isDisabled={verify}
               />
-              <Button
-                onClick={verifyVoter}
-                width="220px"
-                ml="45px"
-                isDisabled={verify}
-              >
-                {loading ? <Spinner color="white" /> : "Verificar"}
+              <Button onClick={verifyVoter} width="220px" ml="45px" isDisabled={verify}>
+                {loading ? <Spinner color="white" /> : 'Verificar'}
               </Button>
             </Flex>
           </Flex>
 
           <Input
-            labelColor={!verify ? "gray.300" : "gray.500"}
+            labelColor={!verify ? 'gray.300' : 'gray.500'}
             label="Nome*:"
             placeholder="Nome completo"
             name="name"
             type="text"
             error={errors?.name}
             value={values.name}
-            onChange={(e) =>
-              setValues({ ...values, [e.target.name]: e.target.value })
-            }
+            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
             borderColor="gray.500"
             disabled={!verify}
           />
           <Input
-            labelColor={!verify ? "gray.300" : "gray.500"}
+            labelColor={!verify ? 'gray.300' : 'gray.500'}
+            label="Referência:"
+            placeholder="Referência do eleitor"
+            name="reference"
+            type="text"
+            error={errors?.reference}
+            value={values.reference}
+            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            borderColor="gray.500"
+            disabled={!verify}
+          />
+          <Input
+            labelColor={!verify ? 'gray.300' : 'gray.500'}
             label="E-mail:"
             placeholder="E-mail"
             name="email"
             type="email"
             error={errors?.email}
             value={values.email}
-            onChange={(e) =>
-              setValues({ ...values, [e.target.name]: e.target.value })
-            }
+            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
             borderColor="gray.500"
             disabled={!verify}
           />
           <Box>
             <Flex
-              justifyContent={["flex-start", "space-between"]}
-              alignItems={["flex-start", "flex-end"]}
-              flexDirection={["column", "row"]}
-              gap={[5, "48px"]}
+              justifyContent={['flex-start', 'space-between']}
+              alignItems={['flex-start', 'flex-end']}
+              flexDirection={['column', 'row']}
+              gap={[5, '48px']}
             >
               <Input
-                labelColor={!verify ? "gray.300" : "gray.500"}
+                labelColor={!verify ? 'gray.300' : 'gray.500'}
                 label="Data de nascimento:"
                 name="birthdate"
                 type="date"
                 error={errors?.birthdate}
                 value={values.birthdate}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 placeholder="Data de Nascimento"
                 borderColor="gray.500"
                 css={{
-                  "&::-webkit-calendar-picker-indicator": {
-                    color: "gray.500",
+                  '&::-webkit-calendar-picker-indicator': {
+                    color: 'gray.500',
                   },
                 }}
                 // rightIcon={
@@ -347,48 +327,22 @@ export default function VoterRegister() {
                 // }
                 disabled={!verify}
               />
-              <PatternFormat
-                customInput={Input}
-                type="text"
-                label="CPF:"
-                format="###.###.###-##"
-                mask="_"
-                name="document"
-                error={errors?.document}
-                value={values?.documentMask}
-                onValueChange={(value) => {
-                  setValues({
-                    ...values,
-                    document: value?.value,
-                    documentMask: value?.formattedValue,
-                  });
-                }}
-                borderColor="gray.500"
-                disabled={!verify}
-                labelColor={!verify ? "gray.300" : "gray.500"}
-                placeholder="CPF"
-              />
+
 
               <Box w="100%">
-                <Text
-                  color={!verify ? "gray.300" : "gray.500"}
-                  fontWeight="400"
-                  margin="0"
-                >
+                <Text color={!verify ? 'gray.300' : 'gray.500'} fontWeight="400" margin="0">
                   Gênero:
                 </Text>
                 <Select
                   placeholder="Gênero"
                   borderColor="gray.500"
                   bg="gray.50"
-                  _placeholder={{ color: "gray.500" }}
+                  _placeholder={{ color: 'gray.500' }}
                   color="gray.600"
                   disabled={!verify}
                   value={values?.gender}
                   name="gender"
-                  onChange={(e) =>
-                    setValues({ ...values, [e.target.name]: e.target.value })
-                  }
+                  onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 >
                   <option value="MALE">Masculino</option>
                   <option value="FEMALE">Feminino</option>
@@ -398,23 +352,17 @@ export default function VoterRegister() {
           </Box>
           <Box>
             <Flex>
-              <Text
-                color={!verify ? "gray.300" : "gray.500"}
-                fontWeight="400"
-                margin="0"
-              >
+              <Text color={!verify ? 'gray.300' : 'gray.500'} fontWeight="400" margin="0">
                 Endereço:
               </Text>
-              {cepLoading && (
-                <Spinner color={office?.primary_color} size="sm" />
-              )}
+              {cepLoading && <Spinner color={office?.primary_color} size="sm" />}
             </Flex>
             <Flex
               mb="24px"
-              justifyContent={["flex-start"]}
-              alignItems={["flex-start", "flex-end"]}
-              flexDirection={["column", "row"]}
-              gap={[5, "44px"]}
+              justifyContent={['flex-start']}
+              alignItems={['flex-start', 'flex-end']}
+              flexDirection={['column', 'row']}
+              gap={[5, '44px']}
             >
               <PatternFormat
                 customInput={Input}
@@ -433,20 +381,20 @@ export default function VoterRegister() {
                 }}
                 borderColor="gray.500"
                 disabled={!verify}
-                w={["100%", "200px"]}
+                w={['100%', '200px']}
                 placeholder="CEP"
               />
               <Button onClick={getCep} width="280px" isDisabled={!verify}>
-                {loading ? <Spinner color="white" /> : "Buscar"}
+                {loading ? <Spinner color="white" /> : 'Buscar'}
               </Button>
             </Flex>
 
             <Flex
               mb="24px"
-              justifyContent={["flex-start", "space-between"]}
-              alignItems={["flex-start", "flex-end"]}
-              flexDirection={["column", "row"]}
-              gap={[5, "44px"]}
+              justifyContent={['flex-start', 'space-between']}
+              alignItems={['flex-start', 'flex-end']}
+              flexDirection={['column', 'row']}
+              gap={[5, '44px']}
             >
               <Input
                 placeholder="Rua"
@@ -454,9 +402,7 @@ export default function VoterRegister() {
                 type="text"
                 error={errors?.street}
                 value={values.street}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 borderColor="gray.500"
                 flex={1}
                 disabled={!verify}
@@ -467,9 +413,7 @@ export default function VoterRegister() {
                 type="text"
                 error={errors?.neighborhood}
                 value={values.neighborhood}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 borderColor="gray.500"
                 flex={1}
                 disabled={!verify}
@@ -479,21 +423,19 @@ export default function VoterRegister() {
                 type="number"
                 error={errors?.address_number}
                 value={values.address_number}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 placeholder="Numero"
-                w={["100%", "200px"]}
+                w={['100%', '200px']}
                 borderColor="gray.500"
                 disabled={!verify}
               />
             </Flex>
             <Flex
               mb="24px"
-              justifyContent={["flex-start", "space-between"]}
-              alignItems={["flex-start", "flex-end"]}
-              flexDirection={["column", "row"]}
-              gap={[5, "44px"]}
+              justifyContent={['flex-start', 'space-between']}
+              alignItems={['flex-start', 'flex-end']}
+              flexDirection={['column', 'row']}
+              gap={[5, '44px']}
             >
               <Input
                 placeholder="Complemento"
@@ -501,9 +443,7 @@ export default function VoterRegister() {
                 type="text"
                 error={errors?.complement}
                 value={values.complement}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 borderColor="gray.500"
                 disabled={!verify}
               />
@@ -513,9 +453,7 @@ export default function VoterRegister() {
                 type="text"
                 error={errors?.city}
                 value={values.city}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 borderColor="gray.500"
                 disabled={!verify}
               />
@@ -525,23 +463,16 @@ export default function VoterRegister() {
                 type="text"
                 error={errors?.state}
                 value={values.state}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 borderColor="gray.500"
                 disabled={!verify}
               />
             </Flex>
           </Box>
 
-          <Flex
-            w="100%"
-            alignItems="center"
-            justifyContent="center"
-            mt={["40px", "95px"]}
-          >
+          <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
             <Button onClick={handleRegister} width="280px" isDisabled={!verify}>
-              {loading ? <Spinner color="white" /> : "Cadastrar"}
+              {loading ? <Spinner color="white" /> : 'Cadastrar'}
             </Button>
           </Flex>
         </Stack>

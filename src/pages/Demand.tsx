@@ -158,7 +158,7 @@ export default function Demand() {
         </Text>
         {role?.demandas_page > 1 && (
           <Button
-            onClick={() => navigate("/registrar-demanda")}
+            onClick={() => navigate("/demanda/registrar-demanda")}
             w={["160px", "280px"]}
           >
             Cadastrar Demanda
@@ -251,6 +251,7 @@ export default function Demand() {
                     case "title":
                       if (filterField?.length >= 3) {
                         return (
+                          currentValue?.title &&
                           currentValue?.title
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
@@ -261,6 +262,7 @@ export default function Demand() {
                     case "voter":
                       if (filterField?.length >= 3) {
                         return (
+                          currentValue?.voter?.name &&
                           currentValue?.voter?.name
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
@@ -282,6 +284,7 @@ export default function Demand() {
                     case "city":
                       if (filterField?.length >= 3) {
                         return (
+                          currentValue?.voter?.city &&
                           currentValue?.voter?.city
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
@@ -292,6 +295,7 @@ export default function Demand() {
                     case "neighborhood":
                       if (filterField?.length >= 3) {
                         return (
+                          currentValue?.voter?.neighborhood &&
                           currentValue?.voter?.neighborhood
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
@@ -341,7 +345,7 @@ export default function Demand() {
                             )
                           : "-"}
                       </Td>
-                      {role?.equipe_page > 1 && (
+                      {role?.demandas_page > 1 && (
                         <Td
                           py="4px"
                           borderBottomWidth="1px"

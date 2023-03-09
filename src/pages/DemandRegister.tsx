@@ -11,6 +11,8 @@ import {
   Textarea,
   Switch,
   Select,
+  Button as ChakraButton,
+  Link,
 } from "@chakra-ui/react";
 import {
   ChangeEvent,
@@ -63,10 +65,6 @@ export default function DemandRegister() {
 
   const handleResource = () => {
     setResource(!resource);
-  };
-
-  const handleCreateVoter = (cellphone: string) => {
-    navigate("/demanda/registrar-eleitor", { state: { cellphone } });
   };
 
   const handleRegister = async (e: FormEvent) => {
@@ -359,13 +357,19 @@ export default function DemandRegister() {
                 cursor="pointer"
               >
                 <Text color="gray.400">Eleitor não encontrado</Text>
-                <Button
+
+                <ChakraButton
+                  as="a"
                   w="220px"
                   h="30px"
-                  onClick={() => handleCreateVoter(values?.cellphone)}
+                  href={`${process.env.REACT_APP_WEB}/demanda/registrar-eleitor/${values?.cellphone}`}
+                  target="_blank"
+                  bg={office?.primary_color}
+                  color={office?.secondary_color}
+                  _hover={{ bg: office?.primary_color }}
                 >
-                  Cadastrar o eleitor
-                </Button>
+                  Cadastrar eleitor
+                </ChakraButton>
               </Flex>
             )}
           </Box>
