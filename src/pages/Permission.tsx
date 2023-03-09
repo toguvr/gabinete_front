@@ -198,7 +198,12 @@ export default function Permission() {
           {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
         </Text>
         {role?.equipe_page > 1 && (
-          <Button onClick={() => navigate('/registrar-equipe')} w={['160px', '280px']}>
+
+          <Button
+            onClick={() => navigate("/equipe/registrar-equipe")}
+            w={["160px", "280px"]}
+          >
+
             Cadastrar equipe
           </Button>
         )}

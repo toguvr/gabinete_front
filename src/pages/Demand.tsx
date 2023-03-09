@@ -137,7 +137,12 @@ export default function Demand() {
           Demanda
         </Text>
         {role?.demandas_page > 1 && (
-          <Button onClick={() => navigate('/registrar-demanda')} w={['160px', '280px']}>
+
+          <Button
+            onClick={() => navigate("/demanda/registrar-demanda")}
+            w={["160px", "280px"]}
+          >
+
             Cadastrar Demanda
           </Button>
         )}

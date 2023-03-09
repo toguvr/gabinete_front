@@ -20,11 +20,12 @@ import { useNavigate } from "react-router";
 import Button from "../components/Form/Button";
 import { getFormatDate } from "../utils/date";
 import { PatternFormat } from "react-number-format";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 export default function DemandaRegisterVoter() {
-  const location = useLocation();
-  const { cellphone } = location.state;
+  const { id } = useParams();
+  const cellphone = id;
+  console.log("cellphone", cellphone);
   const [values, setValues] = useState({} as StateProps);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,6 @@ export default function DemandaRegisterVoter() {
   const [verify, setVerify] = useState(cellphone ? true : false);
   const { office, role } = useAuth();
   const navigate = useNavigate();
-  const [openCepInputs, setOpenCepInputs] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
 
   const handleRegister = useCallback(
@@ -140,8 +140,24 @@ export default function DemandaRegisterVoter() {
         `https://viacep.com.br/ws/${values?.zip}/json/`
       );
 
+      if (response.data.erro) {
+        setValues({
+          ...values,
+          street: "",
+          neighborhood: "",
+          city: "",
+          state: "",
+        });
+        return toast({
+          title: "Cep não encontrado, tente novamente",
+          status: "error",
+          position: "top-right",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+
       const { bairro, localidade, logradouro, uf } = response.data;
-      setOpenCepInputs(true);
       setValues({
         ...values,
         street: logradouro,
@@ -238,7 +254,7 @@ export default function DemandaRegisterVoter() {
           />
           <Input
             labelColor={!verify ? "gray.300" : "gray.500"}
-            label="E-mail*:"
+            label="E-mail:"
             placeholder="E-mail"
             name="email"
             type="email"
@@ -385,7 +401,7 @@ export default function DemandaRegisterVoter() {
                 }
                 borderColor="gray.500"
                 flex={1}
-                disabled={!verify || !openCepInputs}
+                disabled={!verify}
               />
             </Flex>
             <Flex
@@ -406,7 +422,7 @@ export default function DemandaRegisterVoter() {
                 }
                 borderColor="gray.500"
                 flex={1}
-                disabled={!verify || !openCepInputs}
+                disabled={!verify}
               />
               <Input
                 name="address_number"
@@ -419,7 +435,7 @@ export default function DemandaRegisterVoter() {
                 placeholder="Numero"
                 w={["100%", "200px"]}
                 borderColor="gray.500"
-                disabled={!verify || !openCepInputs}
+                disabled={!verify}
               />
             </Flex>
             <Flex
@@ -439,7 +455,7 @@ export default function DemandaRegisterVoter() {
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 borderColor="gray.500"
-                disabled={!verify || !openCepInputs}
+                disabled={!verify}
               />
               <Input
                 placeholder="Cidade"
@@ -451,7 +467,7 @@ export default function DemandaRegisterVoter() {
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 borderColor="gray.500"
-                disabled={!verify || !openCepInputs}
+                disabled={!verify}
               />
               <Input
                 placeholder="UF"
@@ -463,7 +479,7 @@ export default function DemandaRegisterVoter() {
                   setValues({ ...values, [e.target.name]: e.target.value })
                 }
                 borderColor="gray.500"
-                disabled={!verify || !openCepInputs}
+                disabled={!verify}
               />
             </Flex>
           </Box>
