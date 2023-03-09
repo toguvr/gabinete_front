@@ -40,7 +40,7 @@ export const privateRoute = [
   { pathname: "/eleitor", permissionName: "eleitor_page" },
   { pathname: "/demanda", permissionName: "demandas_page" },
   { pathname: "/tarefa", permissionName: "tarefas_page" },
-  { pathname: "/solicitacoes", permissionName: "tarefas_page" },
+  // { pathname: "/solicitacoes", permissionName: "tarefas_page" },
 ];
 
 const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
@@ -100,7 +100,7 @@ export default function AppRoutes() {
       <Route element={<AuthenticatedRoutes isPrivate />}>
         {/* <Route path="/home" element={<Home />} /> */}
 
-        <Route path="/solicitacoes" element={<Solicitations />} />
+        {/* <Route path="/solicitacoes" element={<Solicitations />} /> */}
 
         <Route path="/equipe" element={<Permission />} />
         <Route path="/equipe/:id" element={<PermissionEdit />} />

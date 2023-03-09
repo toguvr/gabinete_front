@@ -362,14 +362,13 @@ export default function DemandRegister() {
                   as="a"
                   w="220px"
                   h="30px"
-                  href={`http://localhost:3000/demanda/registrar-eleitor/${values?.cellphone}`}
-                  // href={`${process.env.REACT_APP_WEB}/demanda/registrar-eleitor/${values?.cellphone}`}
+                  href={`${process.env.REACT_APP_WEB}/demanda/registrar-eleitor/${values?.cellphone}`}
                   target="_blank"
                   bg={office?.primary_color}
                   color={office?.secondary_color}
                   _hover={{ bg: office?.primary_color }}
                 >
-                  Cadastraro eleitor
+                  Cadastrar eleitor
                 </ChakraButton>
               </Flex>
             )}

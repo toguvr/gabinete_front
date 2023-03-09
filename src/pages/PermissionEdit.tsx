@@ -67,73 +67,70 @@ export default function PermissionEdit() {
     getRoles();
   }, []);
 
-  const handleUpdatePermission = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault();
+  const handleUpdatePermission = async (e: FormEvent) => {
+    e.preventDefault();
 
-      setErrors({});
+    setErrors({});
 
-      setLoading(true);
-      try {
-        const schema = Yup.object().shape({
-          name: Yup.string().required("Nome completo obrigatório"),
-          email: Yup.string()
-            .email("Email inválido")
-            .required("Email obrigatório"),
-        });
+    setLoading(true);
+    try {
+      const schema = Yup.object().shape({
+        name: Yup.string().required("Nome obrigatório"),
+        email: Yup.string()
+          .email("Email inválido")
+          .required("Email obrigatório"),
+      });
 
-        await schema.validate(values, {
-          abortEarly: false,
-        });
+      await schema.validate(values, {
+        abortEarly: false,
+      });
 
-        const body = {
-          role_id: values?.role_id,
-          permissionId: id,
-        };
+      const body = {
+        role_id: values?.role_id,
+        permissionId: id,
+      };
 
-        await api.put("/permission", body);
+      await api.put("/permission", body);
 
-        toast({
-          title: "Ataulizado com sucesso",
-          description: "Você atualizou uma equipe.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-          position: "top-right",
-        });
-        navigate("/equipe");
-      } catch (err: any) {
-        if (err instanceof Yup.ValidationError) {
-          setErrors(getValidationErrors(err));
+      toast({
+        title: "Ataulizado com sucesso",
+        description: "Você atualizou uma equipe.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top-right",
+      });
+      navigate("/equipe");
+    } catch (err: any) {
+      if (err instanceof Yup.ValidationError) {
+        setErrors(getValidationErrors(err));
 
-          return;
-        }
-        if (err.response) {
-          return toast({
-            title:
-              err.response.data.message ||
-              "Ocorreu um erro ao cadastrar a equipe, cheque as credenciais",
-
-            status: "error",
-            position: "top-right",
-            duration: 3000,
-            isClosable: true,
-          });
-        }
+        return;
+      }
+      if (err.response) {
         return toast({
-          title: "Ocorreu um erro ao cadastrar a equipe, cheque as credenciais",
+          title:
+            err.response.data.message ||
+            "Ocorreu um erro ao cadastrar a equipe, cheque as credenciais",
 
           status: "error",
           position: "top-right",
           duration: 3000,
           isClosable: true,
         });
-      } finally {
-        setLoading(false);
       }
-    },
-    [values]
-  );
+      return toast({
+        title: "Ocorreu um erro ao cadastrar a equipe, cheque as credenciais",
+
+        status: "error",
+        position: "top-right",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getPermissionById = async () => {
     setLoading(true);
