@@ -147,9 +147,18 @@ export default function Tarefa() {
           gap={['20px', '0']}
           alignItems={['center', 'flex-start']}
         >
-          <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
-            Tarefas
-            {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
+
+          <Text
+            color="gray.500"
+            fontWeight="semibold"
+            fontSize="20px"
+            ml={[0, "28px"]}
+          >
+            Tarefa
+            {loading && (
+              <Spinner color={office?.primary_color} ml="4" size="sm" />
+            )}
+
           </Text>
           <Button onClick={getOfficeList} w={['160px', '280px']}>
             Atualizar
@@ -158,8 +167,10 @@ export default function Tarefa() {
         <Text mt="36px" color="gray.500">
           Filtrar por:
         </Text>
-        <Flex height="40px">
-          <Flex flex={1} gap={['12px', '24px']}>
+
+        <Flex height="40px" maxW="600px">
+          <Flex flex={1} gap={["12px", "24px"]}>
+
             <Select
               w="220px"
               borderColor="gray.500"
@@ -217,8 +228,8 @@ export default function Tarefa() {
                 value={filterField}
                 maxW="600px"
               >
-                <option value="BACKLOG">Backlog</option>
-                <option value="FAZENDO">Fazendo</option>
+                <option value="BACKLOG">Pendente</option>
+                <option value="FAZENDO">Executando</option>
                 <option value="CONCLUIDO">Concluído</option>
               </Select>
             )}

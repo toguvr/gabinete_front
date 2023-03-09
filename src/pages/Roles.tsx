@@ -190,9 +190,18 @@ export default function Roles() {
         gap={['20px', '0']}
         alignItems={['center', 'flex-start']}
       >
-        <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
-          Cargos
-          {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
+
+        <Text
+          color="gray.500"
+          fontWeight="semibold"
+          fontSize="20px"
+          ml={[0, "28px"]}
+        >
+          Cargo
+          {loading && (
+            <Spinner color={office?.primary_color} ml="4" size="sm" />
+          )}
+
         </Text>
         {role?.cargo_page > 1 && (
           <Button onClick={() => navigate('/registrar-cargo')} w={['160px', '280px']}>
@@ -285,11 +294,11 @@ export default function Roles() {
           <Thead position="sticky" top="0px">
             <Tr borderBottomWidth={'4px'} borderBottomStyle="solid" borderBottomColor={'gray.300'}>
               <Th color="gray.600">Nome</Th>
-              <Th color="gray.600">Cargos</Th>
+              <Th color="gray.600">Cargo</Th>
               <Th color="gray.600">Equipe</Th>
               <Th color="gray.600">Eleitor</Th>
               <Th color="gray.600">Demanda</Th>
-              <Th color="gray.600">Tarefas</Th>
+              <Th color="gray.600">Tarefa</Th>
               {role?.cargo_page > 1 && (
                 <Th color="gray.600" w="8">
                   Ações

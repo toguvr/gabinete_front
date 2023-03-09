@@ -129,7 +129,7 @@ export default function RoleRegister() {
       values: values?.home_page,
     },
     {
-      name: "Cargos",
+      name: "Cargo",
       fix: "cargo_page",
       values: values?.cargo_page,
     },
@@ -149,7 +149,7 @@ export default function RoleRegister() {
       values: values?.demandas_page,
     },
     {
-      name: "Tarefas",
+      name: "Tarefa",
       fix: "tarefas_page",
       values: values?.tarefas_page,
     },
@@ -249,7 +249,7 @@ export default function RoleRegister() {
         {/* </AlertDialogOverlay> */}
       </AlertDialog>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
-        Cadastrar Cargos
+        Cadastrar Cargo
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
         <Stack spacing={[5, 10]} mt={["24px", "40px"]} w="852px">
@@ -292,7 +292,7 @@ export default function RoleRegister() {
                       setValues({ ...values, [e.target.name]: e.target.value })
                     }
                   >
-                    {page.name === "Tarefas"
+                    {page.name === "Tarefa"
                       ? roleStatusTasks.map((role) => {
                           return (
                             <option key={role?.key} value={role?.key}>
