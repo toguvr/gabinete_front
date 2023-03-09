@@ -1,5 +1,6 @@
 import {
   Flex,
+  Icon,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -7,31 +8,29 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Icon,
-  Text,
+  Select,
+  Spinner,
   Table,
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
   useDisclosure,
-  Select,
-  Spinner,
-} from "@chakra-ui/react";
-import { useState, useEffect } from "react";
-import Button from "../components/Form/Button";
-import HeaderSideBar from "../components/HeaderSideBar";
-import TaskCard from "../components/TaskCard";
-import TaskListStatusIcon from "../components/TaskListStatusIcon";
-import { useAuth } from "../contexts/AuthContext";
-import { StateProps, TaskPropsDTO } from "../dtos";
-import api from "../services/api";
-import { IoSearchSharp } from "react-icons/io5";
-import Input from "../components/Form/Input";
-import { taskPage } from "../utils/filterTables";
-import { useNavigate } from "react-router-dom";
+} from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { IoSearchSharp } from 'react-icons/io5';
+import Button from '../components/Form/Button';
+import Input from '../components/Form/Input';
+import HeaderSideBar from '../components/HeaderSideBar';
+import TaskCard from '../components/TaskCard';
+import TaskListStatusIcon from '../components/TaskListStatusIcon';
+import { useAuth } from '../contexts/AuthContext';
+import { StateProps, TaskPropsDTO } from '../dtos';
+import api from '../services/api';
+import { taskPage } from '../utils/filterTables';
 
 export default function Tarefa() {
   const [selectedTask, setSelectedTask] = useState({} as TaskPropsDTO);
@@ -39,29 +38,27 @@ export default function Tarefa() {
   const [loading, setLoading] = useState(false);
   const auth = useAuth();
   const { office } = useAuth();
-  const [filterField, setFilterField] = useState("");
+  const [filterField, setFilterField] = useState('');
   const [errors, setErrors] = useState({} as StateProps);
-  const [selectFilter, setSelectFilter] = useState("title");
+  const [selectFilter, setSelectFilter] = useState('title');
 
   async function getOfficeList() {
     setTaskList([] as TaskPropsDTO[]);
 
     setLoading(true);
     try {
-      const response = await api.get(
-        `/task/office/${auth.office.id}/responsible`
-      );
+      const response = await api.get(`/task/office/${auth.office.id}/responsible`);
       response.data.sort((a: any, b: any) => {
-        if (a.status === "BACKLOG") {
+        if (a.status === 'BACKLOG') {
           return -1;
         }
-        if (a.status === "FAZENDO" && b.status === "BACKLOG") {
+        if (a.status === 'FAZENDO' && b.status === 'BACKLOG') {
           return 1;
         }
-        if (a.status === "FAZENDO" && b.status === "CONCLUIDO") {
+        if (a.status === 'FAZENDO' && b.status === 'CONCLUIDO') {
           return -1;
         }
-        if (a.status === "CONCLUIDO") {
+        if (a.status === 'CONCLUIDO') {
           return 1;
         }
         return 0;
@@ -87,16 +84,16 @@ export default function Tarefa() {
       });
 
       taskListUpdated.sort((a, b) => {
-        if (a.status === "BACKLOG") {
+        if (a.status === 'BACKLOG') {
           return -1;
         }
-        if (a.status === "FAZENDO" && b.status === "BACKLOG") {
+        if (a.status === 'FAZENDO' && b.status === 'BACKLOG') {
           return 1;
         }
-        if (a.status === "FAZENDO" && b.status === "CONCLUIDO") {
+        if (a.status === 'FAZENDO' && b.status === 'CONCLUIDO') {
           return -1;
         }
-        if (a.status === "CONCLUIDO") {
+        if (a.status === 'CONCLUIDO') {
           return 1;
         }
         return 0;
@@ -137,11 +134,7 @@ export default function Tarefa() {
             <TaskCard task={selectedTask} />
           </ModalBody>
 
-          <ModalFooter
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
+          <ModalFooter display="flex" alignItems="center" justifyContent="center">
             <Button alignSelf="center" onClick={onClose} w="85px">
               Fechar
             </Button>
@@ -150,30 +143,34 @@ export default function Tarefa() {
       </Modal>
       <Flex flexDirection="column">
         <Flex
-          justifyContent={"space-between"}
-          gap={["20px", "0"]}
-          alignItems={["center", "flex-start"]}
+          justifyContent={'space-between'}
+          gap={['20px', '0']}
+          alignItems={['center', 'flex-start']}
         >
+
           <Text
             color="gray.500"
             fontWeight="semibold"
             fontSize="20px"
             ml={[0, "28px"]}
           >
-            Tarefas
+            Tarefa
             {loading && (
               <Spinner color={office?.primary_color} ml="4" size="sm" />
             )}
+
           </Text>
-          <Button onClick={getOfficeList} w={["160px", "280px"]}>
+          <Button onClick={getOfficeList} w={['160px', '280px']}>
             Atualizar
           </Button>
         </Flex>
         <Text mt="36px" color="gray.500">
           Filtrar por:
         </Text>
-        <Flex height="40px">
+
+        <Flex height="40px" maxW="600px">
           <Flex flex={1} gap={["12px", "24px"]}>
+
             <Select
               w="220px"
               borderColor="gray.500"
@@ -192,7 +189,7 @@ export default function Tarefa() {
               })}
             </Select>
 
-            {selectFilter === "id" || selectFilter === "title" ? (
+            {selectFilter === 'id' || selectFilter === 'title' ? (
               <Input
                 maxW="600px"
                 type="text"
@@ -205,11 +202,9 @@ export default function Tarefa() {
                   setFilterField(e.target.value);
                 }}
                 borderColor="gray.500"
-                rightIcon={
-                  <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-                }
+                rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
               />
-            ) : selectFilter === "priority" ? (
+            ) : selectFilter === 'priority' ? (
               <Select
                 borderColor="gray.500"
                 onChange={(e) => {
@@ -233,8 +228,8 @@ export default function Tarefa() {
                 value={filterField}
                 maxW="600px"
               >
-                <option value="BACKLOG">Backlog</option>
-                <option value="FAZENDO">Fazendo</option>
+                <option value="BACKLOG">Pendente</option>
+                <option value="FAZENDO">Executando</option>
                 <option value="CONCLUIDO">Concluído</option>
               </Select>
             )}
@@ -247,28 +242,28 @@ export default function Tarefa() {
               position="sticky"
               top="0px"
               background="white"
-              borderBottomWidth={"4px"}
+              borderBottomWidth={'4px'}
               borderBottomStyle="solid"
-              borderBottomColor={"gray.300"}
+              borderBottomColor={'gray.300'}
             >
               <Tr>
                 <Th
                   textAlign="center"
-                  fontSize={{ base: "10px", md: "12px", lg: "14px" }}
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   color="gray.600"
                 >
                   Id
                 </Th>
                 <Th
                   textAlign="center"
-                  fontSize={{ base: "10px", md: "12px", lg: "14px" }}
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   color="gray.600"
                 >
                   Status
                 </Th>
                 <Th
                   textAlign="center"
-                  fontSize={{ base: "10px", md: "12px", lg: "14px" }}
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   color="gray.600"
                 >
                   Título
@@ -276,7 +271,7 @@ export default function Tarefa() {
 
                 <Th
                   textAlign="center"
-                  fontSize={{ base: "10px", md: "12px", lg: "14px" }}
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
                   color="gray.600"
                 >
                   Prioridade
@@ -288,9 +283,10 @@ export default function Tarefa() {
                 taskList
                   .filter((currentValue: any) => {
                     switch (selectFilter) {
-                      case "id":
+                      case 'id':
                         if (filterField) {
                           return (
+                            currentValue?.id &&
                             String(currentValue?.id)
                               .toLowerCase()
                               .indexOf(filterField?.toLowerCase()) > -1
@@ -298,29 +294,30 @@ export default function Tarefa() {
                         } else {
                           return currentValue;
                         }
-                      case "title":
+                      case 'title':
                         if (filterField?.length >= 3) {
                           return (
-                            currentValue?.title
-                              .toLowerCase()
-                              .indexOf(filterField?.toLowerCase()) > -1
+                            currentValue?.title &&
+                            currentValue?.title.toLowerCase().indexOf(filterField?.toLowerCase()) >
+                              -1
                           );
                         } else {
                           return currentValue;
                         }
-                      case "status":
+                      case 'status':
                         if (filterField?.length >= 3) {
                           return (
-                            currentValue?.status
-                              .toLowerCase()
-                              .indexOf(filterField?.toLowerCase()) > -1
+                            currentValue?.status &&
+                            currentValue?.status.toLowerCase().indexOf(filterField?.toLowerCase()) >
+                              -1
                           );
                         } else {
                           return currentValue;
                         }
-                      case "priority":
+                      case 'priority':
                         if (filterField?.length >= 3) {
                           return (
+                            currentValue?.priority &&
                             currentValue?.priority
                               .toLowerCase()
                               .indexOf(filterField?.toLowerCase()) > -1
@@ -333,7 +330,7 @@ export default function Tarefa() {
                     }
                   })
                   .map((task) => (
-                    <Tr key={task.id} bg="white" cursor={"pointer"}>
+                    <Tr key={task.id} bg="white" cursor={'pointer'}>
                       <Td
                         onClick={() => {
                           handleSelectTask(task.id);
@@ -360,9 +357,9 @@ export default function Tarefa() {
                       >
                         <div
                           style={{
-                            alignSelf: "center",
-                            display: "flex",
-                            justifyContent: "center",
+                            alignSelf: 'center',
+                            display: 'flex',
+                            justifyContent: 'center',
                           }}
                         >
                           <TaskListStatusIcon
@@ -390,11 +387,11 @@ export default function Tarefa() {
                       <Td
                         onClick={() => handleSelectTask(task.id)}
                         color={
-                          task.priority === "ALTA"
-                            ? "red.500"
-                            : task.priority === "MEDIA"
-                            ? "yellow.500"
-                            : "gray.500"
+                          task.priority === 'ALTA'
+                            ? 'red.500'
+                            : task.priority === 'MEDIA'
+                            ? 'yellow.500'
+                            : 'gray.500'
                         }
                         fontSize="14px"
                         borderBottomWidth="1px"
@@ -403,17 +400,15 @@ export default function Tarefa() {
                         py="4px"
                         textAlign="center"
                       >
-                        <div
-                          style={{ display: "flex", justifyContent: "center" }}
-                        >
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
                           <Text
                             justifyContent="center"
                             background={
-                              task.priority === "ALTA"
-                                ? "red.100"
-                                : task.priority === "MEDIA"
-                                ? "yellow.100"
-                                : "gray.100"
+                              task.priority === 'ALTA'
+                                ? 'red.100'
+                                : task.priority === 'MEDIA'
+                                ? 'yellow.100'
+                                : 'gray.100'
                             }
                             borderRadius="4px"
                             padding="4px"
