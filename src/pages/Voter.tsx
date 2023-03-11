@@ -39,7 +39,13 @@ import {
 } from '@react-pdf/renderer';
 import { addHours } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
-import { IoPencilOutline, IoPrintOutline, IoSearchSharp, IoTrashOutline } from 'react-icons/io5';
+import {
+  IoAdd,
+  IoPencilOutline,
+  IoPrintOutline,
+  IoSearchSharp,
+  IoTrashOutline,
+} from 'react-icons/io5';
 import { NumericFormat } from 'react-number-format';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Form/Button';
@@ -278,7 +284,6 @@ export default function Voter() {
     );
   };
 
-
   return (
     <HeaderSideBar>
       <AlertDialog
@@ -358,12 +363,7 @@ export default function Voter() {
           {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
         </Text>
         {role?.eleitor_page > 1 && (
-
-          <Button
-            onClick={() => navigate("/eleitor/registrar-eleitor")}
-            w={["160px", "280px"]}
-          >
-
+          <Button onClick={() => navigate('/eleitor/registrar-eleitor')} w={['160px', '280px']}>
             Cadastrar eleitor
           </Button>
         )}
@@ -451,7 +451,7 @@ export default function Voter() {
               <Th color="gray.600">Telefone</Th>
               <Th color="gray.600">Endereço</Th>
               {role?.eleitor_page > 1 && (
-                <Th color="gray.600" w="8">
+                <Th textAlign="center" color="gray.600" w="8">
                   Ações
                 </Th>
               )}
@@ -644,6 +644,16 @@ export default function Voter() {
                                   as={IoPencilOutline}
                                   color="gray.600"
                                 />
+                              }
+                            />
+                            <IconButton
+                              onClick={() =>
+                                navigate(`/demanda/registrar-demanda/${voter?.cellphone}`)
+                              }
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              icon={
+                                <Icon cursor="pointer" fontSize="24" as={IoAdd} color="gray.600" />
                               }
                             />
 
