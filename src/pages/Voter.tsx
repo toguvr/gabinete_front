@@ -89,7 +89,6 @@ export default function Voter() {
 
   useEffect(() => {
     getVoterList();
-    console.log('eleitores', data);
   }, []);
 
   const deleteVoter = async () => {
@@ -278,7 +277,6 @@ export default function Voter() {
     );
   };
 
-
   return (
     <HeaderSideBar>
       <AlertDialog
@@ -358,12 +356,7 @@ export default function Voter() {
           {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
         </Text>
         {role?.eleitor_page > 1 && (
-
-          <Button
-            onClick={() => navigate("/eleitor/registrar-eleitor")}
-            w={["160px", "280px"]}
-          >
-
+          <Button onClick={() => navigate('/eleitor/registrar-eleitor')} w={['160px', '280px']}>
             Cadastrar eleitor
           </Button>
         )}

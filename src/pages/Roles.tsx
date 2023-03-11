@@ -80,6 +80,8 @@ export default function Roles() {
     }
   };
 
+  
+
   useEffect(() => {
     getRoles();
   }, []);
@@ -190,26 +192,12 @@ export default function Roles() {
         gap={['20px', '0']}
         alignItems={['center', 'flex-start']}
       >
-
-        <Text
-          color="gray.500"
-          fontWeight="semibold"
-          fontSize="20px"
-          ml={[0, "28px"]}
-        >
+        <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
           Cargo
-          {loading && (
-            <Spinner color={office?.primary_color} ml="4" size="sm" />
-          )}
-
+          {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
         </Text>
         {role?.cargo_page > 1 && (
-
-          <Button
-            onClick={() => navigate("/cargo/registrar-cargo")}
-            w={["160px", "280px"]}
-          >
-
+          <Button onClick={() => navigate('/cargo/registrar-cargo')} w={['160px', '280px']}>
             Cadastrar cargo
           </Button>
         )}
