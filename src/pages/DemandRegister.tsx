@@ -195,10 +195,6 @@ export default function DemandRegister() {
     }
   };
 
-  useEffect(() => {
-    getPermissions();
-  }, []);
-
   const postDocument = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const file = e.target.files;
@@ -245,6 +241,16 @@ export default function DemandRegister() {
   };
 
   const header = renderHeader();
+
+  useEffect(() => {
+    getPermissions();
+  }, []);
+
+  useEffect(() => {
+    if (responsibles) {
+      verifyPermission();
+    }
+  }, [responsibles]);
 
   return (
     <HeaderSideBar>
