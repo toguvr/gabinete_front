@@ -40,7 +40,7 @@ import {
 import { addHours } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import {
-  IoAdd,
+  IoAddCircleSharp,
   IoPencilOutline,
   IoPrintOutline,
   IoSearchSharp,
@@ -444,6 +444,7 @@ export default function Voter() {
             borderBottomColor={'gray.300'}
           >
             <Tr>
+              <Th color="gray.600"></Th>
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">Referência</Th>
               <Th color="gray.600">E-mail</Th>
@@ -550,6 +551,28 @@ export default function Voter() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
+                        <IconButton
+                          onClick={() => navigate(`/demanda/registrar-demanda/${voter?.cellphone}`)}
+                          aria-label="Open alert"
+                          variant="unstyled"
+                          icon={
+                            <Icon
+                              cursor="pointer"
+                              fontSize="24px"
+                              as={IoAddCircleSharp}
+                              color={office?.primary_color}
+                            />
+                          }
+                        />
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
                         {voter?.name}
                       </Td>
                       <Td
@@ -644,16 +667,6 @@ export default function Voter() {
                                   as={IoPencilOutline}
                                   color="gray.600"
                                 />
-                              }
-                            />
-                            <IconButton
-                              onClick={() =>
-                                navigate(`/demanda/registrar-demanda/${voter?.cellphone}`)
-                              }
-                              aria-label="Open alert"
-                              variant="unstyled"
-                              icon={
-                                <Icon cursor="pointer" fontSize="24" as={IoAdd} color="gray.600" />
                               }
                             />
 

@@ -247,7 +247,7 @@ export default function DemandRegister() {
   }, []);
 
   useEffect(() => {
-    if (responsibles) {
+    if (responsibles && id !== undefined) {
       verifyPermission();
     }
   }, [responsibles]);
