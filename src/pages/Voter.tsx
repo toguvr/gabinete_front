@@ -445,7 +445,7 @@ export default function Voter() {
             borderBottomColor={'gray.300'}
           >
             <Tr>
-              {role?.eleitor_page > 1 && <Th color="gray.600"></Th>}
+              {role?.demandas_page > 1 && <Th color="gray.600"></Th>}
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">Referência</Th>
               <Th color="gray.600">E-mail</Th>
@@ -544,7 +544,7 @@ export default function Voter() {
                 .map((voter) => {
                   return (
                     <Tr key={voter.id} whiteSpace="nowrap">
-                      {role?.eleitor_page > 1 && (
+                      {role?.demandas_page > 1 && (
                         <Td
                           color="gray.600"
                           fontSize="14px"
