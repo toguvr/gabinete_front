@@ -27,6 +27,7 @@ import NoBond from '../pages/NoBond';
 import { useEffect } from 'react';
 import Solicitations from '../pages/Solicitations';
 
+
 interface PrivateRoutesProps {
   isPrivate: boolean;
 }
@@ -99,6 +100,7 @@ export default function AppRoutes() {
 
         <Route path="/demanda" element={<Demand />} />
         <Route path="/demanda/:id" element={<DemandEdit />} />
+        <Route path="/demanda/registrar-demanda/:id" element={<DemandRegister />} />
         <Route path="/demanda/registrar-demanda" element={<DemandRegister />} />
         <Route path="/demanda/registrar-eleitor/:id" element={<DemandaRegisterVoter />} />
 

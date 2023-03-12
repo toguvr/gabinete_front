@@ -38,6 +38,7 @@ import { useNavigate, useParams } from 'react-router';
 import { useLocation } from 'react-router-dom';
 
 type RegisterFormData = {
+  id: string;
   name: string;
   office_id: string;
   home_page: string;
@@ -53,9 +54,12 @@ export default function RoleEdit() {
   const [values, setValues] = useState<RegisterFormData>({} as RegisterFormData);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
+  const [proceedDialog, setProceedDialog] = useState(false);
   const [roleLoading, setRoleLoading] = useState(false);
   const toast = useToast();
+
   const { office, updateRole, role, isAuthenticated } = useAuth();
+
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -68,6 +72,7 @@ export default function RoleEdit() {
       updateRole(response.data);
     } catch (err) {}
   };
+
 
   const openDialog = (dialogType: string) => {
     switch (dialogType) {
@@ -151,35 +156,31 @@ export default function RoleEdit() {
     },
   ];
 
-  const handleUpdateRole = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault();
+  function handleUpdateButton() {
+    if (values?.id === role.id) {
+      setProceedDialog(true);
+    } else {
+      return handleUpdateRole();
+    }
+    return;
+  }
 
-      setErrors({});
 
-      setLoading(true);
-      try {
-        const schema = Yup.object().shape({
-          name: Yup.string().required('Nome do cargo obrigatório'),
-        });
+  async function handleUpdateRole() {
+    setErrors({});
 
-        await schema.validate(values, {
-          abortEarly: false,
-        });
 
-        const body = {
-          name: values?.name,
-          office_id: office?.id,
-          home_page: Number(values?.home_page),
-          cargo_page: Number(values?.cargo_page),
-          equipe_page: Number(values?.equipe_page),
-          eleitor_page: Number(values?.eleitor_page),
-          demandas_page: Number(values?.demandas_page),
-          tarefas_page: Number(values?.tarefas_page),
-          roleId: id,
-        };
+    setLoading(true);
+    try {
+      const schema = Yup.object().shape({
+        name: Yup.string().required('Nome do cargo obrigatório'),
+      });
 
-        
+      await schema.validate(values, {
+        abortEarly: false,
+      });
+
+      
         await api.put('/role', body);
 
         if (isAuthenticated && role.id) {
@@ -221,12 +222,19 @@ export default function RoleEdit() {
           duration: 3000,
           isClosable: true,
         });
-      } finally {
-        setLoading(false);
       }
-    },
-    [values]
-  );
+      return toast({
+        title: 'Ocorreu um erro ao atualizar o cargo, cheque as credenciais',
+
+        status: 'error',
+        position: 'top-right',
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const getRoleById = async () => {
     setRoleLoading(true);
@@ -234,6 +242,7 @@ export default function RoleEdit() {
       const response = await api.get(`/role/${id}`);
       setValues({
         ...values,
+        id: response?.data?.id,
         name: response?.data?.name,
         home_page: response?.data?.home_page,
         cargo_page: response?.data?.cargo_page,
@@ -269,6 +278,31 @@ export default function RoleEdit() {
         </AlertDialogContent>
         {/* </AlertDialogOverlay> */}
       </AlertDialog>
+
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={proceedDialog}
+        onClose={onClose}
+        isCentered
+      >
+        <AlertDialogContent mx="12px">
+          <AlertDialogHeader fontSize="lg" fontWeight="bold">
+            Alerta
+          </AlertDialogHeader>
+
+          <AlertDialogBody>
+            Você está prestes a atualizar a sua própria permissão. Deseja continuar?
+          </AlertDialogBody>
+
+          <AlertDialogFooter>
+            <ChakraButton onClick={handleUpdateRole}>Sim</ChakraButton>
+            <ChakraButton marginLeft="24px" onClick={() => setProceedDialog(false)}>
+              Não
+            </ChakraButton>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
         Editar Cargo
         {roleLoading && <Spinner color={office?.primary_color} />}
@@ -347,7 +381,9 @@ export default function RoleEdit() {
           </Box>
 
           <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
+
             <Button onClick={handleUpdateRole} width="280px">
+
               {loading ? <Spinner color="white" /> : 'Atualizar'}
             </Button>
           </Flex>
