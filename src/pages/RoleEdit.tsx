@@ -144,9 +144,7 @@ export default function RoleEdit() {
       values: values?.tarefas_page,
     },
   ];
-
-  console.log('values', values);
-  console.log('role', role);
+  
 
   function handleUpdateButton() {
     if (values?.name === role.name) {
