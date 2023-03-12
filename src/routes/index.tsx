@@ -1,30 +1,32 @@
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
-import Demand from '../pages/Demand';
-import ForgetPassword from '../pages/ForgetPassword';
-import NotFound from '../pages/NotFound';
-import NotPermission from '../pages/NotPermission';
+import VoterRegister from '../pages/VoterRegister';
 import Permission from '../pages/Permission';
-import PermissionEdit from '../pages/PermissionEdit';
 import PermissionRegister from '../pages/PermissionRegister';
-import RedefinePassword from '../pages/RedefinePassword';
 import Signin from '../pages/SignIn';
 import Tarefa from '../pages/Tarefa';
+import ForgetPassword from '../pages/ForgetPassword';
+import RedefinePassword from '../pages/RedefinePassword';
 import Voter from '../pages/Voter';
 import VoterEdit from '../pages/VoterEdit';
-import VoterRegister from '../pages/VoterRegister';
+import Demand from '../pages/Demand';
+import PermissionEdit from '../pages/PermissionEdit';
+import NotFound from '../pages/NotFound';
+import NotPermission from '../pages/NotPermission';
 import api from '../services/api';
 
-import { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import Perfil from '../pages/Perfil';
 import ChangePassword from '../pages/ChangePassword';
-import DemandEdit from '../pages/DemandEdit';
 import DemandRegister from '../pages/DemandRegister';
+import Roles from '../pages/Roles';
+import RoleRegister from '../pages/RoleRegister';
+import RoleEdit from '../pages/RoleEdit';
+import DemandEdit from '../pages/DemandEdit';
 import DemandaRegisterVoter from '../pages/DemandRegisterVoter';
 import NoBond from '../pages/NoBond';
-import Perfil from '../pages/Perfil';
-import RoleEdit from '../pages/RoleEdit';
-import RoleRegister from '../pages/RoleRegister';
-import Roles from '../pages/Roles';
+import { useEffect } from 'react';
+import Solicitations from '../pages/Solicitations';
+
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -51,19 +53,6 @@ const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
   });
 
   const location = useLocation();
-
-  const getPermissionById = async () => {
-    try {
-      const response = await api.get(`/role/${role?.id}`);
-      updateRole(response.data);
-    } catch (err) {}
-  };
-
-  useEffect(() => {
-    if (isAuthenticated && role.id) {
-      getPermissionById();
-    }
-  }, [location.pathname]);
 
   const isMyCurrentRouteInPrivateRoutes = privateRoute.find((privateRoute) =>
     privateRoute.pathname.includes(location.pathname)

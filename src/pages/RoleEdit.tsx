@@ -57,12 +57,22 @@ export default function RoleEdit() {
   const [proceedDialog, setProceedDialog] = useState(false);
   const [roleLoading, setRoleLoading] = useState(false);
   const toast = useToast();
-  const { office, role } = useAuth();
+
+  const { office, updateRole, role, isAuthenticated } = useAuth();
+
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const [dialogTitle, setDialogTitle] = useState('');
   const [dialogText, setDialogText] = useState('');
+
+  const getPermissionById = async () => {
+    try {
+      const response = await api.get(`/role/${role?.id}`);
+      updateRole(response.data);
+    } catch (err) {}
+  };
+
 
   const openDialog = (dialogType: string) => {
     switch (dialogType) {
@@ -155,8 +165,10 @@ export default function RoleEdit() {
     return;
   }
 
+
   async function handleUpdateRole() {
     setErrors({});
+
 
     setLoading(true);
     try {
@@ -168,40 +180,42 @@ export default function RoleEdit() {
         abortEarly: false,
       });
 
-      const body = {
-        name: values?.name,
-        office_id: office?.id,
-        home_page: Number(values?.home_page),
-        cargo_page: Number(values?.cargo_page),
-        equipe_page: Number(values?.equipe_page),
-        eleitor_page: Number(values?.eleitor_page),
-        demandas_page: Number(values?.demandas_page),
-        tarefas_page: Number(values?.tarefas_page),
-        roleId: id,
-      };
+      
+        await api.put('/role', body);
 
-      await api.put('/role', body);
+        if (isAuthenticated && role.id) {
+          getPermissionById();
+        }
 
-      toast({
-        title: 'Cargo atualizado com sucesso',
-        description: 'Você atualizou o cargo.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-        position: 'top-right',
-      });
-      navigate('/cargo');
-    } catch (err: any) {
-      if (err instanceof Yup.ValidationError) {
-        setErrors(getValidationErrors(err));
+        toast({
+          title: 'Cargo atualizado com sucesso',
+          description: 'Você atualizou o cargo.',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top-right',
+        });
+        navigate('/cargo');
+      } catch (err: any) {
+        if (err instanceof Yup.ValidationError) {
+          setErrors(getValidationErrors(err));
 
-        return;
-      }
-      if (err.response) {
+          return;
+        }
+        if (err.response) {
+          return toast({
+            title:
+              err.response.data.message ||
+              'Ocorreu um erro ao atualizar o cargo, cheque as credenciais',
+
+            status: 'error',
+            position: 'top-right',
+            duration: 3000,
+            isClosable: true,
+          });
+        }
         return toast({
-          title:
-            err.response.data.message ||
-            'Ocorreu um erro ao atualizar o cargo, cheque as credenciais',
+          title: 'Ocorreu um erro ao atualizar o cargo, cheque as credenciais',
 
           status: 'error',
           position: 'top-right',
@@ -367,7 +381,9 @@ export default function RoleEdit() {
           </Box>
 
           <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
-            <Button onClick={handleUpdateButton} width="280px">
+
+            <Button onClick={handleUpdateRole} width="280px">
+
               {loading ? <Spinner color="white" /> : 'Atualizar'}
             </Button>
           </Flex>

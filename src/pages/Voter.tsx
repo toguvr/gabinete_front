@@ -96,7 +96,6 @@ export default function Voter() {
 
   useEffect(() => {
     getVoterList();
-    console.log('eleitores', data);
   }, []);
 
   const deleteVoter = async () => {
