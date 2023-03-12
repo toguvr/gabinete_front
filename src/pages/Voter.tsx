@@ -47,6 +47,7 @@ import {
   IoTrashOutline,
 } from 'react-icons/io5';
 import { NumericFormat } from 'react-number-format';
+import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
@@ -444,7 +445,7 @@ export default function Voter() {
             borderBottomColor={'gray.300'}
           >
             <Tr>
-              <Th color="gray.600"></Th>
+              {role?.eleitor_page > 1 && <Th color="gray.600"></Th>}
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">Referência</Th>
               <Th color="gray.600">E-mail</Th>
@@ -543,28 +544,35 @@ export default function Voter() {
                 .map((voter) => {
                   return (
                     <Tr key={voter.id} whiteSpace="nowrap">
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        <IconButton
-                          onClick={() => navigate(`/demanda/registrar-demanda/${voter?.cellphone}`)}
-                          aria-label="Open alert"
-                          variant="unstyled"
-                          icon={
-                            <Icon
-                              cursor="pointer"
-                              fontSize="24px"
-                              as={IoAddCircleSharp}
-                              color={office?.primary_color}
+                      {role?.eleitor_page > 1 && (
+                        <Td
+                          color="gray.600"
+                          fontSize="14px"
+                          borderBottomWidth="1px"
+                          borderBottomStyle="solid"
+                          borderBottomColor="gray.300"
+                          py="4px"
+                        >
+                          <Link
+                            target="_blank"
+                            to={`/demanda/registrar-demanda/${voter?.cellphone}`}
+                          >
+                            <IconButton
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24px"
+                                  as={IoAddCircleSharp}
+                                  color={office?.primary_color}
+                                />
+                              }
                             />
-                          }
-                        />
-                      </Td>
+                          </Link>
+                        </Td>
+                      )}
+
                       <Td
                         color="gray.600"
                         fontSize="14px"
