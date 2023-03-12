@@ -145,10 +145,13 @@ export default function RoleEdit() {
     },
   ];
 
-  function handleUpdateButton(e: FormEvent) {
+  console.log('values', values);
+  console.log('role', role);
+
+  function handleUpdateButton() {
     if (values?.name === role.name) {
       setProceedDialog(true);
-    } else if (values?.name !== role.name) {
+    } else {
       return handleUpdateRole();
     }
     return;
@@ -262,26 +265,31 @@ export default function RoleEdit() {
         </AlertDialogContent>
         {/* </AlertDialogOverlay> */}
       </AlertDialog>
-      {proceedDialog && (
-        <AlertDialog leastDestructiveRef={cancelRef} isOpen={true} onClose={onClose} isCentered>
-          <AlertDialogContent mx="12px">
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Alerta
-            </AlertDialogHeader>
 
-            <AlertDialogBody>
-              Você está prestes a atualizar a sua própria permissão. Deseja continuar?
-            </AlertDialogBody>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={proceedDialog}
+        onClose={onClose}
+        isCentered
+      >
+        <AlertDialogContent mx="12px">
+          <AlertDialogHeader fontSize="lg" fontWeight="bold">
+            Alerta
+          </AlertDialogHeader>
 
-            <AlertDialogFooter>
-              <ChakraButton onClick={handleUpdateRole}>Sim</ChakraButton>
-              <ChakraButton marginLeft="24px" onClick={() => setProceedDialog(false)}>
-                Não
-              </ChakraButton>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
+          <AlertDialogBody>
+            Você está prestes a atualizar a sua própria permissão. Deseja continuar?
+          </AlertDialogBody>
+
+          <AlertDialogFooter>
+            <ChakraButton onClick={handleUpdateRole}>Sim</ChakraButton>
+            <ChakraButton marginLeft="24px" onClick={() => setProceedDialog(false)}>
+              Não
+            </ChakraButton>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
         Editar Cargo
         {roleLoading && <Spinner color={office?.primary_color} />}
