@@ -38,6 +38,7 @@ import { useNavigate, useParams } from 'react-router';
 import { useLocation } from 'react-router-dom';
 
 type RegisterFormData = {
+  id: string;
   name: string;
   office_id: string;
   home_page: string;
@@ -144,10 +145,9 @@ export default function RoleEdit() {
       values: values?.tarefas_page,
     },
   ];
-  
 
   function handleUpdateButton() {
-    if (values?.name === role.name) {
+    if (values?.id === role.id) {
       setProceedDialog(true);
     } else {
       return handleUpdateRole();
@@ -228,6 +228,7 @@ export default function RoleEdit() {
       const response = await api.get(`/role/${id}`);
       setValues({
         ...values,
+        id: response?.data?.id,
         name: response?.data?.name,
         home_page: response?.data?.home_page,
         cargo_page: response?.data?.cargo_page,
