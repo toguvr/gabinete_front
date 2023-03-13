@@ -12,7 +12,6 @@ import Demand from "../pages/Demand";
 import PermissionEdit from "../pages/PermissionEdit";
 import NotFound from "../pages/NotFound";
 import NotPermission from "../pages/NotPermission";
-import api from "../services/api";
 
 import { useAuth } from "../contexts/AuthContext";
 import Perfil from "../pages/Perfil";
@@ -20,12 +19,10 @@ import ChangePassword from "../pages/ChangePassword";
 import DemandRegister from "../pages/DemandRegister";
 import Roles from "../pages/Roles";
 import RoleRegister from "../pages/RoleRegister";
-import RoleEdit from "../pages/RoleEdit";
 import DemandEdit from "../pages/DemandEdit";
 import DemandaRegisterVoter from "../pages/DemandRegisterVoter";
 import NoBond from "../pages/NoBond";
-import { useEffect } from "react";
-import Solicitations from "../pages/Solicitations";
+import RoleEdit from "../pages/RoleEdit";
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -52,19 +49,6 @@ const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
   });
 
   const location = useLocation();
-
-  const getPermissionById = async () => {
-    try {
-      const response = await api.get(`/role/${role?.id}`);
-      updateRole(response.data);
-    } catch (err) {}
-  };
-
-  useEffect(() => {
-    if (isAuthenticated && role.id) {
-      getPermissionById();
-    }
-  }, [location.pathname]);
 
   const isMyCurrentRouteInPrivateRoutes = privateRoute.find((privateRoute) =>
     privateRoute.pathname.includes(location.pathname)
@@ -115,6 +99,10 @@ export default function AppRoutes() {
 
         <Route path="/demanda" element={<Demand />} />
         <Route path="/demanda/:id" element={<DemandEdit />} />
+        <Route
+          path="/demanda/registrar-demanda/:id"
+          element={<DemandRegister />}
+        />
         <Route path="/demanda/registrar-demanda" element={<DemandRegister />} />
         <Route
           path="/demanda/registrar-eleitor/:id"

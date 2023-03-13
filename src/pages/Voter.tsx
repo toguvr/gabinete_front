@@ -39,8 +39,15 @@ import {
 } from '@react-pdf/renderer';
 import { addHours } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
-import { IoPencilOutline, IoPrintOutline, IoSearchSharp, IoTrashOutline } from 'react-icons/io5';
+import {
+  IoAddCircleSharp,
+  IoPencilOutline,
+  IoPrintOutline,
+  IoSearchSharp,
+  IoTrashOutline,
+} from 'react-icons/io5';
 import { NumericFormat } from 'react-number-format';
+import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
@@ -89,7 +96,6 @@ export default function Voter() {
 
   useEffect(() => {
     getVoterList();
-    console.log('eleitores', data);
   }, []);
 
   const deleteVoter = async () => {
@@ -278,7 +284,6 @@ export default function Voter() {
     );
   };
 
-
   return (
     <HeaderSideBar>
       <AlertDialog
@@ -358,12 +363,7 @@ export default function Voter() {
           {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
         </Text>
         {role?.eleitor_page > 1 && (
-
-          <Button
-            onClick={() => navigate("/eleitor/registrar-eleitor")}
-            w={["160px", "280px"]}
-          >
-
+          <Button onClick={() => navigate('/eleitor/registrar-eleitor')} w={['160px', '280px']}>
             Cadastrar eleitor
           </Button>
         )}
@@ -444,6 +444,7 @@ export default function Voter() {
             borderBottomColor={'gray.300'}
           >
             <Tr>
+              {role?.demandas_page > 1 && <Th color="gray.600"></Th>}
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">Referência</Th>
               <Th color="gray.600">E-mail</Th>
@@ -451,7 +452,7 @@ export default function Voter() {
               <Th color="gray.600">Telefone</Th>
               <Th color="gray.600">Endereço</Th>
               {role?.eleitor_page > 1 && (
-                <Th color="gray.600" w="8">
+                <Th textAlign="center" color="gray.600" w="8">
                   Ações
                 </Th>
               )}
@@ -542,6 +543,35 @@ export default function Voter() {
                 .map((voter) => {
                   return (
                     <Tr key={voter.id} whiteSpace="nowrap">
+                      {role?.demandas_page > 1 && (
+                        <Td
+                          color="gray.600"
+                          fontSize="14px"
+                          borderBottomWidth="1px"
+                          borderBottomStyle="solid"
+                          borderBottomColor="gray.300"
+                          py="4px"
+                        >
+                          <Link
+                            target="_blank"
+                            to={`/demanda/registrar-demanda/${voter?.cellphone}`}
+                          >
+                            <IconButton
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24px"
+                                  as={IoAddCircleSharp}
+                                  color={office?.primary_color}
+                                />
+                              }
+                            />
+                          </Link>
+                        </Td>
+                      )}
+
                       <Td
                         color="gray.600"
                         fontSize="14px"
