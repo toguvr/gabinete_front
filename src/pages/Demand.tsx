@@ -20,10 +20,15 @@ import {
   useToast,
   Button as ChakraButton,
   Select,
+  Spinner,
 } from '@chakra-ui/react';
 import { addHours } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
-import { IoPencilOutline, IoSearchSharp, IoTrashOutline } from 'react-icons/io5';
+import {
+  IoPencilOutline,
+  IoSearchSharp,
+  IoTrashOutline,
+} from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
@@ -70,7 +75,8 @@ export default function Demand() {
     } catch (err: any) {
       return toast({
         title:
-          err?.response?.data?.message || 'Ocorreu um erro ao excluir a demanda, tente novamente',
+          err?.response?.data?.message ||
+          'Ocorreu um erro ao excluir a demanda, tente novamente',
         status: 'error',
         position: 'top-right',
         duration: 3000,
@@ -107,7 +113,12 @@ export default function Demand() {
 
   return (
     <HeaderSideBar>
-      <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose} isCentered>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
         {/* <AlertDialogOverlay > */}
         <AlertDialogContent mx="12px">
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -115,13 +126,18 @@ export default function Demand() {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            Essa ação é irreversível, ao deletar não será possível desfazer. Você deseja apagar
-            mesmo assim?
+            Essa ação é irreversível, ao deletar não será possível desfazer.
+            Você deseja apagar mesmo assim?
           </AlertDialogBody>
 
           <AlertDialogFooter>
             <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
-            <ChakraButton colorScheme={'red'} isLoading={loading} onClick={deleteDemand} ml={3}>
+            <ChakraButton
+              colorScheme={'red'}
+              isLoading={loading}
+              onClick={deleteDemand}
+              ml={3}
+            >
               Continuar
             </ChakraButton>
           </AlertDialogFooter>
@@ -133,11 +149,22 @@ export default function Demand() {
         gap={['20px', '0']}
         alignItems={['center', 'flex-start']}
       >
-        <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
+        <Text
+          color="gray.500"
+          fontWeight="semibold"
+          fontSize="20px"
+          ml={[0, '28px']}
+        >
           Demanda
+          {loading && (
+            <Spinner color={office?.primary_color} ml="4" size="sm" />
+          )}
         </Text>
         {role?.demandas_page > 1 && (
-          <Button onClick={() => navigate('/demanda/registrar-demanda')} w={['160px', '280px']}>
+          <Button
+            onClick={() => navigate('/demanda/registrar-demanda')}
+            w={['160px', '280px']}
+          >
             Cadastrar Demanda
           </Button>
         )}
@@ -176,7 +203,9 @@ export default function Demand() {
             setFilterField(e.target.value);
           }}
           borderColor="gray.500"
-          rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
+          rightIcon={
+            <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+          }
         />
       </Flex>
       <Box
@@ -228,7 +257,9 @@ export default function Demand() {
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.title &&
-                          currentValue?.title.toLowerCase().indexOf(filterField?.toLowerCase()) > -1
+                          currentValue?.title
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
                         );
                       } else {
                         return currentValue;
@@ -313,7 +344,10 @@ export default function Demand() {
                         py="4px"
                       >
                         {task?.deadline
-                          ? getFormatDate(addHours(new Date(task?.deadline), 12), 'dd/MM/yyyy')
+                          ? getFormatDate(
+                              addHours(new Date(task?.deadline), 12),
+                              'dd/MM/yyyy'
+                            )
                           : '-'}
                       </Td>
                       {role?.demandas_page > 1 && (
