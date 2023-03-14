@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router';
 import Button from '../components/Form/Button';
 import { getFormatDate } from '../utils/date';
 import { PatternFormat } from 'react-number-format';
+import { useParams } from 'react-router-dom';
 
 export default function VoterRegister() {
   const [values, setValues] = useState({} as StateProps);
@@ -22,6 +23,7 @@ export default function VoterRegister() {
   const { office, role } = useAuth();
   const navigate = useNavigate();
   const [cepLoading, setCepLoading] = useState(false);
+  const { id } = useParams();
 
   const handleRegister = useCallback(
     async (e: FormEvent) => {
@@ -218,7 +220,7 @@ export default function VoterRegister() {
                 name="ddd"
                 type="text"
                 error={errors?.ddd}
-                value={values?.dddMask}
+                value={id ? id.slice(0, 2) : values?.dddMask}
                 onValueChange={(value) => {
                   setValues({
                     ...values,
@@ -241,7 +243,7 @@ export default function VoterRegister() {
                 name="cellphone"
                 type="tel"
                 error={errors?.cellphone}
-                value={values?.cellphoneMask}
+                value={id ? id.slice(2) : values?.cellphoneMask}
                 onValueChange={(value) => {
                   setValues({
                     ...values,
@@ -327,7 +329,6 @@ export default function VoterRegister() {
                 // }
                 disabled={!verify}
               />
-
 
               <Box w="100%">
                 <Text color={!verify ? 'gray.300' : 'gray.500'} fontWeight="400" margin="0">

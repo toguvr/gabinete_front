@@ -12,8 +12,8 @@ import {
   Switch,
   Select,
   Button as ChakraButton,
-  Link,
 } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 import { ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { IoCheckmarkCircle, IoSearchSharp } from 'react-icons/io5';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -334,20 +334,17 @@ export default function DemandRegister() {
                 borderRadius="4px"
                 cursor="pointer"
               >
-                <Text color="gray.400">Eleitor não encontrado</Text>
-
-                <ChakraButton
-                  as="a"
-                  w="220px"
-                  h="30px"
-                  href={`${process.env.REACT_APP_WEB}/demanda/registrar-eleitor/${values?.cellphone}`}
-                  target="_blank"
-                  bg={office?.primary_color}
-                  color={office?.secondary_color}
-                  _hover={{ bg: office?.primary_color }}
-                >
-                  Cadastrar eleitor
-                </ChakraButton>
+                <Link target="_blank" to={`/eleitor/registrar-eleitor/${values?.cellphone}`}>
+                  <ChakraButton
+                    w="220px"
+                    h="30px"
+                    bg={office?.primary_color}
+                    color={office?.secondary_color}
+                    _hover={{ bg: office?.primary_color }}
+                  >
+                    Cadastrar eleitor
+                  </ChakraButton>
+                </Link>
               </Flex>
             )}
           </Box>
