@@ -74,6 +74,7 @@ export default function Voter() {
   const [filterField, setFilterField] = useState('');
   const [numberOfLines, setNumberOfLines] = useState(14);
   const [errors, setErrors] = useState({} as StateProps);
+  const [dateToFilter, setDateToFilter] = useState('');
 
   const openDialog = (voter_id: string) => {
     setVoterToDeleteId(voter_id);
@@ -93,6 +94,16 @@ export default function Voter() {
       setLoading(false);
     }
   };
+
+  function convertDateToFilterToLocaleString(date: any) {
+    setDateToFilter(date);
+    var datePart = date.match(/\d+/g),
+      year = datePart[0], // get only two digits
+      month = datePart[1],
+      day = datePart[2];
+
+    setFilterField(day + '/' + month + '/' + year);
+  }
 
   useEffect(() => {
     getVoterList();
@@ -369,7 +380,7 @@ export default function Voter() {
         )}
       </Flex>
       <Text mt="36px" color="gray.500">
-        Filtar por:
+        Filtrar por:
       </Text>
       <Flex justifyContent="space-between">
         <Flex gap={['12px', '24px']} flex="1" mr={['0', '24px']}>
@@ -379,7 +390,10 @@ export default function Voter() {
             name="filterType"
             value={selectFilter}
             onChange={(e) => {
-              setSelectFilter(e.target.value);
+              {
+                setSelectFilter(e.target.value);
+                setFilterField('');
+              }
             }}
           >
             {voterPage.map((voter) => {
@@ -391,20 +405,37 @@ export default function Voter() {
             })}
           </Select>
 
-          <Input
-            maxW="600px"
-            type="text"
-            name="filterField"
-            placeholder="Buscar"
-            error={errors?.filterField}
-            value={filterField}
-            mb="24px"
-            onChange={(e) => {
-              setFilterField(e.target.value);
-            }}
-            borderColor="gray.500"
-            rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
-          />
+          {selectFilter === 'birthdate' ? (
+            <Input
+              maxW="600px"
+              type="date"
+              name="filterField"
+              placeholder="Buscar"
+              error={errors?.filterField}
+              value={dateToFilter}
+              mb="24px"
+              onChange={(e) => {
+                convertDateToFilterToLocaleString(e.target.value);
+              }}
+              borderColor="gray.500"
+              rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
+            />
+          ) : (
+            <Input
+              maxW="600px"
+              type="text"
+              name="filterField"
+              placeholder="Buscar"
+              error={errors?.filterField}
+              value={filterField}
+              mb="24px"
+              onChange={(e) => {
+                setFilterField(e.target.value);
+              }}
+              borderColor="gray.500"
+              rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
+            />
+          )}
         </Flex>
 
         <Button
