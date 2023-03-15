@@ -420,7 +420,12 @@ export default function Permission() {
                 })
                 .map((permission) => {
                   return (
-                    <Tr key={permission.id} h="45px" py="4px">
+                    <Tr
+                      key={permission.id}
+                      h="45px"
+                      py="4px"
+                      whiteSpace="nowrap"
+                    >
                       <Td
                         color={permission?.active ? 'gray.600' : 'gray.300'}
                         fontSize="14px"
