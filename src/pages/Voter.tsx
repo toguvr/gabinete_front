@@ -41,6 +41,7 @@ import { addHours } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import {
   IoAddCircleSharp,
+  IoLogoWhatsapp,
   IoPencilOutline,
   IoPrintOutline,
   IoSearchSharp,
@@ -66,8 +67,16 @@ export default function Voter() {
   const [data, setData] = useState([] as VoterDTO[]);
   const [voterToDeleteId, setVoterToDeleteId] = useState('');
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
-  const { isOpen: isOpenAlert, onOpen: onOpenAlert, onClose: onCloseAlert } = useDisclosure();
-  const { isOpen: isOpenModal, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure();
+  const {
+    isOpen: isOpenAlert,
+    onOpen: onOpenAlert,
+    onClose: onCloseAlert,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenModal,
+    onOpen: onOpenModal,
+    onClose: onCloseModal,
+  } = useDisclosure();
   const { role, office } = useAuth();
   const auth = useAuth();
   const [selectFilter, setSelectFilter] = useState('name');
@@ -116,7 +125,8 @@ export default function Voter() {
     } catch (err: any) {
       return toast({
         title:
-          err?.response?.data?.message || 'Ocorreu um erro ao excluir o eleitor, tente novamente',
+          err?.response?.data?.message ||
+          'Ocorreu um erro ao excluir o eleitor, tente novamente',
         status: 'error',
         position: 'top-right',
         duration: 3000,
@@ -245,11 +255,15 @@ export default function Voter() {
             <Page key={index} size="A4" style={styles.page}>
               <View style={styles.table}>
                 <View style={styles.flexBetween}>
-                  {office?.logo_url && <Image style={styles.image} src={office?.logo_url} />}
+                  {office?.logo_url && (
+                    <Image style={styles.image} src={office?.logo_url} />
+                  )}
                   <TextPDF style={styles.tableTitle}>{office?.name}</TextPDF>
                 </View>
 
-                <TextPDF style={styles.tableSubTitle}>Lista de Eleitores</TextPDF>
+                <TextPDF style={styles.tableSubTitle}>
+                  Lista de Eleitores
+                </TextPDF>
 
                 <View style={styles.tableContainer}>
                   <View style={styles.rowTitle}>
@@ -270,7 +284,9 @@ export default function Voter() {
                       >
                         <TextPDF style={styles.voter}>{item?.name}</TextPDF>
                         <TextPDF style={styles.email}>{item?.email}</TextPDF>
-                        <TextPDF style={styles.cellphone}>{item?.cellphone}</TextPDF>
+                        <TextPDF style={styles.cellphone}>
+                          {item?.cellphone}
+                        </TextPDF>
                       </View>
                     );
                   })}
@@ -299,13 +315,18 @@ export default function Voter() {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            Essa ação é irreversível, ao deletar não será possível desfazer. Você deseja apagar
-            mesmo assim?
+            Essa ação é irreversível, ao deletar não será possível desfazer.
+            Você deseja apagar mesmo assim?
           </AlertDialogBody>
 
           <AlertDialogFooter>
             <ChakraButton onClick={onCloseAlert}>Cancelar</ChakraButton>
-            <ChakraButton colorScheme={'red'} isLoading={loading} onClick={deleteVoter} ml={3}>
+            <ChakraButton
+              colorScheme={'red'}
+              isLoading={loading}
+              onClick={deleteVoter}
+              ml={3}
+            >
               Continuar
             </ChakraButton>
           </AlertDialogFooter>
@@ -315,7 +336,11 @@ export default function Voter() {
       <Modal isOpen={isOpenModal} onClose={onCloseModal} size="lg" isCentered>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader alignItems="center" display="flex" justifyContent="space-between">
+          <ModalHeader
+            alignItems="center"
+            display="flex"
+            justifyContent="space-between"
+          >
             <Text fontSize="20px" fontWeight="700" color="green.1000">
               Impressão de documento
             </Text>
@@ -344,8 +369,14 @@ export default function Voter() {
             </ChakraButton>
 
             {data.length > 0 && (
-              <PDFDownloadLink document={<MyDocument />} fileName={`eleitores-${office?.name}.pdf`}>
-                <Button colorScheme="teal" leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}>
+              <PDFDownloadLink
+                document={<MyDocument />}
+                fileName={`eleitores-${office?.name}.pdf`}
+              >
+                <Button
+                  colorScheme="teal"
+                  leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
+                >
                   Imprimir
                 </Button>
               </PDFDownloadLink>
@@ -358,12 +389,22 @@ export default function Voter() {
         gap={['20px', '0']}
         alignItems={['center', 'flex-start']}
       >
-        <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
+        <Text
+          color="gray.500"
+          fontWeight="semibold"
+          fontSize="20px"
+          ml={[0, '28px']}
+        >
           Eleitor
-          {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
+          {loading && (
+            <Spinner color={office?.primary_color} ml="4" size="sm" />
+          )}
         </Text>
         {role?.eleitor_page > 1 && (
-          <Button onClick={() => navigate('/eleitor/registrar-eleitor')} w={['160px', '280px']}>
+          <Button
+            onClick={() => navigate('/eleitor/registrar-eleitor')}
+            w={['160px', '280px']}
+          >
             Cadastrar eleitor
           </Button>
         )}
@@ -403,7 +444,9 @@ export default function Voter() {
               setFilterField(e.target.value);
             }}
             borderColor="gray.500"
-            rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
+            rightIcon={
+              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+            }
           />
         </Flex>
 
@@ -468,7 +511,9 @@ export default function Voter() {
                         return (
                           currentValue &&
                           currentValue.name &&
-                          currentValue.name.toLowerCase().indexOf(filterField?.toLowerCase()) > -1
+                          currentValue.name
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
                         );
                       } else {
                         return currentValue;
@@ -488,7 +533,9 @@ export default function Voter() {
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.email &&
-                          currentValue?.email.toLowerCase().indexOf(filterField?.toLowerCase()) > -1
+                          currentValue?.email
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
                         );
                       } else {
                         return currentValue;
@@ -519,7 +566,9 @@ export default function Voter() {
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.city &&
-                          currentValue?.city.toLowerCase().indexOf(filterField?.toLowerCase()) > -1
+                          currentValue?.city
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
                         );
                       } else {
                         return currentValue;
@@ -611,7 +660,10 @@ export default function Voter() {
                         py="4px"
                       >
                         {voter?.birthdate
-                          ? getFormatDate(addHours(new Date(voter?.birthdate), 12), 'dd/MM/yyyy')
+                          ? getFormatDate(
+                              addHours(new Date(voter?.birthdate), 12),
+                              'dd/MM/yyyy'
+                            )
                           : '-'}
                       </Td>
                       <Td
@@ -622,6 +674,25 @@ export default function Voter() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
+                        <Link
+                          target="_blank"
+                          to={`https://wa.me/55${voter?.cellphone}`}
+                          rel="noopener noreferrer"
+                        >
+                          <IconButton
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24px"
+                                as={IoLogoWhatsapp}
+                                color={office?.primary_color}
+                              />
+                            }
+                          />
+                        </Link>
+
                         {voter?.cellphone ? voter?.cellphone : '-'}
                       </Td>
                       {voter?.street ? (
@@ -636,9 +707,19 @@ export default function Voter() {
                         >
                           {voter?.zip
                             ? `${voter?.street ? voter?.street + ',' : ''}
-                              ${voter?.address_number ? voter?.address_number + ',' : ''}
-                              ${voter?.neighborhood ? voter?.neighborhood + ',' : ''}
-                              ${voter?.complement ? voter?.complement + ',' : ''}
+                              ${
+                                voter?.address_number
+                                  ? voter?.address_number + ','
+                                  : ''
+                              }
+                              ${
+                                voter?.neighborhood
+                                  ? voter?.neighborhood + ','
+                                  : ''
+                              }
+                              ${
+                                voter?.complement ? voter?.complement + ',' : ''
+                              }
                               ${voter?.city ? voter?.city + ',' : ''}
                               ${voter?.state ? voter?.state + ',' : ''}`
                             : '-'}

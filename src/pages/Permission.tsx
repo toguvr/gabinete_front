@@ -22,21 +22,22 @@ import {
   Spinner,
   Switch,
   Select,
-} from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
-import HeaderSideBar from "../components/HeaderSideBar";
-import { PermissionByIdDTO, RoleDTO, StateProps } from "../dtos";
+} from '@chakra-ui/react';
+import { useEffect, useRef, useState } from 'react';
+import HeaderSideBar from '../components/HeaderSideBar';
+import { PermissionByIdDTO, RoleDTO, StateProps } from '../dtos';
 import {
+  IoLogoWhatsapp,
   IoPencilOutline,
   IoSearchSharp,
   IoTrashOutline,
-} from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
-import api from "../services/api";
-import { useAuth } from "../contexts/AuthContext";
-import Button from "../components/Form/Button";
-import Input from "../components/Form/Input";
-import { permissionPage } from "../utils/filterTables";
+} from 'react-icons/io5';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+import Button from '../components/Form/Button';
+import Input from '../components/Form/Input';
+import { permissionPage } from '../utils/filterTables';
 
 export default function Permission() {
   const navigate = useNavigate();
@@ -46,12 +47,12 @@ export default function Permission() {
   const { role, office } = useAuth();
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [permissionToDeleteId, setPermissionToDeleteId] = useState("");
-  const [selectFilter, setSelectFilter] = useState("name");
-  const [filterField, setFilterField] = useState("");
+  const [permissionToDeleteId, setPermissionToDeleteId] = useState('');
+  const [selectFilter, setSelectFilter] = useState('name');
+  const [filterField, setFilterField] = useState('');
   const [errors, setErrors] = useState({} as StateProps);
-  const [selectPageFilter, setSelectPageFilter] = useState("");
-  const [selectRoleFilter, setSelectRoleFilter] = useState("");
+  const [selectPageFilter, setSelectPageFilter] = useState('');
+  const [selectRoleFilter, setSelectRoleFilter] = useState('');
   const [roles, setRoles] = useState([] as RoleDTO[]);
 
   const openDialog = (permission_id: string) => {
@@ -98,22 +99,22 @@ export default function Permission() {
       await api.delete(`/permission/${permissionToDeleteId}`);
 
       toast({
-        title: "Equipe excluída com sucesso",
-        status: "success",
-        position: "top-right",
+        title: 'Equipe excluída com sucesso',
+        status: 'success',
+        position: 'top-right',
         duration: 3000,
         isClosable: true,
       });
       getPermissions();
-      setPermissionToDeleteId("");
+      setPermissionToDeleteId('');
       onClose();
     } catch (err: any) {
       return toast({
         title:
           err?.response?.data?.message ||
-          "Ocorreu um erro ao excluir a equipe, tente novamente",
-        status: "error",
-        position: "top-right",
+          'Ocorreu um erro ao excluir a equipe, tente novamente',
+        status: 'error',
+        position: 'top-right',
         duration: 3000,
         isClosable: true,
       });
@@ -148,15 +149,15 @@ export default function Permission() {
         permissionId: permission_id,
       };
 
-      await api.put("/permission", body);
+      await api.put('/permission', body);
 
       toast({
-        title: "Atualizado com sucesso",
-        description: "Você atualizou uma equipe.",
-        status: "success",
+        title: 'Atualizado com sucesso',
+        description: 'Você atualizou uma equipe.',
+        status: 'success',
         duration: 3000,
         isClosable: true,
-        position: "top-right",
+        position: 'top-right',
       });
 
       return;
@@ -166,19 +167,19 @@ export default function Permission() {
         return toast({
           title:
             err.response.data.message ||
-            "Ocorreu um erro ao cadastrar a equipe, cheque as credenciais",
+            'Ocorreu um erro ao cadastrar a equipe, cheque as credenciais',
 
-          status: "error",
-          position: "top-right",
+          status: 'error',
+          position: 'top-right',
           duration: 3000,
           isClosable: true,
         });
       }
       return toast({
-        title: "Ocorreu um erro ao cadastrar a equipe, cheque as credenciais",
+        title: 'Ocorreu um erro ao cadastrar a equipe, cheque as credenciais',
 
-        status: "error",
-        position: "top-right",
+        status: 'error',
+        position: 'top-right',
         duration: 3000,
         isClosable: true,
       });
@@ -206,7 +207,7 @@ export default function Permission() {
           <AlertDialogFooter>
             <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
             <ChakraButton
-              colorScheme={"red"}
+              colorScheme={'red'}
               isLoading={loading}
               onClick={deletePermission}
               ml={3}
@@ -218,15 +219,15 @@ export default function Permission() {
         {/* </AlertDialogOverlay> */}
       </AlertDialog>
       <Flex
-        justifyContent={"space-between"}
-        gap={["20px", "0"]}
-        alignItems={["center", "flex-start"]}
+        justifyContent={'space-between'}
+        gap={['20px', '0']}
+        alignItems={['center', 'flex-start']}
       >
         <Text
           color="gray.500"
           fontWeight="semibold"
           fontSize="20px"
-          ml={[0, "28px"]}
+          ml={[0, '28px']}
         >
           Equipe
           {loading && (
@@ -235,8 +236,8 @@ export default function Permission() {
         </Text>
         {role?.equipe_page > 1 && (
           <Button
-            onClick={() => navigate("/equipe/registrar-equipe")}
-            w={["160px", "280px"]}
+            onClick={() => navigate('/equipe/registrar-equipe')}
+            w={['160px', '280px']}
           >
             Cadastrar equipe
           </Button>
@@ -245,7 +246,7 @@ export default function Permission() {
       <Text mt="36px" color="gray.500">
         Filtar por:
       </Text>
-      <Flex gap={["12px", "24px"]}>
+      <Flex gap={['12px', '24px']}>
         <Select
           w="220px"
           borderColor="gray.500"
@@ -263,11 +264,11 @@ export default function Permission() {
             );
           })}
         </Select>
-        {selectFilter === "active" ? (
+        {selectFilter === 'active' ? (
           <Select
             borderColor="gray.500"
             bg="gray.50"
-            _placeholder={{ color: "gray.500" }}
+            _placeholder={{ color: 'gray.500' }}
             color="gray.600"
             maxW="600px"
             name="selectPageFilter"
@@ -281,11 +282,11 @@ export default function Permission() {
               Desativado
             </option>
           </Select>
-        ) : selectFilter === "role" ? (
+        ) : selectFilter === 'role' ? (
           <Select
             borderColor="gray.500"
             bg="gray.50"
-            _placeholder={{ color: "gray.500" }}
+            _placeholder={{ color: 'gray.500' }}
             color="gray.600"
             maxW="600px"
             name="selectRoleFilter"
@@ -322,26 +323,26 @@ export default function Permission() {
         overflow="auto"
         mt="16px"
         sx={{
-          "::-webkit-scrollbar": {
-            bg: "gray.50",
-            width: "8px",
-            height: "8px",
+          '::-webkit-scrollbar': {
+            bg: 'gray.50',
+            width: '8px',
+            height: '8px',
           },
-          "&::-webkit-scrollbar-track": {
-            width: "2px",
+          '&::-webkit-scrollbar-track': {
+            width: '2px',
           },
-          "&::-webkit-scrollbar-thumb": {
-            background: "gray.600",
-            borderRadius: "8px",
+          '&::-webkit-scrollbar-thumb': {
+            background: 'gray.600',
+            borderRadius: '8px',
           },
         }}
       >
         <Table variant="simple">
           <Thead position="sticky" top="0px">
             <Tr
-              borderBottomWidth={"4px"}
+              borderBottomWidth={'4px'}
               borderBottomStyle="solid"
-              borderBottomColor={"gray.300"}
+              borderBottomColor={'gray.300'}
             >
               <Th color="gray.600">Ativo</Th>
 
@@ -361,7 +362,7 @@ export default function Permission() {
               data
                 .filter((currentValue: any) => {
                   switch (selectFilter) {
-                    case "name":
+                    case 'name':
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.user?.name &&
@@ -372,7 +373,7 @@ export default function Permission() {
                       } else {
                         return currentValue;
                       }
-                    case "email":
+                    case 'email':
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.user?.email &&
@@ -383,7 +384,7 @@ export default function Permission() {
                       } else {
                         return currentValue;
                       }
-                    case "role":
+                    case 'role':
                       if (selectRoleFilter?.length >= 3) {
                         return (
                           currentValue?.role?.name &&
@@ -394,7 +395,7 @@ export default function Permission() {
                       } else {
                         return currentValue;
                       }
-                    case "cellphone":
+                    case 'cellphone':
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.user?.cellphone &&
@@ -405,10 +406,10 @@ export default function Permission() {
                       } else {
                         return currentValue;
                       }
-                    case "active":
-                      if (selectPageFilter === "active") {
+                    case 'active':
+                      if (selectPageFilter === 'active') {
                         return currentValue?.active === true;
-                      } else if (selectPageFilter === "inactive") {
+                      } else if (selectPageFilter === 'inactive') {
                         return currentValue?.active === false;
                       } else {
                         return currentValue;
@@ -421,7 +422,7 @@ export default function Permission() {
                   return (
                     <Tr key={permission.id} h="45px" py="4px">
                       <Td
-                        color={permission?.active ? "gray.600" : "gray.300"}
+                        color={permission?.active ? 'gray.600' : 'gray.300'}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -439,7 +440,7 @@ export default function Permission() {
                         />
                       </Td>
                       <Td
-                        color={permission?.active ? "gray.600" : "gray.400"}
+                        color={permission?.active ? 'gray.600' : 'gray.400'}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -449,7 +450,7 @@ export default function Permission() {
                         {permission?.user?.name}
                       </Td>
                       <Td
-                        color={permission?.active ? "gray.600" : "gray.400"}
+                        color={permission?.active ? 'gray.600' : 'gray.400'}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -459,17 +460,35 @@ export default function Permission() {
                         {permission?.user?.email}
                       </Td>
                       <Td
-                        color={permission?.active ? "gray.600" : "gray.400"}
+                        color={permission?.active ? 'gray.600' : 'gray.400'}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
                         borderBottomColor="gray.300"
                         py="0px"
                       >
+                        <Link
+                          target="_blank"
+                          to={`https://wa.me/55${permission?.user?.cellphone}`}
+                          rel="noopener noreferrer"
+                        >
+                          <IconButton
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24px"
+                                as={IoLogoWhatsapp}
+                                color={office?.primary_color}
+                              />
+                            }
+                          />
+                        </Link>
                         {permission?.user?.cellphone}
                       </Td>
                       <Td
-                        color={permission?.active ? "gray.600" : "gray.400"}
+                        color={permission?.active ? 'gray.600' : 'gray.400'}
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
