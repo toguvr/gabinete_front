@@ -1,12 +1,12 @@
 export enum TaskPriority {
-  ALTA = "ALTA",
-  MEDIA = "MEDIA",
-  BAIXA = "BAIXA",
+  ALTA = 'ALTA',
+  MEDIA = 'MEDIA',
+  BAIXA = 'BAIXA',
 }
 
 export enum UserGender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
 }
 
 export interface StateProps {
@@ -24,6 +24,7 @@ export interface UserDTO {
   need_update_password?: boolean;
   old_password?: string;
   new_password?: string;
+  birthdate?: string;
   created_at?: Date;
   updated_at?: Date;
 }
