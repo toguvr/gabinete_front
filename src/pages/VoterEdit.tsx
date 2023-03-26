@@ -1,33 +1,27 @@
-import {
-  Box,
-  Flex,
-  Select,
-  Spinner,
-  Stack,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
-import axios from "axios";
-import { FormEvent, useCallback, useEffect, useState } from "react";
-import { PatternFormat } from "react-number-format";
-import { useNavigate, useParams } from "react-router";
-import * as Yup from "yup";
-import Button from "../components/Form/Button";
-import Input from "../components/Form/Input";
-import HeaderSideBar from "../components/HeaderSideBar";
-import { useAuth } from "../contexts/AuthContext";
-import { StateProps } from "../dtos";
-import api from "../services/api";
-import getValidationErrors from "../utils/validationError";
+import { Box, Flex, Select, Spinner, Stack, Text, useToast } from '@chakra-ui/react';
+import axios from 'axios';
+import { FormEvent, useEffect, useState } from 'react';
+import { PatternFormat } from 'react-number-format';
+import { useNavigate, useParams } from 'react-router';
+import * as Yup from 'yup';
+import Button from '../components/Form/Button';
+import Input from '../components/Form/Input';
+import HeaderSideBar from '../components/HeaderSideBar';
+import { useAuth } from '../contexts/AuthContext';
+import { PermissionByIdDTO, StateProps } from '../dtos';
+import api from '../services/api';
+import getValidationErrors from '../utils/validationError';
 
 export default function VoterEdit() {
   const { id } = useParams();
   const [values, setValues] = useState({} as StateProps);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
+  const [creator, setCreator] = useState<string | undefined>('');
   const [loading, setLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
+  const [users, setUsers] = useState([] as PermissionByIdDTO[]);
   const toast = useToast();
-  const { office } = useAuth();
+  const { office, role } = useAuth();
   const navigate = useNavigate();
 
   const handleUpdateVoter = async (e: FormEvent) => {
@@ -38,9 +32,9 @@ export default function VoterEdit() {
     setLoading(true);
     try {
       const schema = Yup.object().shape({
-        name: Yup.string().required("Nome obrigatório"),
-        ddd: Yup.string().required("ddd obrigatório"),
-        cellphone: Yup.string().required("Telefone obrigatório"),
+        name: Yup.string().required('Nome obrigatório'),
+        ddd: Yup.string().required('ddd obrigatório'),
+        cellphone: Yup.string().required('Telefone obrigatório'),
       });
 
       await schema.validate(values, {
@@ -66,7 +60,7 @@ export default function VoterEdit() {
 
       const body = {
         name,
-        cellphone: `${ddd ?? ""}${cellphone ?? ""}`,
+        cellphone: `${ddd ?? ''}${cellphone ?? ''}`,
         email,
         office_id: office?.id,
         address_number,
@@ -81,17 +75,17 @@ export default function VoterEdit() {
         zip,
         voter_id: id,
       };
-      await api.put("/voter", body);
+      await api.put('/voter', body);
 
       toast({
-        title: "Eleitor atualizado com sucesso",
-        description: "Você atualizou o eleitor.",
-        status: "success",
+        title: 'Eleitor atualizado com sucesso',
+        description: 'Você atualizou o eleitor.',
+        status: 'success',
         duration: 3000,
         isClosable: true,
-        position: "top-right",
+        position: 'top-right',
       });
-      return navigate("/eleitor");
+      return navigate('/eleitor');
     } catch (err: any) {
       if (err instanceof Yup.ValidationError) {
         setErrors(getValidationErrors(err));
@@ -102,19 +96,19 @@ export default function VoterEdit() {
         return toast({
           title:
             err.response.data.message ||
-            "Ocorreu um erro ao atualizar o eleitor, cheque as credenciais",
+            'Ocorreu um erro ao atualizar o eleitor, cheque as credenciais',
 
-          status: "error",
-          position: "top-right",
+          status: 'error',
+          position: 'top-right',
           duration: 3000,
           isClosable: true,
         });
       }
       return toast({
-        title: "Ocorreu um erro ao atualizar o eleitor, cheque as credenciais",
+        title: 'Ocorreu um erro ao atualizar o eleitor, cheque as credenciais',
 
-        status: "error",
-        position: "top-right",
+        status: 'error',
+        position: 'top-right',
         duration: 3000,
         isClosable: true,
       });
@@ -126,9 +120,7 @@ export default function VoterEdit() {
   const getCep = async () => {
     setCepLoading(true);
     try {
-      const response = await axios.get(
-        `https://viacep.com.br/ws/${values?.zip}/json/`
-      );
+      const response = await axios.get(`https://viacep.com.br/ws/${values?.zip}/json/`);
 
       const { bairro, localidade, logradouro, uf } = response.data;
 
@@ -141,9 +133,9 @@ export default function VoterEdit() {
       });
     } catch (err) {
       return toast({
-        title: "Ocorreu um erro ao buscar o cep, tente novamente",
-        status: "error",
-        position: "top-right",
+        title: 'Ocorreu um erro ao buscar o cep, tente novamente',
+        status: 'error',
+        position: 'top-right',
         duration: 3000,
         isClosable: true,
       });
@@ -152,10 +144,26 @@ export default function VoterEdit() {
     }
   };
 
+  const getPermissions = async () => {
+    setUsers([] as PermissionByIdDTO[]);
+
+    setLoading(true);
+    try {
+      const response = await api.get(`/permission/office/${role?.office_id}`);
+
+      setUsers(response.data);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getVoterById = async () => {
     setLoading(true);
     try {
       const response = await api.get(`/voter/${id}`);
+      const updatedVoter = users.find((user) => user.user.id === response?.data?.creator_id);
+      setCreator(updatedVoter?.user.name);
 
       setValues({
         dddMask: response?.data?.cellphone.slice(0, 2),
@@ -184,8 +192,12 @@ export default function VoterEdit() {
   };
 
   useEffect(() => {
-    getVoterById();
+    getPermissions();
   }, []);
+
+  useEffect(() => {
+    getVoterById();
+  }, [users]);
 
   return (
     <HeaderSideBar backRoute={true}>
@@ -193,8 +205,8 @@ export default function VoterEdit() {
         Editar Eleitor
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
-        <Stack spacing={[5, 8]} mt={["24px", "40px"]} w="852px">
-          <Flex flexDir={"column"}>
+        <Stack spacing={[5, 8]} mt={['24px', '40px']} w="852px">
+          <Flex flexDir={'column'}>
             <Text color="gray.500" fontWeight="400" margin="0">
               Telefone*:
             </Text>
@@ -236,7 +248,7 @@ export default function VoterEdit() {
                   });
                 }}
                 placeholder="00000-0000"
-                w={["100%", "180px"]}
+                w={['100%', '180px']}
                 borderColor="gray.500"
               />
             </Flex>
@@ -249,9 +261,7 @@ export default function VoterEdit() {
             type="text"
             error={errors?.name}
             value={values?.name}
-            onChange={(e) =>
-              setValues({ ...values, [e.target.name]: e.target.value })
-            }
+            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
             borderColor="gray.500"
           />
           <Input
@@ -261,10 +271,27 @@ export default function VoterEdit() {
             type="text"
             error={errors?.reference}
             value={values.reference}
-            onChange={(e) =>
-              setValues({ ...values, [e.target.name]: e.target.value })
-            }
+            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
             borderColor="gray.500"
+          />
+
+          <Input
+            labelColor="gray.500"
+            label="Criador"
+            mt="8px"
+            name="creator"
+            type="string"
+            error={errors?.creator}
+            value={creator ? creator : '-'}
+            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            borderColor="gray.500"
+            css={{
+              '&::-webkit-calendar-picker-indicator': {
+                color: 'gray.500',
+              },
+            }}
+            w="100%"
+            isDisabled
           />
 
           <Input
@@ -274,17 +301,15 @@ export default function VoterEdit() {
             type="email"
             error={errors?.email}
             value={values?.email}
-            onChange={(e) =>
-              setValues({ ...values, [e.target.name]: e.target.value })
-            }
+            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
             borderColor="gray.500"
           />
           <Box>
             <Flex
-              justifyContent={["flex-start", "space-between"]}
-              alignItems={["flex-start", "flex-end"]}
-              flexDirection={["column", "row"]}
-              gap={[5, "48px"]}
+              justifyContent={['flex-start', 'space-between']}
+              alignItems={['flex-start', 'flex-end']}
+              flexDirection={['column', 'row']}
+              gap={[5, '48px']}
             >
               <Input
                 label="Data de nascimento:"
@@ -292,14 +317,12 @@ export default function VoterEdit() {
                 type="date"
                 error={errors?.birthdate}
                 value={values?.birthdate}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 placeholder="Data de Nascimento"
                 borderColor="gray.500"
                 css={{
-                  "&::-webkit-calendar-picker-indicator": {
-                    color: "gray.500",
+                  '&::-webkit-calendar-picker-indicator': {
+                    color: 'gray.500',
                   },
                 }}
               />
@@ -312,13 +335,11 @@ export default function VoterEdit() {
                   placeholder="Gênero"
                   borderColor="gray.500"
                   bg="gray.50"
-                  _placeholder={{ color: "gray.500" }}
+                  _placeholder={{ color: 'gray.500' }}
                   color="gray.600"
                   value={values?.gender}
                   name="gender"
-                  onChange={(e) =>
-                    setValues({ ...values, [e.target.name]: e.target.value })
-                  }
+                  onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 >
                   <option value="MALE">Masculino</option>
                   <option value="FEMALE">Feminino</option>
@@ -331,16 +352,14 @@ export default function VoterEdit() {
               <Text color="gray.500" fontWeight="400" margin="0">
                 Endereço:
               </Text>
-              {cepLoading && (
-                <Spinner color={office?.primary_color} size="sm" />
-              )}
+              {cepLoading && <Spinner color={office?.primary_color} size="sm" />}
             </Flex>
             <Flex
               mb="24px"
-              justifyContent={["flex-start", "space-between"]}
-              alignItems={["flex-start", "flex-end"]}
-              flexDirection={["column", "row"]}
-              gap={[5, "44px"]}
+              justifyContent={['flex-start', 'space-between']}
+              alignItems={['flex-start', 'flex-end']}
+              flexDirection={['column', 'row']}
+              gap={[5, '44px']}
             >
               <PatternFormat
                 customInput={Input}
@@ -359,7 +378,7 @@ export default function VoterEdit() {
                 }}
                 borderColor="gray.500"
                 onBlur={getCep}
-                w={["100%", "200px"]}
+                w={['100%', '200px']}
                 placeholder="CEP"
               />
 
@@ -369,19 +388,17 @@ export default function VoterEdit() {
                 type="text"
                 error={errors?.street}
                 value={values?.street}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 borderColor="gray.500"
                 flex={1}
               />
             </Flex>
             <Flex
               mb="24px"
-              justifyContent={["flex-start", "space-between"]}
-              alignItems={["flex-start", "flex-end"]}
-              flexDirection={["column", "row"]}
-              gap={[5, "44px"]}
+              justifyContent={['flex-start', 'space-between']}
+              alignItems={['flex-start', 'flex-end']}
+              flexDirection={['column', 'row']}
+              gap={[5, '44px']}
             >
               <Input
                 placeholder="Bairro"
@@ -389,9 +406,7 @@ export default function VoterEdit() {
                 type="text"
                 error={errors?.neighborhood}
                 value={values?.neighborhood}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 borderColor="gray.500"
                 flex={1}
               />
@@ -400,20 +415,18 @@ export default function VoterEdit() {
                 type="number"
                 error={errors?.address_number}
                 value={values?.address_number}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 placeholder="Numero"
-                w={["100%", "200px"]}
+                w={['100%', '200px']}
                 borderColor="gray.500"
               />
             </Flex>
             <Flex
               mb="24px"
-              justifyContent={["flex-start", "space-between"]}
-              alignItems={["flex-start", "flex-end"]}
-              flexDirection={["column", "row"]}
-              gap={[5, "44px"]}
+              justifyContent={['flex-start', 'space-between']}
+              alignItems={['flex-start', 'flex-end']}
+              flexDirection={['column', 'row']}
+              gap={[5, '44px']}
             >
               <Input
                 placeholder="Complemento"
@@ -421,9 +434,7 @@ export default function VoterEdit() {
                 type="text"
                 error={errors?.complement}
                 value={values?.complement}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 borderColor="gray.500"
               />
               <Input
@@ -432,9 +443,7 @@ export default function VoterEdit() {
                 type="text"
                 error={errors?.city}
                 value={values?.city}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 borderColor="gray.500"
               />
               <Input
@@ -443,22 +452,15 @@ export default function VoterEdit() {
                 type="text"
                 error={errors?.state}
                 value={values?.state}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
                 borderColor="gray.500"
               />
             </Flex>
           </Box>
 
-          <Flex
-            w="100%"
-            alignItems="center"
-            justifyContent="center"
-            mt={["40px", "95px"]}
-          >
+          <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
             <Button onClick={handleUpdateVoter} w="280px">
-              {loading ? <Spinner color="white" /> : "Atualizar"}
+              {loading ? <Spinner color="white" /> : 'Atualizar'}
             </Button>
           </Flex>
         </Stack>

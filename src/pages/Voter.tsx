@@ -53,7 +53,7 @@ import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
 import HeaderSideBar from '../components/HeaderSideBar';
 import { useAuth } from '../contexts/AuthContext';
-import { StateProps, VoterDTO } from '../dtos';
+import { PermissionByIdDTO, StateProps, VoterDTO } from '../dtos';
 import api from '../services/api';
 import { getFormatDate } from '../utils/date';
 import { voterPage } from '../utils/filterTables';
@@ -65,6 +65,7 @@ export default function Voter() {
   const toast = useToast();
   const [data, setData] = useState([] as VoterDTO[]);
   const [voterToDeleteId, setVoterToDeleteId] = useState('');
+  const [users, setUsers] = useState([] as PermissionByIdDTO[]);
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen: isOpenAlert, onOpen: onOpenAlert, onClose: onCloseAlert } = useDisclosure();
   const { isOpen: isOpenModal, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure();
@@ -80,14 +81,38 @@ export default function Voter() {
     onOpenAlert();
   };
 
+  const getPermissions = async () => {
+    setUsers([] as PermissionByIdDTO[]);
+
+    setLoading(true);
+    try {
+      const response = await api.get(`/permission/office/${role?.office_id}`);
+
+      setUsers(response.data);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getVoterList = async () => {
     setData([] as VoterDTO[]);
 
     setLoading(true);
     try {
       const response = await api.get(`/voter/office/${auth.office.id}`);
+      const updatedVoter = response.data.map((voter: any) => {
+        const userWithPermission = users.find(
+          (userPermission: PermissionByIdDTO) => userPermission.user.id === voter.creator_id
+        );
+        if (userWithPermission) {
+          voter.creator = userWithPermission.user;
+        }
 
-      setData(response.data);
+        return voter;
+      });
+
+      setData(updatedVoter);
     } catch (err) {
     } finally {
       setLoading(false);
@@ -95,8 +120,14 @@ export default function Voter() {
   };
 
   useEffect(() => {
-    getVoterList();
+    getPermissions();
   }, []);
+
+  useEffect(() => {
+    if (users.length > 0) {
+      getVoterList();
+    }
+  }, [users]);
 
   const deleteVoter = async () => {
     setLoading(true);
@@ -450,6 +481,7 @@ export default function Voter() {
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Data de nascimento</Th>
               <Th color="gray.600">Telefone</Th>
+              <Th color="gray.600">Criador</Th>
               <Th color="gray.600">Endereço</Th>
               {role?.eleitor_page > 1 && (
                 <Th textAlign="center" color="gray.600" w="8">
@@ -478,6 +510,17 @@ export default function Voter() {
                         return (
                           currentValue?.reference &&
                           currentValue?.reference
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case 'creator':
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.creator?.name &&
+                          currentValue?.creator?.name
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
                         );
@@ -623,6 +666,16 @@ export default function Voter() {
                         py="4px"
                       >
                         {voter?.cellphone ? voter?.cellphone : '-'}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {voter?.creator?.name}
                       </Td>
                       {voter?.street ? (
                         <Td
