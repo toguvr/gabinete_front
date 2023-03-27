@@ -442,6 +442,8 @@ export default function Voter() {
             borderBottomWidth={'4px'}
             borderBottomStyle="solid"
             borderBottomColor={'gray.300'}
+            backgroundColor="white"
+            zIndex="1"
           >
             <Tr>
               {role?.demandas_page > 1 && <Th color="gray.600"></Th>}
