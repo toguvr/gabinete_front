@@ -19,6 +19,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { StateProps } from "../dtos";
 import api from "../services/api";
 import getValidationErrors from "../utils/validationError";
+import { getFormatDate } from "../utils/date";
 
 export default function VoterEdit() {
   const { id } = useParams();
@@ -166,7 +167,10 @@ export default function VoterEdit() {
         email: response?.data?.email,
         office_id: office.id,
         address_number: response?.data?.address_number,
-        birthdate: response?.data?.birthdate,
+        birthdate: getFormatDate(
+          new Date(response?.data?.birthdate),
+          "yyyy-MM-dd"
+        ),
         city: response?.data?.city,
         reference: response?.data?.reference,
         gender: response?.data?.gender,
