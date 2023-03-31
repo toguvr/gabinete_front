@@ -23,6 +23,7 @@ import DemandEdit from "../pages/DemandEdit";
 import DemandaRegisterVoter from "../pages/DemandRegisterVoter";
 import NoBond from "../pages/NoBond";
 import RoleEdit from "../pages/RoleEdit";
+import Home from "../pages/Home";
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -31,7 +32,7 @@ interface PrivateRoutesProps {
 export const publicRoute = {};
 
 export const privateRoute = [
-  // { pathname: "/home", permissionName: "home_page" },
+  { pathname: "/home", permissionName: "home_page" },
   { pathname: "/cargo", permissionName: "cargo_page" },
   { pathname: "/equipe", permissionName: "equipe_page" },
   { pathname: "/eleitor", permissionName: "eleitor_page" },
@@ -82,7 +83,7 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route element={<AuthenticatedRoutes isPrivate />}>
-        {/* <Route path="/home" element={<Home />} /> */}
+        <Route path="/home" element={<Home />} />
 
         {/* <Route path="/solicitacoes" element={<Solicitations />} /> */}
 
