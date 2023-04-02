@@ -162,6 +162,7 @@ export default function VoterEdit() {
     setLoading(true);
     try {
       const response = await api.get(`/voter/${id}`);
+      console.log('voterporId', response.data);
       const updatedVoter = users.find((user) => user.user.id === response?.data?.creator_id);
       setCreator(updatedVoter?.user.name);
 

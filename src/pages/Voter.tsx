@@ -101,18 +101,8 @@ export default function Voter() {
     setLoading(true);
     try {
       const response = await api.get(`/voter/office/${auth.office.id}`);
-      const updatedVoter = response.data.map((voter: any) => {
-        const userWithPermission = users.find(
-          (userPermission: PermissionByIdDTO) => userPermission.user.id === voter.creator_id
-        );
-        if (userWithPermission) {
-          voter.creator = userWithPermission.user;
-        }
 
-        return voter;
-      });
-
-      setData(updatedVoter);
+      setData(response.data);
     } catch (err) {
     } finally {
       setLoading(false);

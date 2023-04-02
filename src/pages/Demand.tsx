@@ -102,19 +102,9 @@ export default function Demand() {
     setLoading(true);
     try {
       const response = await api.get(`/task/office/${office?.id}`);
+      console.log('tasks', response.data);
 
-      const updatedTasks = response.data.map((task: any) => {
-        const userWithPermission = users.find(
-          (userPermission: PermissionByIdDTO) => userPermission.user.id === task.creator_id
-        );
-        if (userWithPermission) {
-          task.creator = userWithPermission.user;
-        }
-
-        return task;
-      });
-
-      setData(updatedTasks);
+      setData(response.data);
     } catch (err) {
     } finally {
       setLoading(false);

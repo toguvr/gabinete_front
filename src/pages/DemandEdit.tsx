@@ -117,6 +117,7 @@ export default function DemandEdit() {
     setLoading(true);
     try {
       const response = await api.get(`/task/${id}`);
+      console.log('task por id', response.data);
       const taskCreator = responsibles?.filter(
         (responsible) => responsible.value === response.data.creator_id
       );
