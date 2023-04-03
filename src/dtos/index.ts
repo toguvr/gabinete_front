@@ -92,6 +92,7 @@ export interface VoterDTO {
   document: string;
   email: string;
   gender: string;
+  creator: UserDTO;
   id: string;
   name: string;
   neighborhood: string;

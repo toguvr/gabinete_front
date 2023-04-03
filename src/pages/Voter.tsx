@@ -46,19 +46,20 @@ import {
   IoPrintOutline,
   IoSearchSharp,
   IoTrashOutline,
-} from "react-icons/io5";
-import { NumericFormat } from "react-number-format";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import Button from "../components/Form/Button";
-import Input from "../components/Form/Input";
-import HeaderSideBar from "../components/HeaderSideBar";
-import { useAuth } from "../contexts/AuthContext";
-import { StateProps, VoterDTO } from "../dtos";
-import api from "../services/api";
-import { getFormatDate } from "../utils/date";
-import { voterPage } from "../utils/filterTables";
-import { paginationArray } from "../utils/pdfPagination";
+} from 'react-icons/io5';
+import { NumericFormat } from 'react-number-format';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Button from '../components/Form/Button';
+import Input from '../components/Form/Input';
+import HeaderSideBar from '../components/HeaderSideBar';
+import { useAuth } from '../contexts/AuthContext';
+import { PermissionByIdDTO, StateProps, VoterDTO } from '../dtos';
+import api from '../services/api';
+import { getFormatDate } from '../utils/date';
+import { voterPage } from '../utils/filterTables';
+import { paginationArray } from '../utils/pdfPagination';
+
 
 export default function Voter() {
   const navigate = useNavigate();
@@ -493,6 +494,7 @@ export default function Voter() {
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Data de nascimento</Th>
               <Th color="gray.600">Telefone</Th>
+              <Th color="gray.600">Criador</Th>
               <Th color="gray.600">Endereço</Th>
               {role?.eleitor_page > 1 && (
                 <Th textAlign="center" color="gray.600" w="8">
@@ -529,7 +531,20 @@ export default function Voter() {
                       } else {
                         return currentValue;
                       }
-                    case "email":
+
+                    case 'creator':
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.creator?.name &&
+                          currentValue?.creator?.name
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case 'email':
+
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.email &&
@@ -697,6 +712,16 @@ export default function Voter() {
                         ) : (
                           "-"
                         )}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {voter?.creator?.name}
                       </Td>
                       {voter?.street ? (
                         <Td
