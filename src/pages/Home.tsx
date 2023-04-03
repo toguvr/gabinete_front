@@ -276,6 +276,20 @@ export default function Home() {
                   Aniversariantes
                 </Text>
               </Flex>
+              {!!permissionBirthDates && !!voterBirthDates && (
+                <Flex
+                  margin="20px 0px"
+                  height="40px"
+                  width="100%"
+                  alignItems="center"
+                  justifyContent="start"
+                  paddingLeft={{ base: '16px', md: '24px' }}
+                >
+                  <Text fontWeight="500" fontSize="16px" color="#718096">
+                    Nenhum aniversariante hoje.
+                  </Text>
+                </Flex>
+              )}
               {permissionBirthDates &&
                 permissionBirthDates.map((permission) => (
                   <Flex
@@ -347,21 +361,21 @@ export default function Home() {
                   </Flex>
                 ))}
             </Flex>
-            <Flex
+            {/* <Flex
               borderRadius="8px"
               boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
               background="white"
               height="100%"
               width="100%"
-            ></Flex>
+            ></Flex> */}
           </Flex>
-          <Flex
+          {/* <Flex
             borderRadius="8px"
             boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
             background="white"
             height="100%"
             width={{ base: '100%', md: 'calc(66% - 10px)' }}
-          ></Flex>
+          ></Flex> */}
         </Flex>
       </Flex>
     </HeaderSideBar>
