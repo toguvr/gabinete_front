@@ -89,7 +89,6 @@ export default function Demand() {
     setLoading(true);
     try {
       const response = await api.get(`/task/office/${office?.id}`);
-      console.log('tasks', response.data);
 
       setData(response.data);
     } catch (err) {
