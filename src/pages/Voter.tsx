@@ -121,20 +121,22 @@ export default function Voter() {
         isClosable: true,
       });
       getVoterList();
-      setVoterToDeleteId("");
-      onCloseAlert();
+      setVoterToDeleteId('');
+
     } catch (err: any) {
       return toast({
         title:
           err?.response?.data?.message ||
-          "Ocorreu um erro ao excluir o eleitor, tente novamente",
-        status: "error",
-        position: "top-right",
+          'Ocorreu um erro ao excluir o eleitor, tente novamente',
+        status: 'error',
+        position: 'top-right',
+
         duration: 3000,
         isClosable: true,
       });
     } finally {
       setLoading(false);
+      onCloseAlert();
     }
   };
 
@@ -323,7 +325,7 @@ export default function Voter() {
           <AlertDialogFooter>
             <ChakraButton onClick={onCloseAlert}>Cancelar</ChakraButton>
             <ChakraButton
-              colorScheme={"red"}
+              colorScheme={'red'}
               isLoading={loading}
               onClick={deleteVoter}
               ml={3}
@@ -394,7 +396,8 @@ export default function Voter() {
           color="gray.500"
           fontWeight="semibold"
           fontSize="20px"
-          ml={[0, "28px"]}
+          ml={[0, '28px']}
+
         >
           Eleitor
           {loading && (
@@ -403,8 +406,9 @@ export default function Voter() {
         </Text>
         {role?.eleitor_page > 1 && (
           <Button
-            onClick={() => navigate("/eleitor/registrar-eleitor")}
-            w={["160px", "280px"]}
+            onClick={() => navigate('/eleitor/registrar-eleitor')}
+            w={['160px', '280px']}
+
           >
             Cadastrar eleitor
           </Button>
@@ -677,9 +681,10 @@ export default function Voter() {
                         {voter?.birthdate
                           ? getFormatDate(
                               addHours(new Date(voter?.birthdate), 12),
-                              "dd/MM/yyyy"
+                              'dd/MM/yyyy'
                             )
-                          : "-"}
+                          : '-'}
+
                       </Td>
                       <Td
                         color="gray.600"
@@ -734,23 +739,24 @@ export default function Voter() {
                           py="4px"
                         >
                           {voter?.zip
-                            ? `${voter?.street ? voter?.street + "," : ""}
+                            ? `${voter?.street ? voter?.street + ',' : ''}
                               ${
                                 voter?.address_number
-                                  ? voter?.address_number + ","
-                                  : ""
+                                  ? voter?.address_number + ','
+                                  : ''
                               }
                               ${
                                 voter?.neighborhood
-                                  ? voter?.neighborhood + ","
-                                  : ""
+                                  ? voter?.neighborhood + ','
+                                  : ''
                               }
                               ${
-                                voter?.complement ? voter?.complement + "," : ""
+                                voter?.complement ? voter?.complement + ',' : ''
                               }
-                              ${voter?.city ? voter?.city + "," : ""}
-                              ${voter?.state ? voter?.state + "," : ""}`
-                            : "-"}
+                              ${voter?.city ? voter?.city + ',' : ''}
+                              ${voter?.state ? voter?.state + ',' : ''}`
+                            : '-'}
+
                         </Td>
                       ) : (
                         <Td

@@ -22,8 +22,8 @@ import {
   Spinner,
   Switch,
   Select,
-  } from '@chakra-ui/react';
-import { useEffect, useRef, useState } from "react";
+} from '@chakra-ui/react';
+import { useEffect, useRef, useState } from 'react';
 
 import HeaderSideBar from '../components/HeaderSideBar';
 import { PermissionByIdDTO, RoleDTO, StateProps } from '../dtos';
@@ -32,12 +32,10 @@ import {
   IoPencilOutline,
   IoSearchSharp,
   IoTrashOutline,
+
 } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
-
-
-
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/Form/Button";
 import Input from "../components/Form/Input";
@@ -112,11 +110,12 @@ export default function Permission() {
       });
       getPermissions();
       setPermissionToDeleteId('');
-      onClose();
     } catch (err: any) {
       return toast({
         title:
-          err?.response?.data?.message || 'Ocorreu um erro ao excluir a equipe, tente novamente',
+          err?.response?.data?.message ||
+          'Ocorreu um erro ao excluir a equipe, tente novamente',
+
         status: 'error',
         position: 'top-right',
         duration: 3000,
@@ -124,6 +123,7 @@ export default function Permission() {
       });
     } finally {
       setLoading(false);
+      onClose();
     }
   };
 
@@ -202,7 +202,13 @@ export default function Permission() {
 
           <AlertDialogFooter>
             <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
-            <ChakraButton colorScheme={'red'} isLoading={loading} onClick={deletePermission} ml={3}>
+            <ChakraButton
+              colorScheme={'red'}
+              isLoading={loading}
+              onClick={deletePermission}
+              ml={3}
+            >
+
               Continuar
             </ChakraButton>
           </AlertDialogFooter>
@@ -214,12 +220,24 @@ export default function Permission() {
         gap={['20px', '0']}
         alignItems={['center', 'flex-start']}
       >
-        <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
+
+        <Text
+          color="gray.500"
+          fontWeight="semibold"
+          fontSize="20px"
+          ml={[0, '28px']}
+        >
+
           Equipe
           {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
         </Text>
         {role?.equipe_page > 1 && (
-          <Button onClick={() => navigate('/equipe/registrar-equipe')} w={['160px', '280px']}>
+
+          <Button
+            onClick={() => navigate('/equipe/registrar-equipe')}
+            w={['160px', '280px']}
+          >
+
             Cadastrar equipe
           </Button>
         )}
@@ -318,7 +336,13 @@ export default function Permission() {
       >
         <Table variant="simple">
           <Thead position="sticky" top="0px">
-            <Tr borderBottomWidth={'4px'} borderBottomStyle="solid" borderBottomColor={'gray.300'}>
+
+            <Tr
+              borderBottomWidth={'4px'}
+              borderBottomStyle="solid"
+              borderBottomColor={'gray.300'}
+            >
+
               <Th color="gray.600">Ativo</Th>
 
               <Th color="gray.600">Nome</Th>
