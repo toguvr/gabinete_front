@@ -1,11 +1,16 @@
-import { Flex, Grid, Icon, Text } from '@chakra-ui/react';
-import { AiOutlineUsergroupAdd } from 'react-icons/ai';
-import { MdHowToReg, MdOutlineChecklist } from 'react-icons/md';
-import { RiSuitcaseLine } from 'react-icons/ri';
-import HeaderSideBar from '../components/HeaderSideBar';
-import { useAuth } from '../contexts/AuthContext';
-import api from '../services/api';
-import { useEffect, useState } from 'react';
+import { Flex, Grid, Icon, IconButton, Text } from "@chakra-ui/react";
+import { AiOutlineUsergroupAdd } from "react-icons/ai";
+import { RiTeamLine } from "react-icons/ri";
+import { MdHowToReg, MdOutlineChecklist } from "react-icons/md";
+import { RiSuitcaseLine } from "react-icons/ri";
+import HeaderSideBar from "../components/HeaderSideBar";
+import { useAuth } from "../contexts/AuthContext";
+import api from "../services/api";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { IoLogoWhatsapp } from "react-icons/io5";
+import { PermissionByIdDTO, VoterDTO } from "../dtos";
+import { SiMicrosoftteams } from "react-icons/si";
 
 interface IResumeOffice {
   role: number;
@@ -17,6 +22,12 @@ interface IResumeOffice {
 export default function Home() {
   const { office, updateUser, user } = useAuth();
   const [resumeOffice, setResumeOffice] = useState({} as IResumeOffice);
+  const [permissionBirthDates, setPermissionBirthDates] = useState(
+    [] as PermissionByIdDTO[]
+  );
+  const [voterBirthDates, setVoterBirthDates] = useState([] as VoterDTO[]);
+
+  console.log("vote", voterBirthDates);
 
   async function getResumeOffice() {
     try {
@@ -25,9 +36,21 @@ export default function Home() {
     } catch (error) {}
   }
 
+  async function getBirthDates() {
+    try {
+      const [permissions, voters] = await Promise.all([
+        api.get(`/permission/by-birthdate/${office?.id}`),
+        api.get(`/voter/by-birthdate/${office?.id}`),
+      ]);
+      setPermissionBirthDates(permissions.data);
+      setVoterBirthDates(voters.data);
+    } catch (error) {}
+  }
+
   useEffect(() => {
     if (office?.id) {
       getResumeOffice();
+      getBirthDates();
     }
   }, [office?.id]);
 
@@ -42,17 +65,17 @@ export default function Home() {
       >
         <Grid
           background="transparent"
-          height="270px"
+          height={{ base: "100%", md: "270px" }}
           width="100%"
           gap="10px"
-          templateColumns={{ base: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }}
+          templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(4, 1fr)" }}
           display="grid"
           padding="4px"
         >
           <Flex
             position="relative"
             background="white"
-            height={{ base: '160px', md: '200px' }}
+            height={{ base: "160px", md: "200px" }}
             width="100%"
             borderRadius="8px"
             boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
@@ -60,23 +83,23 @@ export default function Home() {
             <Flex
               position="absolute"
               top="20px"
-              right={{ base: '10px', md: '16px' }}
+              right={{ base: "10px", md: "16px" }}
               rounded="50%"
               bgColor={office?.primary_color}
-              height={{ base: '40px', md: '40px' }}
-              width={{ base: '40px', md: '40px' }}
+              height={{ base: "40px", md: "40px" }}
+              width={{ base: "40px", md: "40px" }}
               justifyContent="center"
               alignItems="center"
             >
               <Icon color="white" fontSize="30px" as={RiSuitcaseLine} />
             </Flex>
             <Text
-              fontSize={{ base: '16px', md: '22px' }}
+              fontSize={{ base: "12px", md: "18px" }}
               color="#718096"
               fontWeight="700"
               position="absolute"
               top="20px"
-              left={{ base: '10px', md: '16px' }}
+              left={{ base: "10px", md: "16px" }}
             >
               Cargos
             </Text>
@@ -86,7 +109,7 @@ export default function Home() {
               fontSize="48px"
               position="absolute"
               bottom="10px"
-              left={{ base: '10px', md: '16px' }}
+              left={{ base: "10px", md: "16px" }}
             >
               {resumeOffice.role}
             </Text>
@@ -94,7 +117,7 @@ export default function Home() {
           <Flex
             position="relative"
             background="white"
-            height={{ base: '160px', md: '200px' }}
+            height={{ base: "160px", md: "200px" }}
             width="100%"
             borderRadius="8px"
             boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
@@ -102,23 +125,23 @@ export default function Home() {
             <Flex
               position="absolute"
               top="20px"
-              right={{ base: '10px', md: '16px' }}
+              right={{ base: "10px", md: "16px" }}
               rounded="50%"
               bgColor={office?.primary_color}
-              height={{ base: '40px', md: '40px' }}
-              width={{ base: '40px', md: '40px' }}
+              height={{ base: "40px", md: "40px" }}
+              width={{ base: "40px", md: "40px" }}
               justifyContent="center"
               alignItems="center"
             >
               <Icon color="white" fontSize="30px" as={AiOutlineUsergroupAdd} />
             </Flex>
             <Text
-              fontSize={{ base: '16px', md: '22px' }}
+              fontSize={{ base: "12px", md: "18px" }}
               color="#718096"
               fontWeight="700"
               position="absolute"
               top="20px"
-              left={{ base: '10px', md: '16px' }}
+              left={{ base: "10px", md: "16px" }}
             >
               Equipe
             </Text>
@@ -128,7 +151,7 @@ export default function Home() {
               fontSize="48px"
               position="absolute"
               bottom="10px"
-              left={{ base: '10px', md: '16px' }}
+              left={{ base: "10px", md: "16px" }}
             >
               {resumeOffice.user}
             </Text>
@@ -136,7 +159,7 @@ export default function Home() {
           <Flex
             position="relative"
             background="white"
-            height={{ base: '160px', md: '200px' }}
+            height={{ base: "160px", md: "200px" }}
             width="100%"
             borderRadius="8px"
             boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
@@ -144,23 +167,23 @@ export default function Home() {
             <Flex
               position="absolute"
               top="20px"
-              right={{ base: '10px', md: '16px' }}
+              right={{ base: "10px", md: "16px" }}
               rounded="50%"
               bgColor={office?.primary_color}
-              height={{ base: '40px', md: '40px' }}
-              width={{ base: '40px', md: '40px' }}
+              height={{ base: "40px", md: "40px" }}
+              width={{ base: "40px", md: "40px" }}
               justifyContent="center"
               alignItems="center"
             >
               <Icon color="white" fontSize="30px" as={MdHowToReg} />
             </Flex>
             <Text
-              fontSize={{ base: '16px', md: '22px' }}
+              fontSize={{ base: "12px", md: "18px" }}
               color="#718096"
               fontWeight="700"
               position="absolute"
               top="20px"
-              left={{ base: '10px', md: '16px' }}
+              left={{ base: "10px", md: "16px" }}
             >
               Eleitores
             </Text>
@@ -170,7 +193,7 @@ export default function Home() {
               fontSize="48px"
               position="absolute"
               bottom="10px"
-              left={{ base: '10px', md: '16px' }}
+              left={{ base: "10px", md: "16px" }}
             >
               {resumeOffice.voter}
             </Text>
@@ -178,7 +201,7 @@ export default function Home() {
           <Flex
             position="relative"
             background="white"
-            height={{ base: '160px', md: '200px' }}
+            height={{ base: "160px", md: "200px" }}
             width="100%"
             borderRadius="8px"
             boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
@@ -186,23 +209,23 @@ export default function Home() {
             <Flex
               position="absolute"
               top="20px"
-              right={{ base: '10px', md: '16px' }}
+              right={{ base: "10px", md: "16px" }}
               rounded="50%"
               bgColor={office?.primary_color}
-              height={{ base: '40px', md: '40px' }}
-              width={{ base: '40px', md: '40px' }}
+              height={{ base: "40px", md: "40px" }}
+              width={{ base: "40px", md: "40px" }}
               justifyContent="center"
               alignItems="center"
             >
               <Icon color="white" fontSize="30px" as={MdOutlineChecklist} />
             </Flex>
             <Text
-              fontSize={{ base: '16px', md: '22px' }}
+              fontSize={{ base: "12px", md: "18px" }}
               color="#718096"
               fontWeight="700"
               position="absolute"
               top="20px"
-              left={{ base: '10px', md: '16px' }}
+              left={{ base: "10px", md: "16px" }}
             >
               Demandas
             </Text>
@@ -212,43 +235,160 @@ export default function Home() {
               fontSize="48px"
               position="absolute"
               bottom="10px"
-              left={{ base: '10px', md: '16px' }}
+              left={{ base: "10px", md: "16px" }}
             >
               {resumeOffice.task}
             </Text>
           </Flex>
         </Grid>
 
-        {/* <Flex
-          background="green"
+        <Flex
+          marginTop="10px"
+          background="white"
           height="100%"
           width="100%"
           gap="10px"
-          direction={{ base: 'column', md: 'row' }}
+          direction={{ base: "column", md: "row" }}
         >
           <Flex
-            background="blue"
+            background="white"
             height="100%"
-            width={{ base: '100%', md: 'calc(33.333% - 10px)' }}
-          ></Flex>
-          <Flex
-            background="gray"
-            height="100%"
-            width={{ base: '100%', md: 'calc(33.333% - 10px)' }}
-          ></Flex>
-          <Flex
-            background="yellow"
-            height="100%"
-            width={{ base: '100%', md: 'calc(33.333% - 10px)' }}
+            width={{ base: "100%", md: "calc(50% - 5px)" }}
             display="flex"
             flexDirection="column"
             gap="10px"
           >
-            <Flex background="purple" height="100%" width="100%"></Flex>
-            <Flex background="purple" height="100%" width="100%"></Flex>
-          </Flex>
+            <Flex
+              borderRadius="8px"
+              boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
+              background="white"
+              height="100%"
+              width="100%"
+              display="flex"
+              flexDirection="column"
+            >
+              <Flex
+                margin="20px 0px"
+                height="20px"
+                width="100%"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Text fontWeight="600" fontSize="20px" color="#718096">
+                  Aniversariantes
+                </Text>
+              </Flex>
+              {!!permissionBirthDates && !!voterBirthDates && (
+                <Flex
+                  margin="20px 0px"
+                  height="40px"
+                  width="100%"
+                  alignItems="center"
+                  justifyContent="start"
+                  paddingLeft={{ base: "16px", md: "24px" }}
+                >
+                  <Text fontWeight="500" fontSize="16px" color="#718096">
+                    Nenhum aniversariante hoje.
+                  </Text>
+                </Flex>
+              )}
+              {permissionBirthDates &&
+                permissionBirthDates.map((permission) => (
+                  <Flex
+                    key={permission.id}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    padding={{ base: "0 16px", md: "0 24px" }}
+                    width="100%"
+                  >
+                    <Icon color="#718096" fontSize="24" as={RiTeamLine} />
 
-        </Flex> */}
+                    <Text
+                      lineHeight="20px"
+                      fontWeight="400"
+                      fontSize="16px"
+                      color="#718096"
+                    >
+                      {permission?.user?.name}{" "}
+                    </Text>
+                    <Link
+                      target="_blank"
+                      to={`https://wa.me/55${permission?.user?.cellphone}`}
+                      rel="noopener noreferrer"
+                    >
+                      <IconButton
+                        aria-label="Open alert"
+                        variant="unstyled"
+                        icon={
+                          <Icon
+                            cursor="pointer"
+                            fontSize="24px"
+                            as={IoLogoWhatsapp}
+                            color="#718096"
+                          />
+                        }
+                      />
+                    </Link>
+                  </Flex>
+                ))}{" "}
+              {voterBirthDates &&
+                voterBirthDates.map((voter) => (
+                  <Flex
+                    key={voter.id}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    padding={{ base: "0 16px", md: "0 24px" }}
+                    width="100%"
+                  >
+                    <Icon color="#718096" fontSize="24" as={SiMicrosoftteams} />
+
+                    <Text
+                      lineHeight="20px"
+                      fontWeight="400"
+                      fontSize="16px"
+                      color="#718096"
+                    >
+                      {voter?.name}{" "}
+                    </Text>
+                    <Link
+                      target="_blank"
+                      to={`https://wa.me/55${voter?.cellphone}/?text=Olá, ${voter?.name}! Aqui é do Gabinete do Vereador ${office?.name}. Gostaria de desejar um feliz aniversário!`}
+                      rel="noopener noreferrer"
+                    >
+                      <IconButton
+                        aria-label="Open alert"
+                        variant="unstyled"
+                        icon={
+                          <Icon
+                            cursor="pointer"
+                            fontSize="24px"
+                            as={IoLogoWhatsapp}
+                            color="#718096"
+                          />
+                        }
+                      />
+                    </Link>
+                  </Flex>
+                ))}
+            </Flex>
+            {/* <Flex
+              borderRadius="8px"
+              boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
+              background="white"
+              height="100%"
+              width="100%"
+            ></Flex> */}
+          </Flex>
+          {/* <Flex
+            borderRadius="8px"
+            boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
+            background="white"
+            height="100%"
+            width={{ base: '100%', md: 'calc(66% - 10px)' }}
+          ></Flex> */}
+        </Flex>
       </Flex>
     </HeaderSideBar>
   );
