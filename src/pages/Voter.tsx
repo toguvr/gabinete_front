@@ -31,8 +31,8 @@ import {
 import {
   Document,
   Image,
-  Page,
   PDFDownloadLink,
+  Page,
   StyleSheet,
   Text as TextPDF,
   View,
@@ -41,14 +41,14 @@ import { addHours } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import {
   IoAddCircleSharp,
+  IoLogoWhatsapp,
   IoPencilOutline,
   IoPrintOutline,
   IoSearchSharp,
   IoTrashOutline,
 } from 'react-icons/io5';
 import { NumericFormat } from 'react-number-format';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
 import HeaderSideBar from '../components/HeaderSideBar';
@@ -120,7 +120,6 @@ export default function Voter() {
       });
       getVoterList();
       setVoterToDeleteId('');
-      onCloseAlert();
     } catch (err: any) {
       return toast({
         title:
@@ -128,11 +127,13 @@ export default function Voter() {
           'Ocorreu um erro ao excluir o eleitor, tente novamente',
         status: 'error',
         position: 'top-right',
+
         duration: 3000,
         isClosable: true,
       });
     } finally {
       setLoading(false);
+      onCloseAlert();
     }
   };
 
@@ -486,6 +487,8 @@ export default function Voter() {
             borderBottomWidth={'4px'}
             borderBottomStyle="solid"
             borderBottomColor={'gray.300'}
+            backgroundColor="white"
+            zIndex="1"
           >
             <Tr>
               {role?.demandas_page > 1 && <Th color="gray.600"></Th>}
@@ -494,6 +497,7 @@ export default function Voter() {
               <Th color="gray.600">Telefone</Th>
               <Th color="gray.600">Data de nascimento</Th>
               <Th color="gray.600">E-mail</Th>
+              <Th color="gray.600">Criador</Th>
               <Th color="gray.600">Endereço</Th>
               {role?.eleitor_page > 1 && (
                 <Th textAlign="center" color="gray.600" w="8">
@@ -524,6 +528,18 @@ export default function Voter() {
                         return (
                           currentValue?.reference &&
                           currentValue?.reference
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+
+                    case 'creator':
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.creator?.name &&
+                          currentValue?.creator?.name
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
                         );
@@ -650,7 +666,29 @@ export default function Voter() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
-                        {voter?.cellphone ? voter?.cellphone : '-'}
+                        {voter?.cellphone ? (
+                          <Link
+                            target="_blank"
+                            to={`https://wa.me/55${voter?.cellphone}`}
+                            rel="noopener noreferrer"
+                          >
+                            <IconButton
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24px"
+                                  as={IoLogoWhatsapp}
+                                  color={office?.primary_color}
+                                />
+                              }
+                            />
+                            {voter?.cellphone}
+                          </Link>
+                        ) : (
+                          '-'
+                        )}
                       </Td>
                       <Td
                         color="gray.600"
@@ -677,6 +715,16 @@ export default function Voter() {
                         py="4px"
                       >
                         {voter?.email ? voter?.email : '-'}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {voter?.creator?.name}
                       </Td>
                       {voter?.street ? (
                         <Td
