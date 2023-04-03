@@ -26,13 +26,18 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import HeaderSideBar from '../components/HeaderSideBar';
 import { PermissionByIdDTO, RoleDTO, StateProps } from '../dtos';
-import { IoPencilOutline, IoSearchSharp, IoTrashOutline } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
-import Button from '../components/Form/Button';
-import Input from '../components/Form/Input';
-import { permissionPage } from '../utils/filterTables';
+import {
+  IoLogoWhatsapp,
+  IoPencilOutline,
+  IoSearchSharp,
+  IoTrashOutline,
+} from "react-icons/io5";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
+import Button from "../components/Form/Button";
+import Input from "../components/Form/Input";
+import { permissionPage } from "../utils/filterTables";
 
 export default function Permission() {
   const navigate = useNavigate();
@@ -102,11 +107,13 @@ export default function Permission() {
       });
       getPermissions();
       setPermissionToDeleteId('');
-      onClose();
+
     } catch (err: any) {
       return toast({
         title:
-          err?.response?.data?.message || 'Ocorreu um erro ao excluir a equipe, tente novamente',
+          err?.response?.data?.message ||
+          'Ocorreu um erro ao excluir a equipe, tente novamente',
+
         status: 'error',
         position: 'top-right',
         duration: 3000,
@@ -114,6 +121,7 @@ export default function Permission() {
       });
     } finally {
       setLoading(false);
+      onClose();
     }
   };
 
@@ -204,12 +212,22 @@ export default function Permission() {
         gap={['20px', '0']}
         alignItems={['center', 'flex-start']}
       >
-        <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
+
+
+        <Text
+          color="gray.500"
+          fontWeight="semibold"
+          fontSize="20px"
+          ml={[0, '28px']}
+        >
           Equipe
           {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
         </Text>
         {role?.equipe_page > 1 && (
-          <Button onClick={() => navigate('/equipe/registrar-equipe')} w={['160px', '280px']}>
+          <Button
+            onClick={() => navigate('/equipe/registrar-equipe')}
+            w={['160px', '280px']}
+          >
             Cadastrar equipe
           </Button>
         )}
@@ -310,7 +328,6 @@ export default function Permission() {
           <Thead position="sticky" top="0px" backgroundColor="white" zIndex="1">
             <Tr borderBottomWidth={'4px'} borderBottomStyle="solid" borderBottomColor={'gray.300'}>
               <Th color="gray.600">Ativo</Th>
-
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Telefone</Th>
@@ -385,7 +402,12 @@ export default function Permission() {
                 })
                 .map((permission) => {
                   return (
-                    <Tr key={permission.id} h="45px" py="4px">
+                    <Tr
+                      key={permission.id}
+                      h="45px"
+                      py="4px"
+                      whiteSpace="nowrap"
+                    >
                       <Td
                         color={permission?.active ? 'gray.600' : 'gray.300'}
                         fontSize="14px"
@@ -427,7 +449,25 @@ export default function Permission() {
                         borderBottomColor="gray.300"
                         py="0px"
                       >
-                        {permission?.user?.cellphone}
+                        <Link
+                          target="_blank"
+                          to={`https://wa.me/55${permission?.user?.cellphone}`}
+                          rel="noopener noreferrer"
+                        >
+                          <IconButton
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24px"
+                                as={IoLogoWhatsapp}
+                                color={office?.primary_color}
+                              />
+                            }
+                          />
+                          {permission?.user?.cellphone}
+                        </Link>
                       </Td>
                       <Td
                         color={permission?.active ? 'gray.600' : 'gray.400'}

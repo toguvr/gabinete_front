@@ -23,6 +23,7 @@ export const voterPage = [
   { key: 4, value: 'cellphone', label: 'Telefone' },
   { key: 5, value: 'city', label: 'Cidade' },
   { key: 6, value: 'neighborhood', label: 'Bairro' },
+  { key: 7, value: 'creator', label: 'Criador' },
 ];
 
 export const demandPage = [
@@ -31,6 +32,7 @@ export const demandPage = [
   { key: 2, value: 'deadline', label: 'Prazo' },
   { key: 3, value: 'city', label: 'Cidade' },
   { key: 4, value: 'neighborhood', label: 'Bairro' },
+  { key: 5, value: 'creator', label: 'Criador' },
 ];
 
 export const taskPage = [
