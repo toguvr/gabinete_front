@@ -1,12 +1,12 @@
 export enum TaskPriority {
-  ALTA = "ALTA",
-  MEDIA = "MEDIA",
-  BAIXA = "BAIXA",
+  ALTA = 'ALTA',
+  MEDIA = 'MEDIA',
+  BAIXA = 'BAIXA',
 }
 
 export enum UserGender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
 }
 
 export interface StateProps {

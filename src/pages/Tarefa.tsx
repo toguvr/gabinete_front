@@ -47,9 +47,7 @@ export default function Tarefa() {
 
     setLoading(true);
     try {
-      const response = await api.get(
-        `/task/office/${auth.office.id}/responsible`
-      );
+      const response = await api.get(`/task/office/${auth.office.id}/responsible`);
       response.data.sort((a: any, b: any) => {
         if (a.status === 'BACKLOG') {
           return -1;
@@ -121,11 +119,7 @@ export default function Tarefa() {
             <TaskCard task={selectedTask} />
           </ModalBody>
 
-          <ModalFooter
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
+          <ModalFooter display="flex" alignItems="center" justifyContent="center">
             <Button alignSelf="center" onClick={onClose} w="85px">
               Fechar
             </Button>
@@ -138,16 +132,9 @@ export default function Tarefa() {
           gap={['20px', '0']}
           alignItems={['center', 'flex-start']}
         >
-          <Text
-            color="gray.500"
-            fontWeight="semibold"
-            fontSize="20px"
-            ml={[0, '28px']}
-          >
+          <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
             Tarefa
-            {loading && (
-              <Spinner color={office?.primary_color} ml="4" size="sm" />
-            )}
+            {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
           </Text>
           <Button onClick={getOfficeList} w={['160px', '280px']}>
             Atualizar
@@ -177,9 +164,7 @@ export default function Tarefa() {
               })}
             </Select>
 
-            {selectFilter === 'id' ||
-            selectFilter === 'title' ||
-            selectFilter === 'voter' ? (
+            {selectFilter === 'id' || selectFilter === 'title' || selectFilter === 'voter' ? (
               <Input
                 maxW="600px"
                 type="text"
@@ -192,9 +177,7 @@ export default function Tarefa() {
                   setFilterField(e.target.value);
                 }}
                 borderColor="gray.500"
-                rightIcon={
-                  <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-                }
+                rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
               />
             ) : selectFilter === 'priority' ? (
               <Select
@@ -290,9 +273,8 @@ export default function Tarefa() {
                         if (filterField?.length >= 3) {
                           return (
                             currentValue?.title &&
-                            currentValue?.title
-                              .toLowerCase()
-                              .indexOf(filterField?.toLowerCase()) > -1
+                            currentValue?.title.toLowerCase().indexOf(filterField?.toLowerCase()) >
+                              -1
                           );
                         } else {
                           return currentValue;
@@ -301,9 +283,8 @@ export default function Tarefa() {
                         if (filterField?.length >= 3) {
                           return (
                             currentValue?.status &&
-                            currentValue?.status
-                              .toLowerCase()
-                              .indexOf(filterField?.toLowerCase()) > -1
+                            currentValue?.status.toLowerCase().indexOf(filterField?.toLowerCase()) >
+                              -1
                           );
                         } else {
                           return currentValue;
@@ -405,9 +386,7 @@ export default function Tarefa() {
                         py="4px"
                         textAlign="center"
                       >
-                        <div
-                          style={{ display: 'flex', justifyContent: 'center' }}
-                        >
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
                           <Text
                             justifyContent="center"
                             background={

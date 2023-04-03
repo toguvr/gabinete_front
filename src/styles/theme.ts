@@ -1,14 +1,14 @@
-import { extendTheme } from "@chakra-ui/react";
-import "@fontsource/inter";
+import { extendTheme } from '@chakra-ui/react';
+import '@fontsource/inter';
 
 export const theme = extendTheme({
   colors: {
     blue: {
-      primary: "#0066AA",
+      primary: '#0066AA',
     },
   },
   fonts: {
-    heading: "Inter",
-    body: "Inter",
+    heading: 'Inter',
+    body: 'Inter',
   },
 });

@@ -1,7 +1,7 @@
-import { Button as ChakraButton, ButtonProps } from "@chakra-ui/react";
-import { ReactNode } from "react";
-import { useAuth } from "../../contexts/AuthContext";
-import convert from "color-convert";
+import { ButtonProps, Button as ChakraButton } from '@chakra-ui/react';
+import convert from 'color-convert';
+import { ReactNode } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ChakraButtonProps extends ButtonProps {
   children: ReactNode;
@@ -10,26 +10,20 @@ interface ChakraButtonProps extends ButtonProps {
   color?: string;
 }
 
-export default function Button({
-  children,
-  width,
-  bgColor,
-  color,
-  ...rest
-}: ChakraButtonProps) {
+export default function Button({ children, width, bgColor, color, ...rest }: ChakraButtonProps) {
   const { office } = useAuth();
   const officeColor = office?.primary_color;
   const opacity = 0.9;
 
   const rgbColor = convert.hex.rgb(officeColor);
   const transparentRgbColor = rgbColor.concat(opacity * 1);
-  const rgbaColor = `rgba(${transparentRgbColor.join(",")})`;
+  const rgbaColor = `rgba(${transparentRgbColor.join(',')})`;
 
   return (
     <ChakraButton
       bg={bgColor ? bgColor : office?.primary_color}
       color={color ? color : office?.secondary_color}
-      w={width ? width : "100%"}
+      w={width ? width : '100%'}
       _hover={{
         bg: rgbaColor,
       }}

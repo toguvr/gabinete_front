@@ -29,7 +29,6 @@ import { FiHome, FiMenu } from 'react-icons/fi';
 import { IoAlbumsOutline } from 'react-icons/io5';
 import { RiTeamLine } from 'react-icons/ri';
 import { SiMicrosoftteams } from 'react-icons/si';
-import { MdOutlineAddTask } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
