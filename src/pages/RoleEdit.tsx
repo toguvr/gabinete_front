@@ -191,7 +191,7 @@ export default function RoleEdit() {
 
       await api.put('/role', body);
 
-      if (isAuthenticated && role.id) {
+      if (isAuthenticated && values?.id === role.id) {
         getPermissionById();
       }
 
@@ -284,9 +284,9 @@ export default function RoleEdit() {
           </AlertDialogBody>
 
           <AlertDialogFooter>
-            <ChakraButton onClick={handleUpdateRole}>Sim</ChakraButton>
-            <ChakraButton marginLeft="24px" onClick={() => setProceedDialog(false)}>
-              Não
+            <ChakraButton onClick={() => setProceedDialog(false)}>Cancelar</ChakraButton>
+            <ChakraButton marginLeft="24px" colorScheme={'red'} onClick={handleUpdateRole}>
+              Continuar
             </ChakraButton>
           </AlertDialogFooter>
         </AlertDialogContent>

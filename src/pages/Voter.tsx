@@ -27,7 +27,7 @@ import {
   Tr,
   useDisclosure,
   useToast,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   Document,
   Image,
@@ -36,11 +36,12 @@ import {
   StyleSheet,
   Text as TextPDF,
   View,
-} from '@react-pdf/renderer';
-import { addHours } from 'date-fns';
-import { useEffect, useRef, useState } from 'react';
+} from "@react-pdf/renderer";
+import { addHours } from "date-fns";
+import { useEffect, useRef, useState } from "react";
 import {
   IoAddCircleSharp,
+  IoLogoWhatsapp,
   IoPencilOutline,
   IoPrintOutline,
   IoSearchSharp,
@@ -53,18 +54,19 @@ import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
 import HeaderSideBar from '../components/HeaderSideBar';
 import { useAuth } from '../contexts/AuthContext';
-import { StateProps, VoterDTO } from '../dtos';
+import { PermissionByIdDTO, StateProps, VoterDTO } from '../dtos';
 import api from '../services/api';
 import { getFormatDate } from '../utils/date';
 import { voterPage } from '../utils/filterTables';
 import { paginationArray } from '../utils/pdfPagination';
+
 
 export default function Voter() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [data, setData] = useState([] as VoterDTO[]);
-  const [voterToDeleteId, setVoterToDeleteId] = useState('');
+  const [voterToDeleteId, setVoterToDeleteId] = useState("");
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const {
     isOpen: isOpenAlert,
@@ -78,8 +80,8 @@ export default function Voter() {
   } = useDisclosure();
   const { role, office } = useAuth();
   const auth = useAuth();
-  const [selectFilter, setSelectFilter] = useState('name');
-  const [filterField, setFilterField] = useState('');
+  const [selectFilter, setSelectFilter] = useState("name");
+  const [filterField, setFilterField] = useState("");
   const [numberOfLines, setNumberOfLines] = useState(14);
   const [errors, setErrors] = useState({} as StateProps);
 
@@ -112,14 +114,15 @@ export default function Voter() {
       await api.delete(`/voter/${voterToDeleteId}`);
 
       toast({
-        title: 'Usuário excluído com sucesso',
-        status: 'success',
-        position: 'top-right',
+        title: "Usuário excluído com sucesso",
+        status: "success",
+        position: "top-right",
         duration: 3000,
         isClosable: true,
       });
       getVoterList();
       setVoterToDeleteId('');
+
     } catch (err: any) {
       return toast({
         title:
@@ -127,6 +130,7 @@ export default function Voter() {
           'Ocorreu um erro ao excluir o eleitor, tente novamente',
         status: 'error',
         position: 'top-right',
+
         duration: 3000,
         isClosable: true,
       });
@@ -143,106 +147,106 @@ export default function Voter() {
   const styles = StyleSheet.create({
     page: {
       fontSize: 11,
-      flexDirection: 'row',
-      justifyContent: 'center',
+      flexDirection: "row",
+      justifyContent: "center",
       padding: 10,
     },
     table: {
-      width: '90%',
-      flexDirection: 'column',
+      width: "90%",
+      flexDirection: "column",
     },
     flexBetween: {
-      width: '100%',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      width: "100%",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
     columnTitle: {
-      width: '100%',
-      flexDirection: 'column',
-      alignItems: 'center',
+      width: "100%",
+      flexDirection: "column",
+      alignItems: "center",
     },
     summary: {
-      width: '100%',
-      flexDirection: 'column',
-      alignItems: 'center',
+      width: "100%",
+      flexDirection: "column",
+      alignItems: "center",
       marginBottom: 10,
     },
     summaryTitle: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      textAlign: 'center',
+      flexDirection: "row",
+      justifyContent: "center",
+      textAlign: "center",
       fontSize: 10,
     },
     tableTitle: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      textAlign: 'center',
+      flexDirection: "row",
+      justifyContent: "center",
+      textAlign: "center",
     },
     tableSubTitle: {
-      flexDirection: 'row',
-      textAlign: 'center',
+      flexDirection: "row",
+      textAlign: "center",
       padding: 8,
     },
     section: {
       margin: 10,
       padding: 10,
       flexGrow: 1,
-      backgroundColor: 'red',
+      backgroundColor: "red",
     },
     tableContainer: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
+      flexDirection: "row",
+      flexWrap: "wrap",
     },
     row: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       padding: 8,
-      borderTop: '1px solid black',
-      borderRight: '1px solid black',
-      borderLeft: '1px solid black',
+      borderTop: "1px solid black",
+      borderRight: "1px solid black",
+      borderLeft: "1px solid black",
     },
     rowTitle: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       padding: 8,
       fontWeight: 500,
-      borderTop: '1px solid black',
-      borderRight: '1px solid black',
-      borderLeft: '1px solid black',
+      borderTop: "1px solid black",
+      borderRight: "1px solid black",
+      borderLeft: "1px solid black",
     },
     finalRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      fontWeight: 'bold',
+      flexDirection: "row",
+      alignItems: "center",
+      fontWeight: "bold",
       padding: 8,
-      border: '1px solid black',
+      border: "1px solid black",
     },
     voter: {
-      width: '40%',
+      width: "40%",
       padding: 1,
     },
     descriptionBold: {
-      width: '20%',
-      fontWeight: 'bold',
+      width: "20%",
+      fontWeight: "bold",
     },
     email: {
-      width: '40%',
+      width: "40%",
       padding: 1,
     },
     cellphone: {
-      width: '20%',
+      width: "20%",
       padding: 1,
     },
     xyzColumn: {
-      width: '12%',
-      flexDirection: 'column',
-      display: 'flex',
+      width: "12%",
+      flexDirection: "column",
+      display: "flex",
     },
     image: {
       width: 25,
       height: 25,
-      alignSelf: 'center',
+      alignSelf: "center",
     },
   });
 
@@ -384,15 +388,16 @@ export default function Voter() {
         </ModalContent>
       </Modal>
       <Flex
-        justifyContent={'space-between'}
-        gap={['20px', '0']}
-        alignItems={['center', 'flex-start']}
+        justifyContent={"space-between"}
+        gap={["20px", "0"]}
+        alignItems={["center", "flex-start"]}
       >
         <Text
           color="gray.500"
           fontWeight="semibold"
           fontSize="20px"
           ml={[0, '28px']}
+
         >
           Eleitor
           {loading && (
@@ -403,6 +408,7 @@ export default function Voter() {
           <Button
             onClick={() => navigate('/eleitor/registrar-eleitor')}
             w={['160px', '280px']}
+
           >
             Cadastrar eleitor
           </Button>
@@ -412,7 +418,7 @@ export default function Voter() {
         Filtar por:
       </Text>
       <Flex justifyContent="space-between">
-        <Flex gap={['12px', '24px']} flex="1" mr={['0', '24px']}>
+        <Flex gap={["12px", "24px"]} flex="1" mr={["0", "24px"]}>
           <Select
             w="220px"
             borderColor="gray.500"
@@ -452,7 +458,7 @@ export default function Voter() {
         <Button
           onClick={() => onOpenModal()}
           leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
-          w={['160px', '280px']}
+          w={["160px", "280px"]}
         >
           Imprimir
         </Button>
@@ -462,17 +468,17 @@ export default function Voter() {
         overflow="auto"
         mt="16px"
         sx={{
-          '::-webkit-scrollbar': {
-            bg: 'gray.50',
-            width: '8px',
-            height: '8px',
+          "::-webkit-scrollbar": {
+            bg: "gray.50",
+            width: "8px",
+            height: "8px",
           },
-          '&::-webkit-scrollbar-track': {
-            width: '2px',
+          "&::-webkit-scrollbar-track": {
+            width: "2px",
           },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'gray.600',
-            borderRadius: '8px',
+          "&::-webkit-scrollbar-thumb": {
+            background: "gray.600",
+            borderRadius: "8px",
           },
         }}
       >
@@ -481,9 +487,9 @@ export default function Voter() {
             position="sticky"
             top="0px"
             background="white"
-            borderBottomWidth={'4px'}
+            borderBottomWidth={"4px"}
             borderBottomStyle="solid"
-            borderBottomColor={'gray.300'}
+            borderBottomColor={"gray.300"}
           >
             <Tr>
               {role?.demandas_page > 1 && <Th color="gray.600"></Th>}
@@ -492,6 +498,7 @@ export default function Voter() {
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Data de nascimento</Th>
               <Th color="gray.600">Telefone</Th>
+              <Th color="gray.600">Criador</Th>
               <Th color="gray.600">Endereço</Th>
               {role?.eleitor_page > 1 && (
                 <Th textAlign="center" color="gray.600" w="8">
@@ -505,7 +512,7 @@ export default function Voter() {
               data
                 .filter((currentValue: any) => {
                   switch (selectFilter) {
-                    case 'name':
+                    case "name":
                       if (filterField?.length >= 3) {
                         return (
                           currentValue &&
@@ -517,7 +524,7 @@ export default function Voter() {
                       } else {
                         return currentValue;
                       }
-                    case 'reference':
+                    case "reference":
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.reference &&
@@ -528,7 +535,20 @@ export default function Voter() {
                       } else {
                         return currentValue;
                       }
+
+                    case 'creator':
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.creator?.name &&
+                          currentValue?.creator?.name
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
                     case 'email':
+
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.email &&
@@ -539,18 +559,18 @@ export default function Voter() {
                       } else {
                         return currentValue;
                       }
-                    case 'birthdate':
+                    case "birthdate":
                       if (filterField?.length >= 3) {
                         return (
                           getFormatDate(
                             addHours(new Date(currentValue?.birthdate), 12),
-                            'dd/MM/yyyy'
+                            "dd/MM/yyyy"
                           ).indexOf(filterField) > -1
                         );
                       } else {
                         return currentValue;
                       }
-                    case 'cellphone':
+                    case "cellphone":
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.cellphone &&
@@ -561,7 +581,7 @@ export default function Voter() {
                       } else {
                         return currentValue;
                       }
-                    case 'city':
+                    case "city":
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.city &&
@@ -572,7 +592,7 @@ export default function Voter() {
                       } else {
                         return currentValue;
                       }
-                    case 'neighborhood':
+                    case "neighborhood":
                       if (filterField?.length >= 3) {
                         return (
                           currentValue?.neighborhood &&
@@ -648,7 +668,7 @@ export default function Voter() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
-                        {voter?.email ? voter?.email : '-'}
+                        {voter?.email ? voter?.email : "-"}
                       </Td>
                       <Td
                         color="gray.600"
@@ -664,6 +684,7 @@ export default function Voter() {
                               'dd/MM/yyyy'
                             )
                           : '-'}
+
                       </Td>
                       <Td
                         color="gray.600"
@@ -673,7 +694,39 @@ export default function Voter() {
                         borderBottomColor="gray.300"
                         py="4px"
                       >
-                        {voter?.cellphone ? voter?.cellphone : '-'}
+                        {voter?.cellphone ? (
+                          <Link
+                            target="_blank"
+                            to={`https://wa.me/55${voter?.cellphone}`}
+                            rel="noopener noreferrer"
+                          >
+                            <IconButton
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24px"
+                                  as={IoLogoWhatsapp}
+                                  color={office?.primary_color}
+                                />
+                              }
+                            />
+                            {voter?.cellphone}
+                          </Link>
+                        ) : (
+                          "-"
+                        )}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {voter?.creator?.name}
                       </Td>
                       {voter?.street ? (
                         <Td
@@ -703,6 +756,7 @@ export default function Voter() {
                               ${voter?.city ? voter?.city + ',' : ''}
                               ${voter?.state ? voter?.state + ',' : ''}`
                             : '-'}
+
                         </Td>
                       ) : (
                         <Td
@@ -759,7 +813,7 @@ export default function Voter() {
                 })
             ) : (
               <Tr>
-                <Td fontSize={'14px'} w="100%">
+                <Td fontSize={"14px"} w="100%">
                   Nenhum dado cadastrado
                 </Td>
                 <Td></Td>

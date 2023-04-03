@@ -5,12 +5,12 @@ import React, {
   useContext,
   useEffect,
   useState,
-} from 'react';
+} from "react";
 
-import { OfficeDTO, PermissionByIdDTO, UserDTO } from '../dtos';
-import api from '../services/api';
-import { key } from '../config/key';
-import { RoleDTO } from '../dtos/index';
+import { OfficeDTO, PermissionByIdDTO, UserDTO } from "../dtos";
+import api from "../services/api";
+import { key } from "../config/key";
+import { RoleDTO } from "../dtos/index";
 
 interface SignInCredentials {
   email: string;
@@ -100,27 +100,34 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   //   loadStorageData();
   // }, [user?.id]);
 
-  const signIn = useCallback(async ({ email, password }: { email: string; password: string }) => {
-    const response = await api.post('/sessions', {
-      email,
-      password,
-    });
+  const signIn = useCallback(
+    async ({ email, password }: { email: string; password: string }) => {
+      const response = await api.post("/sessions", {
+        email,
+        password,
+      });
 
-    const { token, user, permissions } = response.data;
+      const { token, user, permissions, refresh_token } = response.data;
 
-    localStorage.setItem(key.token, token);
-    localStorage.setItem(key.user, JSON.stringify(user));
-    if (Array.isArray(permissions) && permissions.length > 0) {
-      localStorage.setItem(key.office, JSON.stringify(permissions[0]?.office));
-      localStorage.setItem(key.role, JSON.stringify(permissions[0]?.role));
-      setRole(permissions[0]?.role);
-      setOffice(permissions[0]?.office);
-    }
+      localStorage.setItem(key.refreshToken, refresh_token);
+      localStorage.setItem(key.token, token);
+      localStorage.setItem(key.user, JSON.stringify(user));
+      if (Array.isArray(permissions) && permissions.length > 0) {
+        localStorage.setItem(
+          key.office,
+          JSON.stringify(permissions[0]?.office)
+        );
+        localStorage.setItem(key.role, JSON.stringify(permissions[0]?.role));
+        setRole(permissions[0]?.role);
+        setOffice(permissions[0]?.office);
+      }
 
-    api.defaults.headers.authorization = `Bearer ${token}`;
+      api.defaults.headers.authorization = `Bearer ${token}`;
 
-    setUser(user);
-  }, []);
+      setUser(user);
+    },
+    []
+  );
 
   const updateUser = async (user: UserDTO) => {
     setUser(user);
@@ -154,7 +161,7 @@ function useAuth(): AuthContextData {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
 
   return context;

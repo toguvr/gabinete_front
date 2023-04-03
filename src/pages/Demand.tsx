@@ -32,8 +32,9 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
 import HeaderSideBar from '../components/HeaderSideBar';
+
 import { useAuth } from '../contexts/AuthContext';
-import { StateProps, TaskPropsDTO } from '../dtos';
+import { PermissionByIdDTO, StateProps, TaskPropsDTO } from '../dtos';
 import api from '../services/api';
 import { getFormatDate } from '../utils/date';
 import { demandPage } from '../utils/filterTables';
@@ -43,6 +44,7 @@ export default function Demand() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [data, setData] = useState([] as TaskPropsDTO[]);
+
   const { office, role } = useAuth();
   const [demandToDeleteId, setDemandToDeleteId] = useState('');
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -236,6 +238,7 @@ export default function Demand() {
               <Th color="gray.600">Título</Th>
               <Th color="gray.600">Eleitor</Th>
               <Th color="gray.600">Prazo</Th>
+              <Th color="gray.600">Criador</Th>
 
               {role?.demandas_page > 1 && (
                 <Th color="gray.600" w="8">
@@ -265,6 +268,17 @@ export default function Demand() {
                         return (
                           currentValue?.voter?.name &&
                           currentValue?.voter?.name
+                            .toLowerCase()
+                            .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case 'creator':
+                      if (filterField?.length >= 3) {
+                        return (
+                          currentValue?.creator?.name &&
+                          currentValue?.creator?.name
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
                         );
@@ -345,6 +359,16 @@ export default function Demand() {
                               'dd/MM/yyyy'
                             )
                           : '-'}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {task?.creator?.name}
                       </Td>
                       {role?.demandas_page > 1 && (
                         <Td
