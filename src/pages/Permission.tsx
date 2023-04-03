@@ -22,17 +22,27 @@ import {
   Spinner,
   Switch,
   Select,
-} from '@chakra-ui/react';
-import { useEffect, useRef, useState } from 'react';
+  } from '@chakra-ui/react';
+import { useEffect, useRef, useState } from "react";
+
 import HeaderSideBar from '../components/HeaderSideBar';
 import { PermissionByIdDTO, RoleDTO, StateProps } from '../dtos';
-import { IoPencilOutline, IoSearchSharp, IoTrashOutline } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
-import Button from '../components/Form/Button';
-import Input from '../components/Form/Input';
-import { permissionPage } from '../utils/filterTables';
+import {
+  IoLogoWhatsapp,
+  IoPencilOutline,
+  IoSearchSharp,
+  IoTrashOutline,
+} from "react-icons/io5";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../services/api";
+
+
+
+import { useAuth } from "../contexts/AuthContext";
+import Button from "../components/Form/Button";
+import Input from "../components/Form/Input";
+import { permissionPage } from "../utils/filterTables";
+
 
 export default function Permission() {
   const navigate = useNavigate();
@@ -385,7 +395,12 @@ export default function Permission() {
                 })
                 .map((permission) => {
                   return (
-                    <Tr key={permission.id} h="45px" py="4px">
+                    <Tr
+                      key={permission.id}
+                      h="45px"
+                      py="4px"
+                      whiteSpace="nowrap"
+                    >
                       <Td
                         color={permission?.active ? 'gray.600' : 'gray.300'}
                         fontSize="14px"
@@ -427,7 +442,25 @@ export default function Permission() {
                         borderBottomColor="gray.300"
                         py="0px"
                       >
-                        {permission?.user?.cellphone}
+                        <Link
+                          target="_blank"
+                          to={`https://wa.me/55${permission?.user?.cellphone}`}
+                          rel="noopener noreferrer"
+                        >
+                          <IconButton
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24px"
+                                as={IoLogoWhatsapp}
+                                color={office?.primary_color}
+                              />
+                            }
+                          />
+                          {permission?.user?.cellphone}
+                        </Link>
                       </Td>
                       <Td
                         color={permission?.active ? 'gray.600' : 'gray.400'}
