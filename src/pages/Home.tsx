@@ -21,7 +21,9 @@ interface IResumeOffice {
 export default function Home() {
   const { office, updateUser, user } = useAuth();
   const [resumeOffice, setResumeOffice] = useState({} as IResumeOffice);
-  const [permissionBirthDates, setPermissionBirthDates] = useState([] as PermissionByIdDTO[]);
+  const [permissionBirthDates, setPermissionBirthDates] = useState(
+    [] as PermissionByIdDTO[]
+  );
   const [voterBirthDates, setVoterBirthDates] = useState([] as VoterDTO[]);
 
   console.log('vote', voterBirthDates);
@@ -284,7 +286,12 @@ export default function Home() {
                   justifyContent="start"
                   paddingLeft={{ base: '16px', md: '24px' }}
                 >
-                  <Text fontWeight="500" fontSize="16px" color="#718096">
+                  <Text
+                    textAlign="center"
+                    fontWeight="500"
+                    fontSize="16px"
+                    color="#718096"
+                  >
                     Nenhum aniversariante hoje.
                   </Text>
                 </Flex>
@@ -301,7 +308,13 @@ export default function Home() {
                   >
                     <Icon color="#718096" fontSize="24" as={RiTeamLine} />
 
-                    <Text lineHeight="20px" fontWeight="400" fontSize="16px" color="#718096">
+                    <Text
+                      textAlign="center"
+                      lineHeight="20px"
+                      fontWeight="400"
+                      fontSize="16px"
+                      color="#718096"
+                    >
                       {permission?.user?.name}{' '}
                     </Text>
                     <Link
@@ -336,7 +349,13 @@ export default function Home() {
                   >
                     <Icon color="#718096" fontSize="24" as={SiMicrosoftteams} />
 
-                    <Text lineHeight="20px" fontWeight="400" fontSize="16px" color="#718096">
+                    <Text
+                      textAlign="center"
+                      lineHeight="20px"
+                      fontWeight="400"
+                      fontSize="16px"
+                      color="#718096"
+                    >
                       {voter?.name}{' '}
                     </Text>
                     <Link
