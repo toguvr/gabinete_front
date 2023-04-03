@@ -8,7 +8,11 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { IoEyeOffOutline, IoEyeOutline, IoLockClosedOutline } from 'react-icons/io5';
+import {
+  IoEyeOffOutline,
+  IoEyeOutline,
+  IoLockClosedOutline,
+} from 'react-icons/io5';
 import * as Yup from 'yup';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
@@ -100,7 +104,8 @@ export default function ChangePassword() {
       if (err.response) {
         return toast({
           title:
-            err.response.data.message || 'Ocorreu um erro ao atualizar sua senha, tente novamente',
+            err.response.data.message ||
+            'Ocorreu um erro ao atualizar sua senha, tente novamente',
 
           status: 'error',
           position: 'top-right',
@@ -123,7 +128,12 @@ export default function ChangePassword() {
 
   return (
     <HeaderSideBar backRoute={true}>
-      <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
+      <Text
+        color="gray.500"
+        fontWeight="semibold"
+        fontSize="20px"
+        ml={[0, '28px']}
+      >
         Trocar senha
         {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
       </Text>
@@ -137,7 +147,9 @@ export default function ChangePassword() {
             name="old_password"
             value={values?.old_password}
             error={errors?.old_password}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             type={showPassword ? 'text' : 'password'}
             leftIcon={<Icon as={IoLockClosedOutline} />}
             rightIcon={
@@ -163,7 +175,9 @@ export default function ChangePassword() {
             name="password"
             value={values?.password}
             error={errors?.password}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             type={showPassword ? 'text' : 'password'}
             leftIcon={<Icon as={IoLockClosedOutline} />}
             rightIcon={
@@ -189,7 +203,9 @@ export default function ChangePassword() {
             name="password_confirmation"
             value={values?.password_confirmation}
             error={errors?.password_confirmation}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             type={showPassword ? 'text' : 'password'}
             leftIcon={<Icon as={IoLockClosedOutline} />}
             rightIcon={

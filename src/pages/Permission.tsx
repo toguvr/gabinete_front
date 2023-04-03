@@ -24,7 +24,11 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
-import { IoLogoWhatsapp, IoPencilOutline, IoSearchSharp } from 'react-icons/io5';
+import {
+  IoLogoWhatsapp,
+  IoPencilOutline,
+  IoSearchSharp,
+} from 'react-icons/io5';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
@@ -41,7 +45,7 @@ export default function Permission() {
   const [data, setData] = useState([] as PermissionByIdDTO[]);
   const { role, office } = useAuth();
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onClose } = useDisclosure();
   const [permissionToDeleteId, setPermissionToDeleteId] = useState('');
   const [selectFilter, setSelectFilter] = useState('name');
   const [filterField, setFilterField] = useState('');
@@ -50,17 +54,12 @@ export default function Permission() {
   const [selectRoleFilter, setSelectRoleFilter] = useState('');
   const [roles, setRoles] = useState([] as RoleDTO[]);
 
-  const openDialog = (permission_id: string) => {
-    setPermissionToDeleteId(permission_id);
-    onOpen();
-  };
-
   const getPermissions = async () => {
     setData([] as PermissionByIdDTO[]);
 
     setLoading(true);
     try {
-      const response = await api.get(`/permission/office/${role?.office_id}`);
+      const response = await api.get(`/permission/office/${office?.id}`);
 
       setData(response.data);
     } catch (err) {
@@ -84,9 +83,11 @@ export default function Permission() {
   };
 
   useEffect(() => {
-    getPermissions();
-    getRoles();
-  }, []);
+    if (office?.id) {
+      getPermissions();
+      getRoles();
+    }
+  }, [office?.id]);
 
   const deletePermission = async () => {
     setLoading(true);
@@ -102,11 +103,11 @@ export default function Permission() {
       });
       getPermissions();
       setPermissionToDeleteId('');
-
     } catch (err: any) {
       return toast({
         title:
-          err?.response?.data?.message || 'Ocorreu um erro ao excluir a equipe, tente novamente',
+          err?.response?.data?.message ||
+          'Ocorreu um erro ao excluir a equipe, tente novamente',
 
         status: 'error',
         position: 'top-right',
@@ -123,7 +124,10 @@ export default function Permission() {
     navigate(`/equipe/${permission_id}`);
   };
 
-  const handleUpdateActive = async (permission_id: string, permission_active: boolean) => {
+  const handleUpdateActive = async (
+    permission_id: string,
+    permission_active: boolean
+  ) => {
     setErrors({});
 
     try {
@@ -180,7 +184,12 @@ export default function Permission() {
   };
   return (
     <HeaderSideBar>
-      <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose} isCentered>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
         {/* <AlertDialogOverlay > */}
         <AlertDialogContent mx="12px">
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -188,13 +197,18 @@ export default function Permission() {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            Essa ação é irreversível, ao deletar não será possível desfazer. Você deseja apagar
-            mesmo assim?
+            Essa ação é irreversível, ao deletar não será possível desfazer.
+            Você deseja apagar mesmo assim?
           </AlertDialogBody>
 
           <AlertDialogFooter>
             <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
-            <ChakraButton colorScheme={'red'} isLoading={loading} onClick={deletePermission} ml={3}>
+            <ChakraButton
+              colorScheme={'red'}
+              isLoading={loading}
+              onClick={deletePermission}
+              ml={3}
+            >
               Continuar
             </ChakraButton>
           </AlertDialogFooter>
@@ -206,14 +220,22 @@ export default function Permission() {
         gap={['20px', '0']}
         alignItems={['center', 'flex-start']}
       >
-
-        <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
-
+        <Text
+          color="gray.500"
+          fontWeight="semibold"
+          fontSize="20px"
+          ml={[0, '28px']}
+        >
           Equipe
-          {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
+          {loading && (
+            <Spinner color={office?.primary_color} ml="4" size="sm" />
+          )}
         </Text>
         {role?.equipe_page > 1 && (
-          <Button onClick={() => navigate('/equipe/registrar-equipe')} w={['160px', '280px']}>
+          <Button
+            onClick={() => navigate('/equipe/registrar-equipe')}
+            w={['160px', '280px']}
+          >
             Cadastrar equipe
           </Button>
         )}
@@ -287,7 +309,9 @@ export default function Permission() {
               setFilterField(e.target.value);
             }}
             borderColor="gray.500"
-            rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
+            rightIcon={
+              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+            }
           />
         )}
       </Flex>
@@ -312,7 +336,11 @@ export default function Permission() {
       >
         <Table variant="simple">
           <Thead position="sticky" top="0px" backgroundColor="white" zIndex="1">
-            <Tr borderBottomWidth={'4px'} borderBottomStyle="solid" borderBottomColor={'gray.300'}>
+            <Tr
+              borderBottomWidth={'4px'}
+              borderBottomStyle="solid"
+              borderBottomColor={'gray.300'}
+            >
               <Th color="gray.600">Ativo</Th>
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">E-mail</Th>
@@ -388,7 +416,12 @@ export default function Permission() {
                 })
                 .map((permission) => {
                   return (
-                    <Tr key={permission.id} h="45px" py="4px" whiteSpace="nowrap">
+                    <Tr
+                      key={permission.id}
+                      h="45px"
+                      py="4px"
+                      whiteSpace="nowrap"
+                    >
                       <Td
                         color={permission?.active ? 'gray.600' : 'gray.300'}
                         fontSize="14px"
@@ -399,7 +432,12 @@ export default function Permission() {
                       >
                         <Switch
                           isChecked={permission?.active}
-                          onChange={() => handleUpdateActive(permission?.id, permission?.active)}
+                          onChange={() =>
+                            handleUpdateActive(
+                              permission?.id,
+                              permission?.active
+                            )
+                          }
                         />
                       </Td>
                       <Td
@@ -470,7 +508,9 @@ export default function Permission() {
                           {role?.equipe_page > 1 && (
                             <>
                               <IconButton
-                                onClick={() => handleEditPermission(permission?.id)}
+                                onClick={() =>
+                                  handleEditPermission(permission?.id)
+                                }
                                 aria-label="Open navigation"
                                 variant="unstyled"
                                 minW={6}
