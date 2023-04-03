@@ -1,4 +1,12 @@
-import { Box, Flex, Select, Spinner, Stack, Text, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Select,
+  Spinner,
+  Stack,
+  Text,
+  useToast,
+} from '@chakra-ui/react';
 import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -25,9 +33,12 @@ type RegisterFormData = {
 
 export default function PermissionEdit() {
   const { id } = useParams();
-  const [values, setValues] = useState<RegisterFormData>({} as RegisterFormData);
+  const [values, setValues] = useState<RegisterFormData>(
+    {} as RegisterFormData
+  );
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
+  const [permissionLoading, setPermissionLoading] = useState(false);
   const toast = useToast();
   const [roles, setRoles] = useState([] as RoleDTO[]);
   const { office } = useAuth();
@@ -36,13 +47,13 @@ export default function PermissionEdit() {
   const getRoles = async () => {
     setRoles([] as RoleDTO[]);
 
-    setLoading(true);
+    setPermissionLoading(true);
     try {
       const response = await api.get(`/role/office/${office?.id}`);
       setRoles(response.data);
     } catch (err) {
     } finally {
-      setLoading(false);
+      setPermissionLoading(false);
     }
   };
 
@@ -59,7 +70,9 @@ export default function PermissionEdit() {
     try {
       const schema = Yup.object().shape({
         name: Yup.string().required('Nome obrigatório'),
-        email: Yup.string().email('Email inválido').required('Email obrigatório'),
+        email: Yup.string()
+          .email('Email inválido')
+          .required('Email obrigatório'),
       });
 
       await schema.validate(values, {
@@ -114,7 +127,7 @@ export default function PermissionEdit() {
   };
 
   const getPermissionById = async () => {
-    setLoading(true);
+    setPermissionLoading(true);
     try {
       const response = await api.get(`/permission/${id}`);
       setValues({
@@ -131,7 +144,7 @@ export default function PermissionEdit() {
       });
     } catch (err) {
     } finally {
-      setLoading(false);
+      setPermissionLoading(false);
     }
   };
 
@@ -143,6 +156,7 @@ export default function PermissionEdit() {
     <HeaderSideBar backRoute={true}>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
         Editar Equipe
+        {permissionLoading && <Spinner color={office?.primary_color} />}
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
         <Stack spacing={[5, 10]} mt={['24px', '40px']} w="852px">
@@ -155,7 +169,9 @@ export default function PermissionEdit() {
               type="email"
               error={errors?.email}
               value={values.email}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               borderColor="gray.500"
               w="100%"
               disabled
@@ -169,7 +185,9 @@ export default function PermissionEdit() {
             type="text"
             error={errors?.name}
             value={values.name}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             borderColor="gray.500"
             disabled
           />
@@ -186,7 +204,9 @@ export default function PermissionEdit() {
               value={values?.gender}
               name="gender"
               disabled
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
             >
               <option value="MALE">Masculino</option>
               <option value="FEMALE">Feminino</option>
@@ -200,7 +220,9 @@ export default function PermissionEdit() {
                 type="number"
                 error={errors?.ddd}
                 value={values.ddd}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 placeholder="DDD"
                 w="72px"
                 mr="8px"
@@ -212,7 +234,9 @@ export default function PermissionEdit() {
                 type="number"
                 error={errors?.cellphone}
                 value={values.cellphone}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 placeholder="00000-0000"
                 w="180px"
                 borderColor="gray.500"
@@ -229,7 +253,10 @@ export default function PermissionEdit() {
               color={'gray.500'}
               name="role_id"
               value={values?.role_id}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+              disabled={permissionLoading}
             >
               {roles?.map((role) => {
                 return (
@@ -240,8 +267,17 @@ export default function PermissionEdit() {
               })}
             </Select>
           </Box>
-          <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
-            <Button onClick={handleUpdatePermission} width="280px">
+          <Flex
+            w="100%"
+            alignItems="center"
+            justifyContent="center"
+            mt={['40px', '95px']}
+          >
+            <Button
+              onClick={handleUpdatePermission}
+              width="280px"
+              isDisabled={permissionLoading}
+            >
               {loading ? <Spinner color="white" /> : 'Atualizar'}
             </Button>
           </Flex>
