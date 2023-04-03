@@ -1,12 +1,11 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
   Box,
-  Checkbox,
-  CheckboxGroup,
+  Button as ChakraButton,
   Flex,
   Icon,
   IconButton,
@@ -14,28 +13,21 @@ import {
   Spinner,
   Stack,
   Text,
-  useToast,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
   useDisclosure,
-  Button as ChakraButton,
+  useToast,
 } from '@chakra-ui/react';
-import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
-import HeaderSideBar from '../components/HeaderSideBar';
-import { StateProps } from '../dtos';
-import * as Yup from 'yup';
-import getValidationErrors from '../utils/validationError';
-import Input from '../components/Form/Input';
-import { useAuth } from '../contexts/AuthContext';
-import api from '../services/api';
-import Button from '../components/Form/Button';
+import { useEffect, useRef, useState } from 'react';
 import { IoInformationCircleOutline } from 'react-icons/io5';
-import { roleStatus, roleStatusTasks } from '../utils/roleStatus';
 import { useNavigate, useParams } from 'react-router';
-import { useLocation } from 'react-router-dom';
+import * as Yup from 'yup';
+import Button from '../components/Form/Button';
+import Input from '../components/Form/Input';
+import HeaderSideBar from '../components/HeaderSideBar';
+import { useAuth } from '../contexts/AuthContext';
+import { StateProps } from '../dtos';
+import api from '../services/api';
+import { roleStatus, roleStatusTasks } from '../utils/roleStatus';
+import getValidationErrors from '../utils/validationError';
 
 type RegisterFormData = {
   id: string;

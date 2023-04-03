@@ -1,11 +1,15 @@
-import { Flex, Grid, Icon, Text } from '@chakra-ui/react';
+import { Flex, Grid, Icon, IconButton, Text } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { AiOutlineUsergroupAdd } from 'react-icons/ai';
+import { IoLogoWhatsapp } from 'react-icons/io5';
 import { MdHowToReg, MdOutlineChecklist } from 'react-icons/md';
-import { RiSuitcaseLine } from 'react-icons/ri';
+import { RiSuitcaseLine, RiTeamLine } from 'react-icons/ri';
+import { SiMicrosoftteams } from 'react-icons/si';
+import { Link } from 'react-router-dom';
 import HeaderSideBar from '../components/HeaderSideBar';
 import { useAuth } from '../contexts/AuthContext';
+import { PermissionByIdDTO, VoterDTO } from '../dtos';
 import api from '../services/api';
-import { useEffect, useState } from 'react';
 
 interface IResumeOffice {
   role: number;
@@ -17,6 +21,10 @@ interface IResumeOffice {
 export default function Home() {
   const { office, updateUser, user } = useAuth();
   const [resumeOffice, setResumeOffice] = useState({} as IResumeOffice);
+  const [permissionBirthDates, setPermissionBirthDates] = useState([] as PermissionByIdDTO[]);
+  const [voterBirthDates, setVoterBirthDates] = useState([] as VoterDTO[]);
+
+  console.log('vote', voterBirthDates);
 
   async function getResumeOffice() {
     try {
@@ -25,9 +33,21 @@ export default function Home() {
     } catch (error) {}
   }
 
+  async function getBirthDates() {
+    try {
+      const [permissions, voters] = await Promise.all([
+        api.get(`/permission/by-birthdate/${office?.id}`),
+        api.get(`/voter/by-birthdate/${office?.id}`),
+      ]);
+      setPermissionBirthDates(permissions.data);
+      setVoterBirthDates(voters.data);
+    } catch (error) {}
+  }
+
   useEffect(() => {
     if (office?.id) {
       getResumeOffice();
+      getBirthDates();
     }
   }, [office?.id]);
 
@@ -42,7 +62,7 @@ export default function Home() {
       >
         <Grid
           background="transparent"
-          height="270px"
+          height={{ base: '100%', md: '270px' }}
           width="100%"
           gap="10px"
           templateColumns={{ base: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }}
@@ -71,7 +91,7 @@ export default function Home() {
               <Icon color="white" fontSize="30px" as={RiSuitcaseLine} />
             </Flex>
             <Text
-              fontSize={{ base: '16px', md: '22px' }}
+              fontSize={{ base: '12px', md: '18px' }}
               color="#718096"
               fontWeight="700"
               position="absolute"
@@ -113,7 +133,7 @@ export default function Home() {
               <Icon color="white" fontSize="30px" as={AiOutlineUsergroupAdd} />
             </Flex>
             <Text
-              fontSize={{ base: '16px', md: '22px' }}
+              fontSize={{ base: '12px', md: '18px' }}
               color="#718096"
               fontWeight="700"
               position="absolute"
@@ -155,7 +175,7 @@ export default function Home() {
               <Icon color="white" fontSize="30px" as={MdHowToReg} />
             </Flex>
             <Text
-              fontSize={{ base: '16px', md: '22px' }}
+              fontSize={{ base: '12px', md: '18px' }}
               color="#718096"
               fontWeight="700"
               position="absolute"
@@ -197,7 +217,7 @@ export default function Home() {
               <Icon color="white" fontSize="30px" as={MdOutlineChecklist} />
             </Flex>
             <Text
-              fontSize={{ base: '16px', md: '22px' }}
+              fontSize={{ base: '12px', md: '18px' }}
               color="#718096"
               fontWeight="700"
               position="absolute"
@@ -219,36 +239,143 @@ export default function Home() {
           </Flex>
         </Grid>
 
-        {/* <Flex
-          background="green"
+        <Flex
+          marginTop="10px"
+          background="white"
           height="100%"
           width="100%"
           gap="10px"
           direction={{ base: 'column', md: 'row' }}
         >
           <Flex
-            background="blue"
+            background="white"
             height="100%"
-            width={{ base: '100%', md: 'calc(33.333% - 10px)' }}
-          ></Flex>
-          <Flex
-            background="gray"
-            height="100%"
-            width={{ base: '100%', md: 'calc(33.333% - 10px)' }}
-          ></Flex>
-          <Flex
-            background="yellow"
-            height="100%"
-            width={{ base: '100%', md: 'calc(33.333% - 10px)' }}
+            width={{ base: '100%', md: 'calc(50% - 5px)' }}
             display="flex"
             flexDirection="column"
             gap="10px"
           >
-            <Flex background="purple" height="100%" width="100%"></Flex>
-            <Flex background="purple" height="100%" width="100%"></Flex>
-          </Flex>
+            <Flex
+              borderRadius="8px"
+              boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
+              background="white"
+              height="100%"
+              width="100%"
+              display="flex"
+              flexDirection="column"
+            >
+              <Flex
+                margin="20px 0px"
+                height="20px"
+                width="100%"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Text fontWeight="600" fontSize="20px" color="#718096">
+                  Aniversariantes
+                </Text>
+              </Flex>
+              {!!permissionBirthDates && !!voterBirthDates && (
+                <Flex
+                  margin="20px 0px"
+                  height="40px"
+                  width="100%"
+                  alignItems="center"
+                  justifyContent="start"
+                  paddingLeft={{ base: '16px', md: '24px' }}
+                >
+                  <Text fontWeight="500" fontSize="16px" color="#718096">
+                    Nenhum aniversariante hoje.
+                  </Text>
+                </Flex>
+              )}
+              {permissionBirthDates &&
+                permissionBirthDates.map((permission) => (
+                  <Flex
+                    key={permission.id}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    padding={{ base: '0 16px', md: '0 24px' }}
+                    width="100%"
+                  >
+                    <Icon color="#718096" fontSize="24" as={RiTeamLine} />
 
-        </Flex> */}
+                    <Text lineHeight="20px" fontWeight="400" fontSize="16px" color="#718096">
+                      {permission?.user?.name}{' '}
+                    </Text>
+                    <Link
+                      target="_blank"
+                      to={`https://wa.me/55${permission?.user?.cellphone}`}
+                      rel="noopener noreferrer"
+                    >
+                      <IconButton
+                        aria-label="Open alert"
+                        variant="unstyled"
+                        icon={
+                          <Icon
+                            cursor="pointer"
+                            fontSize="24px"
+                            as={IoLogoWhatsapp}
+                            color="#718096"
+                          />
+                        }
+                      />
+                    </Link>
+                  </Flex>
+                ))}{' '}
+              {voterBirthDates &&
+                voterBirthDates.map((voter) => (
+                  <Flex
+                    key={voter.id}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    padding={{ base: '0 16px', md: '0 24px' }}
+                    width="100%"
+                  >
+                    <Icon color="#718096" fontSize="24" as={SiMicrosoftteams} />
+
+                    <Text lineHeight="20px" fontWeight="400" fontSize="16px" color="#718096">
+                      {voter?.name}{' '}
+                    </Text>
+                    <Link
+                      target="_blank"
+                      to={`https://wa.me/55${voter?.cellphone}/?text=Olá, ${voter?.name}! Aqui é do Gabinete do Vereador ${office?.name}. Gostaria de desejar um feliz aniversário!`}
+                      rel="noopener noreferrer"
+                    >
+                      <IconButton
+                        aria-label="Open alert"
+                        variant="unstyled"
+                        icon={
+                          <Icon
+                            cursor="pointer"
+                            fontSize="24px"
+                            as={IoLogoWhatsapp}
+                            color="#718096"
+                          />
+                        }
+                      />
+                    </Link>
+                  </Flex>
+                ))}
+            </Flex>
+            {/* <Flex
+              borderRadius="8px"
+              boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
+              background="white"
+              height="100%"
+              width="100%"
+            ></Flex> */}
+          </Flex>
+          {/* <Flex
+            borderRadius="8px"
+            boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
+            background="white"
+            height="100%"
+            width={{ base: '100%', md: 'calc(66% - 10px)' }}
+          ></Flex> */}
+        </Flex>
       </Flex>
     </HeaderSideBar>
   );

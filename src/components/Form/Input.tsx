@@ -1,15 +1,15 @@
 import {
   Input as ChakraInput,
-  FormControl,
-  FormLabel,
   InputProps as ChakraInputProps,
+  FormControl,
   FormErrorMessage,
+  FormLabel,
   InputGroup,
   InputLeftElement,
   InputRightElement,
-} from "@chakra-ui/react";
-import { ChangeEvent, ReactNode } from "react";
-import { useAuth } from "../../contexts/AuthContext";
+} from '@chakra-ui/react';
+import { ChangeEvent, ReactNode } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface InputProps extends ChakraInputProps {
   name: string;
@@ -27,7 +27,7 @@ interface InputProps extends ChakraInputProps {
 }
 
 export default function Input({
-  type = "text",
+  type = 'text',
   leftIcon,
   rightIcon,
   borderColor,
@@ -46,7 +46,7 @@ export default function Input({
     <FormControl {...rest} isInvalid={!!error}>
       {label && (
         <FormLabel
-          color={labelColor ? labelColor : "gray.500"}
+          color={labelColor ? labelColor : 'gray.500'}
           fontWeight="400"
           htmlFor={name}
           margin="0"
@@ -80,7 +80,7 @@ export default function Input({
           type={type}
           placeholder={placeholder}
           id={name}
-          _placeholder={{ color: "gray.500" }}
+          _placeholder={{ color: 'gray.500' }}
         />
         {rightIcon && <InputRightElement>{rightIcon}</InputRightElement>}
       </InputGroup>

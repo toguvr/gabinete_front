@@ -1,17 +1,16 @@
 import { Box, Flex, Select, Spinner, Stack, Text, useToast } from '@chakra-ui/react';
-import { FormEvent, useCallback, useState } from 'react';
-import HeaderSideBar from '../components/HeaderSideBar';
-import { StateProps } from '../dtos';
-import * as Yup from 'yup';
-import getValidationErrors from '../utils/validationError';
-import Input from '../components/Form/Input';
 import axios from 'axios';
-import api from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router';
-import Button from '../components/Form/Button';
-import { getFormatDate } from '../utils/date';
+import { FormEvent, useCallback, useState } from 'react';
 import { PatternFormat } from 'react-number-format';
+import { useNavigate } from 'react-router';
+import * as Yup from 'yup';
+import Button from '../components/Form/Button';
+import Input from '../components/Form/Input';
+import HeaderSideBar from '../components/HeaderSideBar';
+import { useAuth } from '../contexts/AuthContext';
+import { StateProps } from '../dtos';
+import api from '../services/api';
+import getValidationErrors from '../utils/validationError';
 
 export default function VoterRegister() {
   const [values, setValues] = useState({} as StateProps);
@@ -327,7 +326,6 @@ export default function VoterRegister() {
                 // }
                 disabled={!verify}
               />
-
 
               <Box w="100%">
                 <Text color={!verify ? 'gray.300' : 'gray.500'} fontWeight="400" margin="0">
