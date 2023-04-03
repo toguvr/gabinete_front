@@ -147,7 +147,7 @@ export default function DemandEdit() {
   const getPermissions = async () => {
     setResponsibles([] as SelectProps[]);
 
-    setLoading(true);
+    setDemandLoading(true);
     try {
       const response = await api.get(
         `/permission/office/${role?.office_id}/responsible`
@@ -161,7 +161,7 @@ export default function DemandEdit() {
       );
     } catch (err) {
     } finally {
-      setLoading(false);
+      setDemandLoading(false);
     }
   };
 

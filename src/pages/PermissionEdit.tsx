@@ -54,13 +54,13 @@ export default function PermissionEdit() {
   const getRoles = async () => {
     setRoles([] as RoleDTO[]);
 
-    setLoading(true);
+    setPermissionLoading(true);
     try {
       const response = await api.get(`/role/office/${office?.id}`);
       setRoles(response.data);
     } catch (err) {
     } finally {
-      setLoading(false);
+      setPermissionLoading(false);
     }
   };
 
