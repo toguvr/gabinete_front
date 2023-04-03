@@ -1,7 +1,6 @@
-import { Flex } from '@chakra-ui/react';
-import HeaderSideBar from '../components/HeaderSideBar';
+import { Flex, Image, Text } from '@chakra-ui/react';
 import Isolation from '../assets/isolation.png';
-import { Image, Text } from '@chakra-ui/react';
+import HeaderSideBar from '../components/HeaderSideBar';
 
 export default function NoBond() {
   return (

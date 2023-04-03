@@ -5,10 +5,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   Box,
+  Button as ChakraButton,
   Flex,
   HStack,
   Icon,
   IconButton,
+  Select,
+  Spinner,
   Table,
   Tbody,
   Td,
@@ -18,21 +21,17 @@ import {
   Tr,
   useDisclosure,
   useToast,
-  Button as ChakraButton,
-  Spinner,
-  Select,
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
-import HeaderSideBar from '../components/HeaderSideBar';
-import { PermissionByIdDTO, RoleDTO, StateProps } from '../dtos';
 import { IoPencilOutline, IoSearchSharp, IoTrashOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
 import Button from '../components/Form/Button';
-import { roleStatus, RoleStatus, roleStatusTasks } from '../utils/roleStatus';
 import Input from '../components/Form/Input';
-import { rolePage } from '../utils/filterTables';
+import HeaderSideBar from '../components/HeaderSideBar';
+import { useAuth } from '../contexts/AuthContext';
+import { RoleDTO, StateProps } from '../dtos';
+import api from '../services/api';
+import { RoleStatus, roleStatus, roleStatusTasks } from '../utils/roleStatus';
 
 export default function Roles() {
   const navigate = useNavigate();
@@ -80,8 +79,6 @@ export default function Roles() {
     }
   };
 
-  
-
   useEffect(() => {
     getRoles();
   }, []);
@@ -100,7 +97,6 @@ export default function Roles() {
       });
       getRoles();
       setRoleToDeleteId('');
-      onClose();
     } catch (err: any) {
       return toast({
         title:
@@ -112,6 +108,7 @@ export default function Roles() {
       });
     } finally {
       setLoading(false);
+      onClose();
     }
   };
 

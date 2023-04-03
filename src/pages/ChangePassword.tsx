@@ -1,31 +1,26 @@
-import { ChangeEvent, useCallback, useState } from "react";
 import {
-  Avatar,
-  Box,
+  Button as ChakraButton,
   Flex,
   Icon,
-  Select,
   Spinner,
   Stack,
   Text,
   useToast,
-  Button as ChakraButton,
-} from "@chakra-ui/react";
-import HeaderSideBar from "../components/HeaderSideBar";
-import { StateProps, UserDTO } from "../dtos";
-import Input from "../components/Form/Input";
-import { useAuth } from "../contexts/AuthContext";
+} from '@chakra-ui/react';
+import { useState } from 'react';
 import {
-  IoCamera,
   IoEyeOffOutline,
   IoEyeOutline,
   IoLockClosedOutline,
-} from "react-icons/io5";
-import resize from "../components/Resize";
-import api from "../services/api";
-import Button from "../components/Form/Button";
-import * as Yup from "yup";
-import getValidationErrors from "../utils/validationError";
+} from 'react-icons/io5';
+import * as Yup from 'yup';
+import Button from '../components/Form/Button';
+import Input from '../components/Form/Input';
+import HeaderSideBar from '../components/HeaderSideBar';
+import { useAuth } from '../contexts/AuthContext';
+import { StateProps, UserDTO } from '../dtos';
+import api from '../services/api';
+import getValidationErrors from '../utils/validationError';
 
 interface UserPassword extends UserDTO {
   old_password: string;
@@ -52,13 +47,13 @@ export default function ChangePassword() {
 
     try {
       const schema = Yup.object().shape({
-        old_password: Yup.string().required("Senha obrigatória"),
+        old_password: Yup.string().required('Senha obrigatória'),
         password: Yup.string()
-          .required("Nova senha é obrigatória")
-          .min(6, "Nova senha deve ter no mínimo 6 caracteres"),
+          .required('Nova senha é obrigatória')
+          .min(6, 'Nova senha deve ter no mínimo 6 caracteres'),
         password_confirmation: Yup.string()
-          .required("Confirmação de senha é obrigatória")
-          .oneOf([Yup.ref("password")], "As senhas devem ser iguais"),
+          .required('Confirmação de senha é obrigatória')
+          .oneOf([Yup.ref('password')], 'As senhas devem ser iguais'),
       });
 
       await schema.validate(values, {
@@ -82,23 +77,23 @@ export default function ChangePassword() {
       delete formData.created_at;
       delete formData.updated_at;
 
-      const response = await api.put("/profile", formData);
+      const response = await api.put('/profile', formData);
 
       updateUser(response.data);
 
       toast({
-        title: "Senha atualizada",
+        title: 'Senha atualizada',
 
-        status: "success",
-        position: "top-right",
+        status: 'success',
+        position: 'top-right',
         duration: 3000,
         isClosable: true,
       });
       setValues({
         ...user,
-        old_password: "",
-        password: "",
-        password_confirmation: "",
+        old_password: '',
+        password: '',
+        password_confirmation: '',
       });
     } catch (err: any) {
       if (err instanceof Yup.ValidationError) {
@@ -110,19 +105,19 @@ export default function ChangePassword() {
         return toast({
           title:
             err.response.data.message ||
-            "Ocorreu um erro ao atualizar sua senha, tente novamente",
+            'Ocorreu um erro ao atualizar sua senha, tente novamente',
 
-          status: "error",
-          position: "top-right",
+          status: 'error',
+          position: 'top-right',
           duration: 3000,
           isClosable: true,
         });
       }
       return toast({
-        title: "Ocorreu um erro ao atualizar sua senha, tente novamente",
+        title: 'Ocorreu um erro ao atualizar sua senha, tente novamente',
 
-        status: "error",
-        position: "top-right",
+        status: 'error',
+        position: 'top-right',
         duration: 3000,
         isClosable: true,
       });
@@ -137,14 +132,14 @@ export default function ChangePassword() {
         color="gray.500"
         fontWeight="semibold"
         fontSize="20px"
-        ml={[0, "28px"]}
+        ml={[0, '28px']}
       >
         Trocar senha
         {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
       </Text>
 
       <Flex alignItems="center" justifyContent="center" as="form">
-        <Stack spacing={[5, 10]} mt={["24px", "40px"]} w="852px">
+        <Stack spacing={[5, 10]} mt={['24px', '40px']} w="852px">
           <Input
             label="Senha anterior:"
             mt="6"
@@ -155,11 +150,11 @@ export default function ChangePassword() {
             onChange={(e) =>
               setValues({ ...values, [e.target.name]: e.target.value })
             }
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             leftIcon={<Icon as={IoLockClosedOutline} />}
             rightIcon={
               <ChakraButton
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 size="sm"
                 variant="ghost"
                 onClick={handleViewPassword}
@@ -183,11 +178,11 @@ export default function ChangePassword() {
             onChange={(e) =>
               setValues({ ...values, [e.target.name]: e.target.value })
             }
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             leftIcon={<Icon as={IoLockClosedOutline} />}
             rightIcon={
               <ChakraButton
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 size="sm"
                 variant="ghost"
                 onClick={handleViewPassword}
@@ -211,11 +206,11 @@ export default function ChangePassword() {
             onChange={(e) =>
               setValues({ ...values, [e.target.name]: e.target.value })
             }
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             leftIcon={<Icon as={IoLockClosedOutline} />}
             rightIcon={
               <ChakraButton
-                _focus={{ outline: "none" }}
+                _focus={{ outline: 'none' }}
                 size="sm"
                 variant="ghost"
                 onClick={handleViewPassword}
@@ -230,7 +225,7 @@ export default function ChangePassword() {
             placeholder="Confirmar Senha"
           />
 
-          <Button onClick={updatePassword} w="280px" alignSelf={"center"}>
+          <Button onClick={updatePassword} w="280px" alignSelf={'center'}>
             Salvar nova senha
           </Button>
         </Stack>

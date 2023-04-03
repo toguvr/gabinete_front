@@ -1,14 +1,14 @@
 import {
+  Avatar,
   Box,
   Flex,
   HStack,
+  Select,
   Spinner,
   Stack,
+  Switch,
   Text,
   useToast,
-  Avatar,
-  Switch,
-  Select,
 } from '@chakra-ui/react';
 import {
   ChangeEvent,

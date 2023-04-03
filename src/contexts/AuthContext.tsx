@@ -1,16 +1,9 @@
-import React, {
-  createContext,
-  ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 
-import { OfficeDTO, PermissionByIdDTO, UserDTO } from '../dtos';
-import api from '../services/api';
 import { key } from '../config/key';
+import { OfficeDTO, UserDTO } from '../dtos';
 import { RoleDTO } from '../dtos/index';
+import api from '../services/api';
 
 interface SignInCredentials {
   email: string;
@@ -106,8 +99,9 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       password,
     });
 
-    const { token, user, permissions } = response.data;
+    const { token, user, permissions, refresh_token } = response.data;
 
+    localStorage.setItem(key.refreshToken, refresh_token);
     localStorage.setItem(key.token, token);
     localStorage.setItem(key.user, JSON.stringify(user));
     if (Array.isArray(permissions) && permissions.length > 0) {

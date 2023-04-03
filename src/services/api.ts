@@ -1,5 +1,5 @@
-import { key } from "../config/key";
-import axios, { AxiosError, AxiosInstance } from "axios";
+import axios, { AxiosError, AxiosInstance } from 'axios';
+import { key } from '../config/key';
 
 let isRefreshing = false;
 let failedRequestQueue = [] as Array<{
@@ -22,9 +22,7 @@ api.registerInterceptTokenManager = (signOut: () => void) => {
     },
     async (error: any) => {
       if (error.response?.status === 401) {
-        if (
-          error?.response?.data?.message === "Token expirou, refaça o login."
-        ) {
+        if (error?.response?.data?.message === 'Token expirou, refaça o login.') {
           const refreshToken = await localStorage.getItem(key.refreshToken);
 
           const originalConfig = error.config;
@@ -33,7 +31,7 @@ api.registerInterceptTokenManager = (signOut: () => void) => {
             isRefreshing = true;
 
             api
-              .post("/sessions/refresh-token", {
+              .post('/sessions/refresh-token', {
                 current_refresh_token: refreshToken,
               })
               .then(async (response: any) => {
@@ -46,15 +44,11 @@ api.registerInterceptTokenManager = (signOut: () => void) => {
 
                 api.defaults.headers.authorization = `Bearer ${token}`;
 
-                failedRequestQueue.forEach((request) =>
-                  request.onSuccess(token)
-                );
+                failedRequestQueue.forEach((request) => request.onSuccess(token));
                 failedRequestQueue = [];
               })
               .catch((err) => {
-                failedRequestQueue.forEach((request) =>
-                  request?.onFailure(err)
-                );
+                failedRequestQueue.forEach((request) => request?.onFailure(err));
                 failedRequestQueue = [];
 
                 signOut();
