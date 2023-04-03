@@ -12,7 +12,13 @@ import {
 } from '@chakra-ui/react';
 import { addHours } from 'date-fns';
 import { Editor } from 'primereact/editor';
-import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { PatternFormat } from 'react-number-format';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -35,6 +41,7 @@ export default function DemandEdit() {
   const [values, setValues] = useState({} as StateProps);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [demandLoading, setDemandLoading] = useState(false);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [verify, setVerify] = useState(true);
   const { role, office } = useAuth();
@@ -113,7 +120,7 @@ export default function DemandEdit() {
   };
 
   const getDemandaById = async () => {
-    setLoading(true);
+    setDemandLoading(true);
     try {
       const response = await api.get(`/task/${id}`);
 
@@ -133,16 +140,18 @@ export default function DemandEdit() {
       setVoterData(response?.data?.voter);
     } catch (err) {
     } finally {
-      setLoading(false);
+      setDemandLoading(false);
     }
   };
 
   const getPermissions = async () => {
     setResponsibles([] as SelectProps[]);
 
-    setLoading(true);
+    setDemandLoading(true);
     try {
-      const response = await api.get(`/permission/office/${role?.office_id}/responsible`);
+      const response = await api.get(
+        `/permission/office/${role?.office_id}/responsible`
+      );
 
       setResponsibles(
         response.data.map((responsible: PermissionByIdDTO) => ({
@@ -152,7 +161,7 @@ export default function DemandEdit() {
       );
     } catch (err) {
     } finally {
-      setLoading(false);
+      setDemandLoading(false);
     }
   };
 
@@ -171,7 +180,8 @@ export default function DemandEdit() {
 
       if (file[0].type !== 'application/pdf') {
         return toast({
-          title: 'Apenas documento em formato de pdf é permitido, tente novamente',
+          title:
+            'Apenas documento em formato de pdf é permitido, tente novamente',
           status: 'error',
           position: 'top-right',
           duration: 3000,
@@ -200,8 +210,16 @@ export default function DemandEdit() {
         <button className="ql-bold" aria-label="Bold"></button>
         <button className="ql-italic" aria-label="Italic"></button>
         <button className="ql-underline" aria-label="Underline"></button>
-        <button className="ql-list" aria-label="Ordered List" value="ordered"></button>
-        <button className="ql-list" aria-label="Unordered List" value="bullet"></button>
+        <button
+          className="ql-list"
+          aria-label="Ordered List"
+          value="ordered"
+        ></button>
+        <button
+          className="ql-list"
+          aria-label="Unordered List"
+          value="bullet"
+        ></button>
       </span>
     );
   };
@@ -210,8 +228,14 @@ export default function DemandEdit() {
 
   return (
     <HeaderSideBar>
-      <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
+      <Text
+        color="gray.500"
+        fontWeight="semibold"
+        fontSize="20px"
+        ml={[0, '28px']}
+      >
         Editar Demanda
+        {demandLoading && <Spinner color={office?.primary_color} />}
       </Text>
 
       <Flex alignItems="center" justifyContent="center" as="form">
@@ -238,7 +262,7 @@ export default function DemandEdit() {
                 type="tel"
                 format="(##) #####-####"
                 borderColor="gray.500"
-                isDisabled={verify}
+                isDisabled={verify || demandLoading}
                 mask="_"
               />
             </Flex>
@@ -267,8 +291,11 @@ export default function DemandEdit() {
               type="text"
               error={errors?.title}
               value={values?.title}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               borderColor="gray.500"
+              disabled={demandLoading}
             />
 
             <Editor
@@ -281,6 +308,7 @@ export default function DemandEdit() {
               value={description}
               onTextChange={(e: any) => setDescription(e.htmlValue)}
               showHeader={true}
+              readOnly={demandLoading}
             />
           </Box>
 
@@ -293,6 +321,7 @@ export default function DemandEdit() {
             value={responsible}
             name="responsible"
             onChange={(e) => setResponsible(e.target.value)}
+            disabled={demandLoading}
           >
             {responsibles.map((responsible) => {
               return (
@@ -314,7 +343,9 @@ export default function DemandEdit() {
               type="date"
               error={errors?.deadline}
               value={values?.deadline}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               borderColor="gray.500"
               css={{
                 '&::-webkit-calendar-picker-indicator': {
@@ -322,6 +353,7 @@ export default function DemandEdit() {
                 },
               }}
               w="220px"
+              disabled={demandLoading}
             />
             <Select
               placeholder="Prioridade*"
@@ -331,7 +363,10 @@ export default function DemandEdit() {
               color="gray.600"
               value={values?.priority}
               name="priority"
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+              disabled={demandLoading}
             >
               <option value="BAIXA">Baixa</option>
               <option value="MEDIA">Media</option>
@@ -344,7 +379,9 @@ export default function DemandEdit() {
               type="date"
               error={errors?.date}
               value={values?.date}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               borderColor="gray.500"
               css={{
                 '&::-webkit-calendar-picker-indicator': {
@@ -417,12 +454,26 @@ export default function DemandEdit() {
             <Text color={'gray.500'}>Recurso:</Text>
             <HStack>
               <Text color={'gray.500'}>Não</Text>
-              <Switch name="resource" isChecked={resource} onChange={handleResource} />
+              <Switch
+                name="resource"
+                isChecked={resource}
+                onChange={handleResource}
+                disabled={demandLoading}
+              />
               <Text color={'gray.500'}>Sim</Text>
             </HStack>
           </Flex>
-          <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
-            <Button onClick={handleUpdateDemanda} width="280px">
+          <Flex
+            w="100%"
+            alignItems="center"
+            justifyContent="center"
+            mt={['40px', '95px']}
+          >
+            <Button
+              onClick={handleUpdateDemanda}
+              width="280px"
+              isDisabled={demandLoading}
+            >
               {loading ? <Spinner color="white" /> : 'Atualizar'}
             </Button>
           </Flex>
