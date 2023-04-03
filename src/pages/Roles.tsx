@@ -5,10 +5,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   Box,
+  Button as ChakraButton,
   Flex,
   HStack,
   Icon,
   IconButton,
+  Select,
+  Spinner,
   Table,
   Tbody,
   Td,
@@ -18,25 +21,17 @@ import {
   Tr,
   useDisclosure,
   useToast,
-  Button as ChakraButton,
-  Spinner,
-  Select,
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
-import HeaderSideBar from '../components/HeaderSideBar';
-import { PermissionByIdDTO, RoleDTO, StateProps } from '../dtos';
-import {
-  IoPencilOutline,
-  IoSearchSharp,
-  IoTrashOutline,
-} from 'react-icons/io5';
+import { IoPencilOutline, IoSearchSharp, IoTrashOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
 import Button from '../components/Form/Button';
-import { roleStatus, RoleStatus, roleStatusTasks } from '../utils/roleStatus';
 import Input from '../components/Form/Input';
-import { rolePage } from '../utils/filterTables';
+import HeaderSideBar from '../components/HeaderSideBar';
+import { useAuth } from '../contexts/AuthContext';
+import { RoleDTO, StateProps } from '../dtos';
+import api from '../services/api';
+import { RoleStatus, roleStatus, roleStatusTasks } from '../utils/roleStatus';
 
 export default function Roles() {
   const navigate = useNavigate();
@@ -105,8 +100,7 @@ export default function Roles() {
     } catch (err: any) {
       return toast({
         title:
-          err?.response?.data?.message ||
-          'Ocorreu um erro ao excluir o cargo, tente novamente',
+          err?.response?.data?.message || 'Ocorreu um erro ao excluir o cargo, tente novamente',
         status: 'error',
         position: 'top-right',
         duration: 3000,
@@ -169,12 +163,7 @@ export default function Roles() {
 
   return (
     <HeaderSideBar>
-      <AlertDialog
-        leastDestructiveRef={cancelRef}
-        isOpen={isOpen}
-        onClose={onClose}
-        isCentered
-      >
+      <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose} isCentered>
         {/* <AlertDialogOverlay > */}
         <AlertDialogContent mx="12px">
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -182,18 +171,13 @@ export default function Roles() {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            Essa ação é irreversível, ao deletar não será possível desfazer.
-            Você deseja apagar mesmo assim?
+            Essa ação é irreversível, ao deletar não será possível desfazer. Você deseja apagar
+            mesmo assim?
           </AlertDialogBody>
 
           <AlertDialogFooter>
             <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
-            <ChakraButton
-              colorScheme={'red'}
-              isLoading={loading}
-              onClick={deleteRole}
-              ml={3}
-            >
+            <ChakraButton colorScheme={'red'} isLoading={loading} onClick={deleteRole} ml={3}>
               Continuar
             </ChakraButton>
           </AlertDialogFooter>
@@ -205,22 +189,12 @@ export default function Roles() {
         gap={['20px', '0']}
         alignItems={['center', 'flex-start']}
       >
-        <Text
-          color="gray.500"
-          fontWeight="semibold"
-          fontSize="20px"
-          ml={[0, '28px']}
-        >
+        <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
           Cargo
-          {loading && (
-            <Spinner color={office?.primary_color} ml="4" size="sm" />
-          )}
+          {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
         </Text>
         {role?.cargo_page > 1 && (
-          <Button
-            onClick={() => navigate('/cargo/registrar-cargo')}
-            w={['160px', '280px']}
-          >
+          <Button onClick={() => navigate('/cargo/registrar-cargo')} w={['160px', '280px']}>
             Cadastrar cargo
           </Button>
         )}
@@ -256,9 +230,7 @@ export default function Roles() {
               setFilterField(e.target.value);
             }}
             borderColor="gray.500"
-            rightIcon={
-              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-            }
+            rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
           />
         ) : (
           <Select
@@ -310,11 +282,7 @@ export default function Roles() {
       >
         <Table variant="simple">
           <Thead position="sticky" top="0px">
-            <Tr
-              borderBottomWidth={'4px'}
-              borderBottomStyle="solid"
-              borderBottomColor={'gray.300'}
-            >
+            <Tr borderBottomWidth={'4px'} borderBottomStyle="solid" borderBottomColor={'gray.300'}>
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">Cargo</Th>
               <Th color="gray.600">Equipe</Th>
@@ -345,10 +313,7 @@ export default function Roles() {
                     }
                   } else {
                     if (selectPageFilter) {
-                      return (
-                        Number(currentValue[selectFilter]) ===
-                        Number(selectPageFilter)
-                      );
+                      return Number(currentValue[selectFilter]) === Number(selectPageFilter);
                     }
                   }
                 })

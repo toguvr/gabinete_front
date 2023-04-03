@@ -1,19 +1,18 @@
 import {
-  Button,
   AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogHeader,
   AlertDialogBody,
+  AlertDialogContent,
   AlertDialogFooter,
-} from "@chakra-ui/react";
-import { useRef } from "react";
-import { useDialog } from "../../contexts/DialogContext";
+  AlertDialogHeader,
+  Button,
+} from '@chakra-ui/react';
+import { useRef } from 'react';
+import { useDialog } from '../../contexts/DialogContext';
 
 type AlertProps = {
   subtitle?: string;
   title?: string;
-  type?: "error" | "success";
+  type?: 'error' | 'success';
   loading?: boolean;
   buttonTitle?: string;
   onSubmit: () => void;
@@ -25,7 +24,7 @@ export default function Dialog({
   subtitle,
   buttonTitle,
   loading = false,
-  type = "success",
+  type = 'success',
 }: AlertProps) {
   const { isOpen, onClose } = useDialog();
   const cancelRef = useRef() as React.MutableRefObject<HTMLDialogElement>;
@@ -35,12 +34,7 @@ export default function Dialog({
   };
 
   return (
-    <AlertDialog
-      leastDestructiveRef={cancelRef}
-      isOpen={isOpen}
-      onClose={onClose}
-      isCentered
-    >
+    <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose} isCentered>
       {/* <AlertDialogOverlay > */}
       <AlertDialogContent mx="12px">
         <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -52,12 +46,12 @@ export default function Dialog({
         <AlertDialogFooter>
           <Button onClick={onClose}>Cancelar</Button>
           <Button
-            colorScheme={type === "error" ? "red" : "teal"}
+            colorScheme={type === 'error' ? 'red' : 'teal'}
             isLoading={loading}
             onClick={onContinue}
             ml={3}
           >
-            {buttonTitle || "Continuar"}
+            {buttonTitle || 'Continuar'}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
