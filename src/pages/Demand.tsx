@@ -208,6 +208,8 @@ export default function Demand() {
             borderBottomWidth={'4px'}
             borderBottomStyle="solid"
             borderBottomColor={'gray.300'}
+            backgroundColor="white"
+            zIndex="1"
           >
             <Tr>
               <Th color="gray.600">Título</Th>

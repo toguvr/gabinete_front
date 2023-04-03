@@ -212,7 +212,7 @@ export default function Tarefa() {
         </Flex>
 
         <TableContainer marginTop="40px" padding={2}>
-          <Table>
+          <Table variant="simple">
             <Thead
               position="sticky"
               top="0px"
@@ -220,6 +220,8 @@ export default function Tarefa() {
               borderBottomWidth={'4px'}
               borderBottomStyle="solid"
               borderBottomColor={'gray.300'}
+              backgroundColor="white"
+              zIndex="1"
             >
               <Tr>
                 <Th

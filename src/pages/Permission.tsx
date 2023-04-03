@@ -24,7 +24,6 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
-
 import { IoLogoWhatsapp, IoPencilOutline, IoSearchSharp } from 'react-icons/io5';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Form/Button';
@@ -103,6 +102,7 @@ export default function Permission() {
       });
       getPermissions();
       setPermissionToDeleteId('');
+
     } catch (err: any) {
       return toast({
         title:
@@ -206,7 +206,9 @@ export default function Permission() {
         gap={['20px', '0']}
         alignItems={['center', 'flex-start']}
       >
+
         <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
+
           Equipe
           {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
         </Text>
@@ -309,10 +311,9 @@ export default function Permission() {
         }}
       >
         <Table variant="simple">
-          <Thead position="sticky" top="0px">
+          <Thead position="sticky" top="0px" backgroundColor="white" zIndex="1">
             <Tr borderBottomWidth={'4px'} borderBottomStyle="solid" borderBottomColor={'gray.300'}>
               <Th color="gray.600">Ativo</Th>
-
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Telefone</Th>
