@@ -21,7 +21,9 @@ interface IResumeOffice {
 export default function Home() {
   const { office, updateUser, user } = useAuth();
   const [resumeOffice, setResumeOffice] = useState({} as IResumeOffice);
-  const [permissionBirthDates, setPermissionBirthDates] = useState([] as PermissionByIdDTO[]);
+  const [permissionBirthDates, setPermissionBirthDates] = useState(
+    [] as PermissionByIdDTO[]
+  );
   const [voterBirthDates, setVoterBirthDates] = useState([] as VoterDTO[]);
 
   console.log('vote', voterBirthDates);
@@ -275,20 +277,21 @@ export default function Home() {
                   Aniversariantes
                 </Text>
               </Flex>
-              {!!permissionBirthDates && !!voterBirthDates && (
-                <Flex
-                  margin="20px 0px"
-                  height="40px"
-                  width="100%"
-                  alignItems="center"
-                  justifyContent="start"
-                  paddingLeft={{ base: '16px', md: '24px' }}
-                >
-                  <Text fontWeight="500" fontSize="16px" color="#718096">
-                    Nenhum aniversariante hoje.
-                  </Text>
-                </Flex>
-              )}
+              {permissionBirthDates.length === 0 &&
+                voterBirthDates.length === 0 && (
+                  <Flex
+                    margin="20px 0px"
+                    height="40px"
+                    width="100%"
+                    alignItems="center"
+                    justifyContent="start"
+                    paddingLeft={{ base: '16px', md: '24px' }}
+                  >
+                    <Text fontWeight="500" fontSize="16px" color="#718096">
+                      Nenhum aniversariante hoje.
+                    </Text>
+                  </Flex>
+                )}
               {permissionBirthDates &&
                 permissionBirthDates.map((permission) => (
                   <Flex
@@ -301,7 +304,12 @@ export default function Home() {
                   >
                     <Icon color="#718096" fontSize="24" as={RiTeamLine} />
 
-                    <Text lineHeight="20px" fontWeight="400" fontSize="16px" color="#718096">
+                    <Text
+                      lineHeight="20px"
+                      fontWeight="400"
+                      fontSize="16px"
+                      color="#718096"
+                    >
                       {permission?.user?.name}{' '}
                     </Text>
                     <Link
@@ -336,12 +344,17 @@ export default function Home() {
                   >
                     <Icon color="#718096" fontSize="24" as={SiMicrosoftteams} />
 
-                    <Text lineHeight="20px" fontWeight="400" fontSize="16px" color="#718096">
+                    <Text
+                      lineHeight="20px"
+                      fontWeight="400"
+                      fontSize="16px"
+                      color="#718096"
+                    >
                       {voter?.name}{' '}
                     </Text>
                     <Link
                       target="_blank"
-                      to={`https://wa.me/55${voter?.cellphone}/?text=Olá, ${voter?.name}! Aqui é do Gabinete do Vereador ${office?.name}. Gostaria de desejar um feliz aniversário!`}
+                      to={`https://wa.me/55${voter?.cellphone}/?text=Olá, ${voter?.name}! Aqui é do Gabinete do ${office.owner_position} ${office?.name}. Gostaria de desejar um feliz aniversário!`}
                       rel="noopener noreferrer"
                     >
                       <IconButton
