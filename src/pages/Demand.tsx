@@ -40,7 +40,7 @@ export default function Demand() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [data, setData] = useState([] as TaskPropsDTO[]);
-  const [users, setUsers] = useState([] as PermissionByIdDTO[]);
+
   const { office, role } = useAuth();
   const [demandToDeleteId, setDemandToDeleteId] = useState('');
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -82,19 +82,6 @@ export default function Demand() {
       setLoading(false);
     }
   };
-  const getPermissions = async () => {
-    setUsers([] as PermissionByIdDTO[]);
-
-    setLoading(true);
-    try {
-      const response = await api.get(`/permission/office/${role?.office_id}`);
-
-      setUsers(response.data);
-    } catch (err) {
-    } finally {
-      setLoading(false);
-    }
-  };
 
   async function getTasks() {
     setData([] as TaskPropsDTO[]);
@@ -112,14 +99,10 @@ export default function Demand() {
   }
 
   useEffect(() => {
-    getPermissions();
-  }, []);
-
-  useEffect(() => {
-    if (office?.id && users.length > 0) {
+    if (office?.id) {
       getTasks();
     }
-  }, [office?.id, users]);
+  }, [office?.id]);
 
   const handleEditTask = (task_id: string) => {
     navigate(`/demanda/${task_id}`);

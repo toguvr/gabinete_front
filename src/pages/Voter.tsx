@@ -65,7 +65,6 @@ export default function Voter() {
   const toast = useToast();
   const [data, setData] = useState([] as VoterDTO[]);
   const [voterToDeleteId, setVoterToDeleteId] = useState('');
-  const [users, setUsers] = useState([] as PermissionByIdDTO[]);
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const { isOpen: isOpenAlert, onOpen: onOpenAlert, onClose: onCloseAlert } = useDisclosure();
   const { isOpen: isOpenModal, onOpen: onOpenModal, onClose: onCloseModal } = useDisclosure();
@@ -79,20 +78,6 @@ export default function Voter() {
   const openDialog = (voter_id: string) => {
     setVoterToDeleteId(voter_id);
     onOpenAlert();
-  };
-
-  const getPermissions = async () => {
-    setUsers([] as PermissionByIdDTO[]);
-
-    setLoading(true);
-    try {
-      const response = await api.get(`/permission/office/${role?.office_id}`);
-
-      setUsers(response.data);
-    } catch (err) {
-    } finally {
-      setLoading(false);
-    }
   };
 
   const getVoterList = async () => {
@@ -110,14 +95,8 @@ export default function Voter() {
   };
 
   useEffect(() => {
-    getPermissions();
+    getVoterList();
   }, []);
-
-  useEffect(() => {
-    if (users.length > 0) {
-      getVoterList();
-    }
-  }, [users]);
 
   const deleteVoter = async () => {
     setLoading(true);
