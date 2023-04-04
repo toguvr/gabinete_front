@@ -495,9 +495,10 @@ export default function Voter() {
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">Referência</Th>
               <Th color="gray.600">Telefone</Th>
-              <Th color="gray.600">Data de nascimento</Th>
+              <Th color="gray.600">Nascimento</Th>
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Criador</Th>
+              <Th color="gray.600">Demandas</Th>
               <Th color="gray.600">Endereço</Th>
               {role?.eleitor_page > 1 && (
                 <Th textAlign="center" color="gray.600" w="8">
@@ -725,6 +726,17 @@ export default function Voter() {
                         py="4px"
                       >
                         {voter?.creator?.name}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                        textAlign="center"
+                      >
+                        {voter?.tasks?.length}
                       </Td>
                       {voter?.street ? (
                         <Td

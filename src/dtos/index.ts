@@ -101,4 +101,5 @@ export interface VoterDTO {
   state: string;
   street: string;
   zip: string;
+  tasks?: TaskPropsDTO[];
 }
