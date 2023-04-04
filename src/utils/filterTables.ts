@@ -42,3 +42,8 @@ export const taskPage = [
   { key: 3, value: 'priority', label: 'Prioridade' },
   { key: 4, value: 'voter', label: 'Eleitor' },
 ];
+
+export const solicitationPage = [
+  { key: 0, value: 'name', label: 'Nome' },
+  { key: 1, value: 'reference', label: 'Referência' },
+];

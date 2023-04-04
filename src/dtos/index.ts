@@ -102,3 +102,9 @@ export interface VoterDTO {
   street: string;
   zip: string;
 }
+
+export interface SolicitationDTO {
+  name: string;
+  id: string;
+  description: string;
+}

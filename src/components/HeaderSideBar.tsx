@@ -31,6 +31,7 @@ import { RiTeamLine } from 'react-icons/ri';
 import { SiMicrosoftteams } from 'react-icons/si';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { MdOutlineAddTask } from 'react-icons/md';
 
 interface LinkItemProps {
   name: string;
@@ -71,12 +72,12 @@ const LinkItems: Array<LinkItemProps> = [
     icon: BiTask,
     permissionName: 'tarefas_page',
   },
-  // {
-  //   name: "Solicitações",
-  //   route: "/solicitacoes",
-  //   icon: MdOutlineAddTask,
-  //   permissionName: "tarefas_page",
-  // },
+  {
+    name: 'Solicitações',
+    route: '/solicitacoes',
+    icon: MdOutlineAddTask,
+    permissionName: 'tarefas_page',
+  },
 ];
 
 export default function SidebarWithHeader({
@@ -96,7 +97,10 @@ export default function SidebarWithHeader({
 
   return (
     <Box minH={['100%', '100vh']} bg="white">
-      <SidebarContent onClose={() => onClose} display={{ base: 'none', md: 'block' }} />
+      <SidebarContent
+        onClose={() => onClose}
+        display={{ base: 'none', md: 'block' }}
+      />
       <Drawer
         autoFocus={false}
         isOpen={isOpen}
@@ -159,9 +163,18 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
           justifyContent="center"
         >
           {office?.logo_url ? (
-            <Image src={office.logo_url} alt="Logo" sx={{ maxW: '140px' }} width={{ md: 40 }} />
+            <Image
+              src={office.logo_url}
+              alt="Logo"
+              sx={{ maxW: '140px' }}
+              width={{ md: 40 }}
+            />
           ) : (
-            <Text color={office?.secondary_color} fontSize={'24px'} textAlign="center">
+            <Text
+              color={office?.secondary_color}
+              fontSize={'24px'}
+              textAlign="center"
+            >
               {office?.name}
             </Text>
           )}
@@ -304,7 +317,11 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
         {office?.logo_url ? (
           <Image src={office?.logo_url} alt="Logo" width={{ md: 40 }} />
         ) : (
-          <Text color={office?.secondary_color} fontSize={'24px'} textAlign="center">
+          <Text
+            color={office?.secondary_color}
+            fontSize={'24px'}
+            textAlign="center"
+          >
             {office?.name}
           </Text>
         )}
@@ -313,9 +330,18 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
       <HStack spacing={{ base: '0', md: '6' }}>
         <Flex alignItems={'center'}>
           <Menu>
-            <MenuButton py={2} transition="all 0.3s" _focus={{ boxShadow: 'none' }}>
+            <MenuButton
+              py={2}
+              transition="all 0.3s"
+              _focus={{ boxShadow: 'none' }}
+            >
               <HStack>
-                <Avatar size={'sm'} src={user?.avatar_url} borderWidth="2px" borderColor="white" />
+                <Avatar
+                  size={'sm'}
+                  src={user?.avatar_url}
+                  borderWidth="2px"
+                  borderColor="white"
+                />
               </HStack>
             </MenuButton>
             <MenuList

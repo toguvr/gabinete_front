@@ -24,6 +24,7 @@ import Perfil from '../pages/Perfil';
 import RoleEdit from '../pages/RoleEdit';
 import RoleRegister from '../pages/RoleRegister';
 import Roles from '../pages/Roles';
+import Solicitations from '../pages/Solicitations';
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -38,7 +39,7 @@ export const privateRoute = [
   { pathname: '/eleitor', permissionName: 'eleitor_page' },
   { pathname: '/demanda', permissionName: 'demandas_page' },
   { pathname: '/tarefa', permissionName: 'tarefas_page' },
-  // { pathname: "/solicitacoes", permissionName: "tarefas_page" },
+  { pathname: '/solicitacoes', permissionName: 'tarefas_page' },
 ];
 
 const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
@@ -85,11 +86,14 @@ export default function AppRoutes() {
       <Route element={<AuthenticatedRoutes isPrivate />}>
         <Route path="/home" element={<Home />} />
 
-        {/* <Route path="/solicitacoes" element={<Solicitations />} /> */}
+        <Route path="/solicitacoes" element={<Solicitations />} />
 
         <Route path="/equipe" element={<Permission />} />
         <Route path="/equipe/:id" element={<PermissionEdit />} />
-        <Route path="/equipe/registrar-equipe" element={<PermissionRegister />} />
+        <Route
+          path="/equipe/registrar-equipe"
+          element={<PermissionRegister />}
+        />
 
         <Route path="/eleitor" element={<Voter />} />
         <Route path="/eleitor/:id" element={<VoterEdit />} />
@@ -97,9 +101,15 @@ export default function AppRoutes() {
 
         <Route path="/demanda" element={<Demand />} />
         <Route path="/demanda/:id" element={<DemandEdit />} />
-        <Route path="/demanda/registrar-demanda/:id" element={<DemandRegister />} />
+        <Route
+          path="/demanda/registrar-demanda/:id"
+          element={<DemandRegister />}
+        />
         <Route path="/demanda/registrar-demanda" element={<DemandRegister />} />
-        <Route path="/demanda/registrar-eleitor/:id" element={<DemandaRegisterVoter />} />
+        <Route
+          path="/demanda/registrar-eleitor/:id"
+          element={<DemandaRegisterVoter />}
+        />
 
         <Route path="/cargo" element={<Roles />} />
         <Route path="/cargo/registrar-cargo" element={<RoleRegister />} />
