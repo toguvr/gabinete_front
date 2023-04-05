@@ -277,7 +277,9 @@ export default function Home() {
                   Aniversariantes
                 </Text>
               </Flex>
-              {!!permissionBirthDates && !!voterBirthDates && (
+
+              {permissionBirthDates.length === 0 &&
+                voterBirthDates.length === 0 && (
                 <Flex
                   margin="20px 0px"
                   height="40px"
@@ -296,6 +298,7 @@ export default function Home() {
                   </Text>
                 </Flex>
               )}
+
               {permissionBirthDates &&
                 permissionBirthDates.map((permission) => (
                   <Flex
@@ -360,7 +363,7 @@ export default function Home() {
                     </Text>
                     <Link
                       target="_blank"
-                      to={`https://wa.me/55${voter?.cellphone}/?text=Olá, ${voter?.name}! Aqui é do Gabinete do Vereador ${office?.name}. Gostaria de desejar um feliz aniversário!`}
+                      to={`https://wa.me/55${voter?.cellphone}/?text=Olá, ${voter?.name}! Aqui é do Gabinete do ${office.owner_position} ${office?.name}. Gostaria de desejar um feliz aniversário!`}
                       rel="noopener noreferrer"
                     >
                       <IconButton
