@@ -96,7 +96,10 @@ export default function SidebarWithHeader({
 
   return (
     <Box minH={['100%', '100vh']} bg="white">
-      <SidebarContent onClose={() => onClose} display={{ base: 'none', md: 'block' }} />
+      <SidebarContent
+        onClose={() => onClose}
+        display={{ base: 'none', md: 'block' }}
+      />
       <Drawer
         autoFocus={false}
         isOpen={isOpen}
@@ -159,9 +162,18 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
           justifyContent="center"
         >
           {office?.logo_url ? (
-            <Image src={office.logo_url} alt="Logo" sx={{ maxW: '140px' }} width={{ md: 40 }} />
+            <Image
+              src={office.logo_url}
+              alt="Logo"
+              sx={{ maxW: '140px' }}
+              width={{ md: 40 }}
+            />
           ) : (
-            <Text color={office?.secondary_color} fontSize={'24px'} textAlign="center">
+            <Text
+              color={office?.secondary_color}
+              fontSize={'24px'}
+              textAlign="center"
+            >
               {office?.name}
             </Text>
           )}
@@ -261,6 +273,10 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
     navigate(`/perfil`);
   };
 
+  const handleNavigateGabinete = () => {
+    navigate(`/gabinete`);
+  };
+
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -304,7 +320,11 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
         {office?.logo_url ? (
           <Image src={office?.logo_url} alt="Logo" width={{ md: 40 }} />
         ) : (
-          <Text color={office?.secondary_color} fontSize={'24px'} textAlign="center">
+          <Text
+            color={office?.secondary_color}
+            fontSize={'24px'}
+            textAlign="center"
+          >
             {office?.name}
           </Text>
         )}
@@ -313,9 +333,18 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
       <HStack spacing={{ base: '0', md: '6' }}>
         <Flex alignItems={'center'}>
           <Menu>
-            <MenuButton py={2} transition="all 0.3s" _focus={{ boxShadow: 'none' }}>
+            <MenuButton
+              py={2}
+              transition="all 0.3s"
+              _focus={{ boxShadow: 'none' }}
+            >
               <HStack>
-                <Avatar size={'sm'} src={user?.avatar_url} borderWidth="2px" borderColor="white" />
+                <Avatar
+                  size={'sm'}
+                  src={user?.avatar_url}
+                  borderWidth="2px"
+                  borderColor="white"
+                />
               </HStack>
             </MenuButton>
             <MenuList
@@ -323,6 +352,9 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
               borderColor={useColorModeValue('gray.200', 'gray.700')}
             >
               <MenuItem onClick={handleNavigatePerfil}>Perfil</MenuItem>
+              {user?.id === office?.owner_id && (
+                <MenuItem onClick={handleNavigateGabinete}>Gabinete</MenuItem>
+              )}
               <MenuDivider />
               <MenuItem onClick={signOut}>Sair</MenuItem>
             </MenuList>
