@@ -29,6 +29,8 @@ import {
   IoPencilOutline,
   IoSearchSharp,
 } from 'react-icons/io5';
+import { getFormatDate } from '../utils/date';
+import { addHours } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
@@ -241,7 +243,7 @@ export default function Permission() {
         )}
       </Flex>
       <Text mt="36px" color="gray.500">
-        Filtar por:
+        Filtrar por:
       </Text>
       <Flex gap={['12px', '24px']}>
         <Select
@@ -346,6 +348,7 @@ export default function Permission() {
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Telefone</Th>
               <Th color="gray.600">Cargo</Th>
+              <Th color="gray.600">Nascimento</Th>
               {role?.equipe_page > 1 && (
                 <Th color="gray.600" w="8">
                   Ações
@@ -365,6 +368,20 @@ export default function Permission() {
                           currentValue?.user?.name
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case 'birthdate':
+                      if (filterField?.length >= 3) {
+                        return (
+                          getFormatDate(
+                            addHours(
+                              new Date(currentValue?.user?.birthdate),
+                              12
+                            ),
+                            'dd/MM/yyyy'
+                          ).indexOf(filterField) > -1
                         );
                       } else {
                         return currentValue;
@@ -497,6 +514,24 @@ export default function Permission() {
                         py="0px"
                       >
                         {permission?.role?.name}
+                      </Td>
+                      <Td
+                        color={permission?.active ? 'gray.600' : 'gray.400'}
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        {permission?.user?.birthdate
+                          ? getFormatDate(
+                              addHours(
+                                new Date(permission?.user?.birthdate),
+                                12
+                              ),
+                              'dd/MM/yyyy'
+                            )
+                          : '-'}
                       </Td>
                       <Td
                         py="0px"

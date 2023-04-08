@@ -26,6 +26,7 @@ export interface UserDTO {
   new_password?: string;
   created_at?: Date;
   updated_at?: Date;
+  birthdate?: Date;
 }
 
 export interface OfficeDTO {

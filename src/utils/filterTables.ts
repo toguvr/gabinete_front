@@ -13,6 +13,7 @@ export const permissionPage = [
   { key: 2, value: 'cellphone', label: 'Telefone' },
   { key: 3, value: 'role', label: 'Cargo' },
   { key: 4, value: 'active', label: 'Ativos' },
+  { key: 5, value: 'birthdate', label: 'Nascimento' },
 ];
 
 export const voterPage = [
