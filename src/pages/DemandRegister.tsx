@@ -1,36 +1,34 @@
 import {
+  Avatar,
   Box,
+  Button as ChakraButton,
   Flex,
   HStack,
   Icon,
+  Select,
   Spinner,
   Stack,
-  Text,
-  useToast,
-  Avatar,
-  Textarea,
   Switch,
-  Select,
-  Button as ChakraButton,
-  Link,
+  Text,
+  Textarea,
+  useToast,
 } from '@chakra-ui/react';
-import { ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { addHours } from 'date-fns';
+import { Editor } from 'primereact/editor';
+import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from 'react';
 import { IoCheckmarkCircle, IoSearchSharp } from 'react-icons/io5';
+import { PatternFormat } from 'react-number-format';
 import { useNavigate, useParams } from 'react-router-dom';
+import * as Yup from 'yup';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
 import HeaderSideBar from '../components/HeaderSideBar';
 import { useAuth } from '../contexts/AuthContext';
 import { PermissionByIdDTO, StateProps, UserDTO } from '../dtos';
 import api from '../services/api';
-import * as Yup from 'yup';
-import { PatternFormat } from 'react-number-format';
-import getValidationErrors from '../utils/validationError';
-import { Editor } from 'primereact/editor';
 import '../styles/editor.css';
-import { addHours } from 'date-fns';
-import { CheckIcon } from '@chakra-ui/icons';
 import { getFormatDate } from '../utils/date';
+import getValidationErrors from '../utils/validationError';
 
 export type SelectProps = {
   label: string;
@@ -294,7 +292,7 @@ export default function DemandRegister() {
             </Flex>
             {verify && voterData && (
               <Flex
-                mt="8px"
+                mt={'8px'}
                 borderWidth={'1px'}
                 borderColor="gray.500"
                 px={'20px'}
@@ -335,19 +333,20 @@ export default function DemandRegister() {
                 cursor="pointer"
               >
                 <Text color="gray.400">Eleitor não encontrado</Text>
-
-                <ChakraButton
-                  as="a"
-                  w="220px"
-                  h="30px"
-                  href={`${process.env.REACT_APP_WEB}/demanda/registrar-eleitor/${values?.cellphone}`}
-                  target="_blank"
-                  bg={office?.primary_color}
-                  color={office?.secondary_color}
-                  _hover={{ bg: office?.primary_color }}
-                >
-                  Cadastrar eleitor
-                </ChakraButton>
+                {role?.eleitor_page > 1 && (
+                  <ChakraButton
+                    as="a"
+                    w="220px"
+                    h="30px"
+                    href={`${process.env.REACT_APP_WEB}/demanda/registrar-eleitor/${values?.cellphone}`}
+                    target="_blank"
+                    bg={office?.primary_color}
+                    color={office?.secondary_color}
+                    _hover={{ bg: office?.primary_color }}
+                  >
+                    Cadastrar eleitor
+                  </ChakraButton>
+                )}
               </Flex>
             )}
           </Box>

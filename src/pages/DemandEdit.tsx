@@ -1,35 +1,35 @@
 import {
+  Avatar,
   Box,
   Flex,
   HStack,
+  Select,
   Spinner,
   Stack,
+  Switch,
   Text,
   useToast,
-  Avatar,
-  Switch,
-  Select,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
+import { addHours } from 'date-fns';
+import { Editor } from 'primereact/editor';
 import {
   ChangeEvent,
   FormEvent,
   useCallback,
   useEffect,
   useState,
-} from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import Button from "../components/Form/Button";
-import Input from "../components/Form/Input";
-import HeaderSideBar from "../components/HeaderSideBar";
-import { useAuth } from "../contexts/AuthContext";
-import { PermissionByIdDTO, StateProps, UserDTO } from "../dtos";
-import api from "../services/api";
-import { getFormatDate } from "../utils/date";
-import * as Yup from "yup";
-import { PatternFormat } from "react-number-format";
-import getValidationErrors from "../utils/validationError";
-import { Editor } from "primereact/editor";
-import { addHours } from "date-fns";
+} from 'react';
+import { PatternFormat } from 'react-number-format';
+import { useNavigate, useParams } from 'react-router-dom';
+import * as Yup from 'yup';
+import Button from '../components/Form/Button';
+import Input from '../components/Form/Input';
+import HeaderSideBar from '../components/HeaderSideBar';
+import { useAuth } from '../contexts/AuthContext';
+import { PermissionByIdDTO, StateProps, UserDTO } from '../dtos';
+import api from '../services/api';
+import { getFormatDate } from '../utils/date';
+import getValidationErrors from '../utils/validationError';
 
 export type SelectProps = {
   label: string;
@@ -41,15 +41,16 @@ export default function DemandEdit() {
   const [values, setValues] = useState({} as StateProps);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [demandLoading, setDemandLoading] = useState(false);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [verify, setVerify] = useState(true);
   const { role, office } = useAuth();
   const toast = useToast();
   const [image, setImage] = useState({} as File);
   const [responsibles, setResponsibles] = useState([] as SelectProps[]);
-  const [responsible, setResponsible] = useState("");
+  const [responsible, setResponsible] = useState('');
   const [voterData, setVoterData] = useState({} as UserDTO);
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState('');
   const [resource, setResource] = useState(false);
 
   const handleResource = () => {
@@ -76,17 +77,17 @@ export default function DemandEdit() {
         responsible_id: responsible,
       };
 
-      await api.put("/task", body);
+      await api.put('/task', body);
 
       toast({
-        title: "Cadastrado com sucesso",
-        description: "Você cadastrou uma demanda.",
-        status: "success",
+        title: 'Cadastrado com sucesso',
+        description: 'Você cadastrou uma demanda.',
+        status: 'success',
         duration: 3000,
         isClosable: true,
-        position: "top-right",
+        position: 'top-right',
       });
-      return navigate("/demanda");
+      return navigate('/demanda');
     } catch (err: any) {
       if (err instanceof Yup.ValidationError) {
         setErrors(getValidationErrors(err));
@@ -97,19 +98,19 @@ export default function DemandEdit() {
         return toast({
           title:
             err.response.data.message ||
-            "Ocorreu um erro ao cadastrar a demanda, cheque as credenciais",
+            'Ocorreu um erro ao cadastrar a demanda, cheque as credenciais',
 
-          status: "error",
-          position: "top-right",
+          status: 'error',
+          position: 'top-right',
           duration: 3000,
           isClosable: true,
         });
       }
       return toast({
-        title: "Ocorreu um erro ao cadastrar a demanda, cheque as credenciais",
+        title: 'Ocorreu um erro ao cadastrar a demanda, cheque as credenciais',
 
-        status: "error",
-        position: "top-right",
+        status: 'error',
+        position: 'top-right',
         duration: 3000,
         isClosable: true,
       });
@@ -119,7 +120,7 @@ export default function DemandEdit() {
   };
 
   const getDemandaById = async () => {
-    setLoading(true);
+    setDemandLoading(true);
     try {
       const response = await api.get(`/task/${id}`);
 
@@ -127,10 +128,10 @@ export default function DemandEdit() {
         cellphoneMask: response?.data?.voter?.cellphone,
         title: response?.data?.title,
         description: response?.data?.description,
-        date: getFormatDate(new Date(response?.data?.date), "yyyy-MM-dd"),
+        date: getFormatDate(new Date(response?.data?.date), 'yyyy-MM-dd'),
         deadline:
           response?.data?.deadline &&
-          getFormatDate(new Date(response?.data?.deadline), "yyyy-MM-dd"),
+          getFormatDate(new Date(response?.data?.deadline), 'yyyy-MM-dd'),
         priority: response?.data?.priority,
       });
       setResource(response?.data?.resource);
@@ -139,14 +140,14 @@ export default function DemandEdit() {
       setVoterData(response?.data?.voter);
     } catch (err) {
     } finally {
-      setLoading(false);
+      setDemandLoading(false);
     }
   };
 
   const getPermissions = async () => {
     setResponsibles([] as SelectProps[]);
 
-    setLoading(true);
+    setDemandLoading(true);
     try {
       const response = await api.get(
         `/permission/office/${role?.office_id}/responsible`
@@ -160,7 +161,7 @@ export default function DemandEdit() {
       );
     } catch (err) {
     } finally {
-      setLoading(false);
+      setDemandLoading(false);
     }
   };
 
@@ -177,12 +178,12 @@ export default function DemandEdit() {
         return; // se não selecionar nenhum file
       }
 
-      if (file[0].type !== "application/pdf") {
+      if (file[0].type !== 'application/pdf') {
         return toast({
           title:
-            "Apenas documento em formato de pdf é permitido, tente novamente",
-          status: "error",
-          position: "top-right",
+            'Apenas documento em formato de pdf é permitido, tente novamente',
+          status: 'error',
+          position: 'top-right',
           duration: 3000,
           isClosable: true,
         });
@@ -196,7 +197,7 @@ export default function DemandEdit() {
       // reader.readAsDataURL(file[0]);
 
       // funcao de resize
-      if (file[0].type === "application/pdf") {
+      if (file[0].type === 'application/pdf') {
         setImage(file[0]);
         return;
       }
@@ -231,18 +232,19 @@ export default function DemandEdit() {
         color="gray.500"
         fontWeight="semibold"
         fontSize="20px"
-        ml={[0, "28px"]}
+        ml={[0, '28px']}
       >
         Editar Demanda
+        {demandLoading && <Spinner color={office?.primary_color} />}
       </Text>
 
       <Flex alignItems="center" justifyContent="center" as="form">
-        <Stack spacing={["16px", "30px"]} mt={["24px", "40px"]} w="852px">
+        <Stack spacing={['16px', '30px']} mt={['24px', '40px']} w="852px">
           <Box>
             <Flex
-              display={"flex"}
-              alignItems={errors?.cellphone ? "flex-start" : "center"}
-              gap={["20px", "30px"]}
+              display={'flex'}
+              alignItems={errors?.cellphone ? 'flex-start' : 'center'}
+              gap={['20px', '30px']}
               w="100%"
             >
               <PatternFormat
@@ -260,16 +262,16 @@ export default function DemandEdit() {
                 type="tel"
                 format="(##) #####-####"
                 borderColor="gray.500"
-                isDisabled={verify}
+                isDisabled={verify || demandLoading}
                 mask="_"
               />
             </Flex>
             <Flex
               mt="8px"
-              borderWidth={"1px"}
+              borderWidth={'1px'}
               borderColor="gray.300"
-              px={"20px"}
-              py={"8px"}
+              px={'20px'}
+              py={'8px'}
               alignItems="center"
               gap="16px"
               borderRadius="4px"
@@ -293,18 +295,20 @@ export default function DemandEdit() {
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
               borderColor="gray.500"
+              disabled={demandLoading}
             />
 
             <Editor
               style={{
-                minHeight: "120px",
-                maxHeight: "120px",
-                overflow: "auto",
+                minHeight: '120px',
+                maxHeight: '120px',
+                overflow: 'auto',
               }}
               headerTemplate={header}
               value={description}
               onTextChange={(e: any) => setDescription(e.htmlValue)}
               showHeader={true}
+              readOnly={demandLoading}
             />
           </Box>
 
@@ -312,11 +316,12 @@ export default function DemandEdit() {
             placeholder="Selecionar responsável*"
             borderColor="gray.500"
             bg="gray.50"
-            _placeholder={{ color: "gray.500" }}
+            _placeholder={{ color: 'gray.500' }}
             color="gray.600"
             value={responsible}
             name="responsible"
             onChange={(e) => setResponsible(e.target.value)}
+            disabled={demandLoading}
           >
             {responsibles.map((responsible) => {
               return (
@@ -327,9 +332,9 @@ export default function DemandEdit() {
             })}
           </Select>
           <Flex
-            alignItems={["flex-start", "flex-end"]}
-            gap={["24px", "36px"]}
-            flexDir={["column", "row"]}
+            alignItems={['flex-start', 'flex-end']}
+            gap={['24px', '36px']}
+            flexDir={['column', 'row']}
           >
             <Input
               labelColor="gray.500"
@@ -343,23 +348,25 @@ export default function DemandEdit() {
               }
               borderColor="gray.500"
               css={{
-                "&::-webkit-calendar-picker-indicator": {
-                  color: "gray.500",
+                '&::-webkit-calendar-picker-indicator': {
+                  color: 'gray.500',
                 },
               }}
               w="220px"
+              disabled={demandLoading}
             />
             <Select
               placeholder="Prioridade*"
               borderColor="gray.500"
               bg="gray.50"
-              _placeholder={{ color: "gray.500" }}
+              _placeholder={{ color: 'gray.500' }}
               color="gray.600"
               value={values?.priority}
               name="priority"
               onChange={(e) =>
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
+              disabled={demandLoading}
             >
               <option value="BAIXA">Baixa</option>
               <option value="MEDIA">Media</option>
@@ -377,8 +384,8 @@ export default function DemandEdit() {
               }
               borderColor="gray.500"
               css={{
-                "&::-webkit-calendar-picker-indicator": {
-                  color: "gray.500",
+                '&::-webkit-calendar-picker-indicator': {
+                  color: 'gray.500',
                 },
               }}
               w="220px"
@@ -444,25 +451,30 @@ export default function DemandEdit() {
             </Flex>
           </FormLabel> */}
           <Flex gap="24px">
-            <Text color={"gray.500"}>Recurso:</Text>
+            <Text color={'gray.500'}>Recurso:</Text>
             <HStack>
-              <Text color={"gray.500"}>Não</Text>
+              <Text color={'gray.500'}>Não</Text>
               <Switch
                 name="resource"
                 isChecked={resource}
                 onChange={handleResource}
+                disabled={demandLoading}
               />
-              <Text color={"gray.500"}>Sim</Text>
+              <Text color={'gray.500'}>Sim</Text>
             </HStack>
           </Flex>
           <Flex
             w="100%"
             alignItems="center"
             justifyContent="center"
-            mt={["40px", "95px"]}
+            mt={['40px', '95px']}
           >
-            <Button onClick={handleUpdateDemanda} width="280px">
-              {loading ? <Spinner color="white" /> : "Atualizar"}
+            <Button
+              onClick={handleUpdateDemanda}
+              width="280px"
+              isDisabled={demandLoading}
+            >
+              {loading ? <Spinner color="white" /> : 'Atualizar'}
             </Button>
           </Flex>
         </Stack>

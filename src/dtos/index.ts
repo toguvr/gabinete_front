@@ -1,12 +1,12 @@
 export enum TaskPriority {
-  ALTA = "ALTA",
-  MEDIA = "MEDIA",
-  BAIXA = "BAIXA",
+  ALTA = 'ALTA',
+  MEDIA = 'MEDIA',
+  BAIXA = 'BAIXA',
 }
 
 export enum UserGender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
 }
 
 export interface StateProps {
@@ -92,6 +92,7 @@ export interface VoterDTO {
   document: string;
   email: string;
   gender: string;
+  creator: UserDTO;
   id: string;
   name: string;
   neighborhood: string;
@@ -100,4 +101,5 @@ export interface VoterDTO {
   state: string;
   street: string;
   zip: string;
+  tasks?: TaskPropsDTO[];
 }

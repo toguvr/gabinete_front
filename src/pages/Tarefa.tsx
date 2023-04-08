@@ -168,7 +168,7 @@ export default function Tarefa() {
               })}
             </Select>
 
-            {selectFilter === 'id' || selectFilter === 'title' || selectFilter === 'all' ? (
+            {selectFilter === 'id' || selectFilter === 'title' || selectFilter === 'voter' || selectFilter === 'all' ? (
               <Input
                 maxW="600px"
                 type="text"
@@ -216,7 +216,7 @@ export default function Tarefa() {
         </Flex>
 
         <TableContainer marginTop="40px" padding={2}>
-          <Table>
+          <Table variant="simple">
             <Thead
               position="sticky"
               top="0px"
@@ -224,6 +224,8 @@ export default function Tarefa() {
               borderBottomWidth={'4px'}
               borderBottomStyle="solid"
               borderBottomColor={'gray.300'}
+              backgroundColor="white"
+              zIndex="1"
             >
               <Tr>
                 <Th
@@ -300,6 +302,17 @@ export default function Tarefa() {
                           return (
                             currentValue?.priority &&
                             currentValue?.priority
+                              .toLowerCase()
+                              .indexOf(filterField?.toLowerCase()) > -1
+                          );
+                        } else {
+                          return currentValue;
+                        }
+                      case 'voter':
+                        if (filterField?.length >= 3) {
+                          return (
+                            currentValue?.voter &&
+                            currentValue?.voter?.name
                               .toLowerCase()
                               .indexOf(filterField?.toLowerCase()) > -1
                           );

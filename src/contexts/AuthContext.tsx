@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   ReactNode,
   useCallback,
@@ -7,10 +7,10 @@ import React, {
   useState,
 } from 'react';
 
-import { OfficeDTO, PermissionByIdDTO, UserDTO } from '../dtos';
-import api from '../services/api';
 import { key } from '../config/key';
+import { OfficeDTO, UserDTO } from '../dtos';
 import { RoleDTO } from '../dtos/index';
+import api from '../services/api';
 
 interface SignInCredentials {
   email: string;
@@ -21,6 +21,7 @@ interface AuthContextData {
   signIn: (credentials: SignInCredentials) => Promise<void>;
   updateUser: (user: UserDTO) => Promise<void>;
   updateRole: (role: RoleDTO) => Promise<void>;
+  updateOffice: (office: OfficeDTO) => Promise<void>;
   signOut: () => void;
   isAuthenticated: boolean;
   user: UserDTO;
@@ -100,27 +101,34 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   //   loadStorageData();
   // }, [user?.id]);
 
-  const signIn = useCallback(async ({ email, password }: { email: string; password: string }) => {
-    const response = await api.post('/sessions', {
-      email,
-      password,
-    });
+  const signIn = useCallback(
+    async ({ email, password }: { email: string; password: string }) => {
+      const response = await api.post('/sessions', {
+        email,
+        password,
+      });
 
-    const { token, user, permissions } = response.data;
+      const { token, user, permissions, refresh_token } = response.data;
 
-    localStorage.setItem(key.token, token);
-    localStorage.setItem(key.user, JSON.stringify(user));
-    if (Array.isArray(permissions) && permissions.length > 0) {
-      localStorage.setItem(key.office, JSON.stringify(permissions[0]?.office));
-      localStorage.setItem(key.role, JSON.stringify(permissions[0]?.role));
-      setRole(permissions[0]?.role);
-      setOffice(permissions[0]?.office);
-    }
+      localStorage.setItem(key.refreshToken, refresh_token);
+      localStorage.setItem(key.token, token);
+      localStorage.setItem(key.user, JSON.stringify(user));
+      if (Array.isArray(permissions) && permissions.length > 0) {
+        localStorage.setItem(
+          key.office,
+          JSON.stringify(permissions[0]?.office)
+        );
+        localStorage.setItem(key.role, JSON.stringify(permissions[0]?.role));
+        setRole(permissions[0]?.role);
+        setOffice(permissions[0]?.office);
+      }
 
-    api.defaults.headers.authorization = `Bearer ${token}`;
+      api.defaults.headers.authorization = `Bearer ${token}`;
 
-    setUser(user);
-  }, []);
+      setUser(user);
+    },
+    []
+  );
 
   const updateUser = async (user: UserDTO) => {
     setUser(user);
@@ -132,6 +140,11 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem(key.role, JSON.stringify(role));
   };
 
+  const updateOffice = async (office: OfficeDTO) => {
+    setOffice(office);
+    localStorage.setItem(key.office, JSON.stringify(office));
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -141,6 +154,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         user,
         updateUser,
         updateRole,
+        updateOffice,
         role,
         office,
       }}
