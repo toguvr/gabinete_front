@@ -98,6 +98,10 @@ export default function AppRoutes() {
         <Route path="/eleitor" element={<Voter />} />
         <Route path="/eleitor/:id" element={<VoterEdit />} />
         <Route path="/eleitor/registrar-eleitor" element={<VoterRegister />} />
+        <Route
+          path="/eleitor/registrar-eleitor/:id"
+          element={<VoterRegister />}
+        />
 
         <Route path="/demanda" element={<Demand />} />
         <Route path="/demanda/:id" element={<DemandEdit />} />
