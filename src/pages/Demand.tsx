@@ -106,6 +106,9 @@ export default function Demand() {
   const handleEditTask = (task_id: string) => {
     navigate(`/demanda/${task_id}`);
   };
+  useEffect(() => {
+    setFilterField('');
+  }, [selectFilter]);
 
   return (
     <HeaderSideBar>
@@ -229,6 +232,8 @@ export default function Demand() {
               data
                 .filter((currentValue: any) => {
                   switch (selectFilter) {
+                    case 'all':
+                      return currentValue;
                     case 'title':
                       if (filterField?.length >= 3) {
                         return (

@@ -247,6 +247,10 @@ export default function Voter() {
     },
   });
 
+  useEffect(() => {
+    setFilterField('');
+  }, [selectFilter]);
+
   const MyDocument = () => {
     return (
       <Document>
@@ -512,6 +516,8 @@ export default function Voter() {
               data
                 .filter((currentValue: any) => {
                   switch (selectFilter) {
+                    case 'all':
+                      return currentValue;
                     case 'name':
                       if (filterField?.length >= 3) {
                         return (
