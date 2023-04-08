@@ -17,7 +17,6 @@ import { useAuth } from '../contexts/AuthContext';
 import ChangePassword from '../pages/ChangePassword';
 import DemandEdit from '../pages/DemandEdit';
 import DemandRegister from '../pages/DemandRegister';
-import DemandaRegisterVoter from '../pages/DemandRegisterVoter';
 import Home from '../pages/Home';
 import NoBond from '../pages/NoBond';
 import Perfil from '../pages/Perfil';
@@ -110,10 +109,6 @@ export default function AppRoutes() {
           element={<DemandRegister />}
         />
         <Route path="/demanda/registrar-demanda" element={<DemandRegister />} />
-        <Route
-          path="/demanda/registrar-eleitor/:id"
-          element={<DemandaRegisterVoter />}
-        />
 
         <Route path="/cargo" element={<Roles />} />
         <Route path="/cargo/registrar-cargo" element={<RoleRegister />} />
