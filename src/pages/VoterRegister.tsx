@@ -245,7 +245,7 @@ export default function VoterRegister() {
   }, [id]);
 
   useEffect(() => {
-    if (id) {
+    if (id && values.ddd && values.cellphone) {
       verifyVoterParam();
     }
   }, [values.ddd, values.cellphone]);
