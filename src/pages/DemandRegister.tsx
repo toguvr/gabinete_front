@@ -366,11 +366,7 @@ export default function DemandRegister() {
                     as="a"
                     w="220px"
                     h="30px"
-                    onClick={() =>
-                      navigate(
-                        `/eleitor/registrar-eleitor/${values?.cellphone}`
-                      )
-                    }
+                    href={`${process.env.REACT_APP_WEB}/eleitor/registrar-eleitor/${values?.cellphone}`}
                     target="_blank"
                     bg={office?.primary_color}
                     color={office?.secondary_color}
