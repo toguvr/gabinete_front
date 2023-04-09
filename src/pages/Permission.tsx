@@ -29,8 +29,6 @@ import {
   IoPencilOutline,
   IoSearchSharp,
 } from 'react-icons/io5';
-import { getFormatDate } from '../utils/date';
-import { addHours } from 'date-fns';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
@@ -38,6 +36,7 @@ import HeaderSideBar from '../components/HeaderSideBar';
 import { useAuth } from '../contexts/AuthContext';
 import { PermissionByIdDTO, RoleDTO, StateProps } from '../dtos';
 import api from '../services/api';
+import { getFormatDate } from '../utils/date';
 import { permissionPage } from '../utils/filterTables';
 
 export default function Permission() {
@@ -376,10 +375,8 @@ export default function Permission() {
                       if (filterField?.length >= 3) {
                         return (
                           getFormatDate(
-                            addHours(
-                              new Date(currentValue?.user?.birthdate),
-                              12
-                            ),
+                            new Date(currentValue?.user?.birthdate),
+
                             'dd/MM/yyyy'
                           ).indexOf(filterField) > -1
                         );
@@ -525,10 +522,7 @@ export default function Permission() {
                       >
                         {permission?.user?.birthdate
                           ? getFormatDate(
-                              addHours(
-                                new Date(permission?.user?.birthdate),
-                                12
-                              ),
+                              new Date(permission?.user?.birthdate),
                               'dd/MM/yyyy'
                             )
                           : '-'}
