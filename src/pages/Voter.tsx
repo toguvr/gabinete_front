@@ -31,13 +31,12 @@ import {
 import {
   Document,
   Image,
-  PDFDownloadLink,
   Page,
+  PDFDownloadLink,
   StyleSheet,
   Text as TextPDF,
   View,
 } from '@react-pdf/renderer';
-import { addHours } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import {
   IoAddCircleSharp,
@@ -568,7 +567,7 @@ export default function Voter() {
                       if (filterField?.length >= 3) {
                         return (
                           getFormatDate(
-                            addHours(new Date(currentValue?.birthdate), 12),
+                            new Date(currentValue?.birthdate),
                             'dd/MM/yyyy'
                           ).indexOf(filterField) > -1
                         );
@@ -707,7 +706,7 @@ export default function Voter() {
                       >
                         {voter?.birthdate
                           ? getFormatDate(
-                              addHours(new Date(voter?.birthdate), 12),
+                              new Date(voter?.birthdate),
                               'dd/MM/yyyy'
                             )
                           : '-'}

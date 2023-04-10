@@ -36,6 +36,7 @@ import HeaderSideBar from '../components/HeaderSideBar';
 import { useAuth } from '../contexts/AuthContext';
 import { PermissionByIdDTO, RoleDTO, StateProps } from '../dtos';
 import api from '../services/api';
+import { getFormatDate } from '../utils/date';
 import { permissionPage } from '../utils/filterTables';
 
 export default function Permission() {
@@ -340,6 +341,7 @@ export default function Permission() {
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Telefone</Th>
               <Th color="gray.600">Cargo</Th>
+              <Th color="gray.600">Nascimento</Th>
               {role?.equipe_page > 1 && (
                 <Th color="gray.600" w="8">
                   Ações
@@ -361,6 +363,18 @@ export default function Permission() {
                           currentValue?.user?.name
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case 'birthdate':
+                      if (filterField?.length >= 3) {
+                        return (
+                          getFormatDate(
+                            new Date(currentValue?.user?.birthdate),
+
+                            'dd/MM/yyyy'
+                          ).indexOf(filterField) > -1
                         );
                       } else {
                         return currentValue;
@@ -488,6 +502,21 @@ export default function Permission() {
                         py="0px"
                       >
                         {permission?.role?.name}
+                      </Td>
+                      <Td
+                        color={permission?.active ? 'gray.600' : 'gray.400'}
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        {permission?.user?.birthdate
+                          ? getFormatDate(
+                              new Date(permission?.user?.birthdate),
+                              'dd/MM/yyyy'
+                            )
+                          : '-'}
                       </Td>
                       <Td
                         py="0px"

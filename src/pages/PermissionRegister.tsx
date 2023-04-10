@@ -29,6 +29,7 @@ type RegisterFormData = {
   ddd: string;
   dddMask?: string;
   gender: string;
+  birthdate?: string;
 };
 
 export default function PermissionRegister() {
@@ -69,6 +70,7 @@ export default function PermissionRegister() {
           office_id: office?.id,
           role_id: values?.role_id,
           gender: values?.gender,
+          birthdate: values?.birthdate,
         };
 
         await api.post('/invite', body);
@@ -216,6 +218,32 @@ export default function PermissionRegister() {
               setValues({ ...values, [e.target.name]: e.target.value })
             }
             borderColor="gray.500"
+            disabled={!verify}
+          />
+          <Input
+            labelColor={!verify ? 'gray.300' : 'gray.500'}
+            label="Data de nascimento:"
+            name="birthdate"
+            type="date"
+            error={errors?.birthdate}
+            value={values.birthdate}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
+            placeholder="Data de Nascimento"
+            borderColor="gray.500"
+            css={{
+              '&::-webkit-calendar-picker-indicator': {
+                color: 'gray.500',
+              },
+            }}
+            // rightIcon={
+            //   <Icon
+            //     color="gray.500"
+            //     fontSize="20px"
+            //     as={IoCalendarNumberOutline}
+            //   />
+            // }
             disabled={!verify}
           />
           <Box w="100%">
