@@ -277,21 +277,28 @@ export default function Home() {
                   Aniversariantes
                 </Text>
               </Flex>
+
               {permissionBirthDates.length === 0 &&
                 voterBirthDates.length === 0 && (
-                  <Flex
-                    margin="20px 0px"
-                    height="40px"
-                    width="100%"
-                    alignItems="center"
-                    justifyContent="start"
-                    paddingLeft={{ base: '16px', md: '24px' }}
+                <Flex
+                  margin="20px 0px"
+                  height="40px"
+                  width="100%"
+                  alignItems="center"
+                  justifyContent="start"
+                  paddingLeft={{ base: '16px', md: '24px' }}
+                >
+                  <Text
+                    textAlign="center"
+                    fontWeight="500"
+                    fontSize="16px"
+                    color="#718096"
                   >
-                    <Text fontWeight="500" fontSize="16px" color="#718096">
-                      Nenhum aniversariante hoje.
-                    </Text>
-                  </Flex>
-                )}
+                    Nenhum aniversariante hoje.
+                  </Text>
+                </Flex>
+              )}
+
               {permissionBirthDates &&
                 permissionBirthDates.map((permission) => (
                   <Flex
@@ -305,6 +312,7 @@ export default function Home() {
                     <Icon color="#718096" fontSize="24" as={RiTeamLine} />
 
                     <Text
+                      textAlign="center"
                       lineHeight="20px"
                       fontWeight="400"
                       fontSize="16px"
@@ -345,6 +353,7 @@ export default function Home() {
                     <Icon color="#718096" fontSize="24" as={SiMicrosoftteams} />
 
                     <Text
+                      textAlign="center"
                       lineHeight="20px"
                       fontWeight="400"
                       fontSize="16px"

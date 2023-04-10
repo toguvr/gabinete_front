@@ -31,13 +31,12 @@ import {
 import {
   Document,
   Image,
-  PDFDownloadLink,
   Page,
+  PDFDownloadLink,
   StyleSheet,
   Text as TextPDF,
   View,
 } from '@react-pdf/renderer';
-import { addHours } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
 import {
   IoAddCircleSharp,
@@ -246,6 +245,10 @@ export default function Voter() {
       alignSelf: 'center',
     },
   });
+
+  useEffect(() => {
+    setFilterField('');
+  }, [selectFilter]);
 
   const MyDocument = () => {
     return (
@@ -495,9 +498,10 @@ export default function Voter() {
               <Th color="gray.600">Nome</Th>
               <Th color="gray.600">Referência</Th>
               <Th color="gray.600">Telefone</Th>
-              <Th color="gray.600">Data de nascimento</Th>
+              <Th color="gray.600">Nascimento</Th>
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Criador</Th>
+              <Th color="gray.600">Demandas</Th>
               <Th color="gray.600">Endereço</Th>
               {role?.eleitor_page > 1 && (
                 <Th textAlign="center" color="gray.600" w="8">
@@ -511,6 +515,8 @@ export default function Voter() {
               data
                 .filter((currentValue: any) => {
                   switch (selectFilter) {
+                    case 'all':
+                      return currentValue;
                     case 'name':
                       if (filterField?.length >= 3) {
                         return (
@@ -561,7 +567,7 @@ export default function Voter() {
                       if (filterField?.length >= 3) {
                         return (
                           getFormatDate(
-                            addHours(new Date(currentValue?.birthdate), 12),
+                            new Date(currentValue?.birthdate),
                             'dd/MM/yyyy'
                           ).indexOf(filterField) > -1
                         );
@@ -700,7 +706,7 @@ export default function Voter() {
                       >
                         {voter?.birthdate
                           ? getFormatDate(
-                              addHours(new Date(voter?.birthdate), 12),
+                              new Date(voter?.birthdate),
                               'dd/MM/yyyy'
                             )
                           : '-'}
@@ -725,6 +731,17 @@ export default function Voter() {
                         py="4px"
                       >
                         {voter?.creator?.name}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                        textAlign="center"
+                      >
+                        {voter?.tasks?.length}
                       </Td>
                       {voter?.street ? (
                         <Td

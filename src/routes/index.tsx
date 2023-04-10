@@ -17,13 +17,13 @@ import { useAuth } from '../contexts/AuthContext';
 import ChangePassword from '../pages/ChangePassword';
 import DemandEdit from '../pages/DemandEdit';
 import DemandRegister from '../pages/DemandRegister';
-import DemandaRegisterVoter from '../pages/DemandRegisterVoter';
 import Home from '../pages/Home';
 import NoBond from '../pages/NoBond';
 import Perfil from '../pages/Perfil';
 import RoleEdit from '../pages/RoleEdit';
 import RoleRegister from '../pages/RoleRegister';
 import Roles from '../pages/Roles';
+import Gabinete from '../pages/Office';
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -89,17 +89,26 @@ export default function AppRoutes() {
 
         <Route path="/equipe" element={<Permission />} />
         <Route path="/equipe/:id" element={<PermissionEdit />} />
-        <Route path="/equipe/registrar-equipe" element={<PermissionRegister />} />
+        <Route
+          path="/equipe/registrar-equipe"
+          element={<PermissionRegister />}
+        />
 
         <Route path="/eleitor" element={<Voter />} />
         <Route path="/eleitor/:id" element={<VoterEdit />} />
         <Route path="/eleitor/registrar-eleitor" element={<VoterRegister />} />
+        <Route
+          path="/eleitor/registrar-eleitor/:id"
+          element={<VoterRegister />}
+        />
 
         <Route path="/demanda" element={<Demand />} />
         <Route path="/demanda/:id" element={<DemandEdit />} />
-        <Route path="/demanda/registrar-demanda/:id" element={<DemandRegister />} />
+        <Route
+          path="/demanda/registrar-demanda/:id"
+          element={<DemandRegister />}
+        />
         <Route path="/demanda/registrar-demanda" element={<DemandRegister />} />
-        <Route path="/demanda/registrar-eleitor/:id" element={<DemandaRegisterVoter />} />
 
         <Route path="/cargo" element={<Roles />} />
         <Route path="/cargo/registrar-cargo" element={<RoleRegister />} />
@@ -108,6 +117,7 @@ export default function AppRoutes() {
         <Route path="/tarefa" element={<Tarefa />} />
 
         <Route path="/perfil" element={<Perfil />} />
+        <Route path="/gabinete" element={<Gabinete />} />
         <Route path="/trocar-senha" element={<ChangePassword />} />
         <Route path="/sem-permissao" element={<NotPermission />} />
         <Route path="/sem-vinculo" element={<NoBond />} />

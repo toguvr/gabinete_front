@@ -1,4 +1,12 @@
-import { Box, Flex, Select, Spinner, Stack, Text, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Select,
+  Spinner,
+  Stack,
+  Text,
+  useToast,
+} from '@chakra-ui/react';
 import axios from 'axios';
 import { FormEvent, useEffect, useState } from 'react';
 import { PatternFormat } from 'react-number-format';
@@ -18,6 +26,7 @@ export default function VoterEdit() {
   const [values, setValues] = useState({} as StateProps);
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
+  const [voterLoading, setVoterLoading] = useState(false);
   const [cepLoading, setCepLoading] = useState(false);
   const toast = useToast();
   const { office } = useAuth();
@@ -119,7 +128,9 @@ export default function VoterEdit() {
   const getCep = async () => {
     setCepLoading(true);
     try {
-      const response = await axios.get(`https://viacep.com.br/ws/${values?.zip}/json/`);
+      const response = await axios.get(
+        `https://viacep.com.br/ws/${values?.zip}/json/`
+      );
 
       const { bairro, localidade, logradouro, uf } = response.data;
 
@@ -144,7 +155,7 @@ export default function VoterEdit() {
   };
 
   const getVoterById = async () => {
-    setLoading(true);
+    setVoterLoading(true);
     try {
       const response = await api.get(`/voter/${id}`);
 
@@ -157,7 +168,10 @@ export default function VoterEdit() {
         email: response?.data?.email,
         office_id: office.id,
         address_number: response?.data?.address_number,
-        birthdate: getFormatDate(new Date(response?.data?.birthdate), 'yyyy-MM-dd'),
+        birthdate: getFormatDate(
+          new Date(response?.data?.birthdate),
+          'yyyy-MM-dd'
+        ),
         city: response?.data?.city,
         reference: response?.data?.reference,
         gender: response?.data?.gender,
@@ -170,7 +184,7 @@ export default function VoterEdit() {
       });
     } catch (err) {
     } finally {
-      setLoading(false);
+      setVoterLoading(false);
     }
   };
 
@@ -182,6 +196,7 @@ export default function VoterEdit() {
     <HeaderSideBar backRoute={true}>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
         Editar Eleitor
+        {voterLoading && <Spinner color={office?.primary_color} />}
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
         <Stack spacing={[5, 8]} mt={['24px', '40px']} w="852px">
@@ -209,6 +224,7 @@ export default function VoterEdit() {
                 borderColor="gray.500"
                 format="##"
                 mask="_"
+                disabled={voterLoading}
               />
 
               <PatternFormat
@@ -229,6 +245,7 @@ export default function VoterEdit() {
                 placeholder="00000-0000"
                 w={['100%', '180px']}
                 borderColor="gray.500"
+                disabled={voterLoading}
               />
             </Flex>
           </Flex>
@@ -240,8 +257,11 @@ export default function VoterEdit() {
             type="text"
             error={errors?.name}
             value={values?.name}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             borderColor="gray.500"
+            disabled={voterLoading}
           />
           <Input
             label="Referência:"
@@ -250,8 +270,11 @@ export default function VoterEdit() {
             type="text"
             error={errors?.reference}
             value={values.reference}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             borderColor="gray.500"
+            disabled={voterLoading}
           />
 
           <Input
@@ -261,8 +284,11 @@ export default function VoterEdit() {
             type="email"
             error={errors?.email}
             value={values?.email}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             borderColor="gray.500"
+            disabled={voterLoading}
           />
           <Box>
             <Flex
@@ -277,7 +303,9 @@ export default function VoterEdit() {
                 type="date"
                 error={errors?.birthdate}
                 value={values?.birthdate}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 placeholder="Data de Nascimento"
                 borderColor="gray.500"
                 css={{
@@ -285,6 +313,7 @@ export default function VoterEdit() {
                     color: 'gray.500',
                   },
                 }}
+                disabled={voterLoading}
               />
 
               <Box w="100%">
@@ -299,7 +328,10 @@ export default function VoterEdit() {
                   color="gray.600"
                   value={values?.gender}
                   name="gender"
-                  onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                  onChange={(e) =>
+                    setValues({ ...values, [e.target.name]: e.target.value })
+                  }
+                  disabled={voterLoading}
                 >
                   <option value="MALE">Masculino</option>
                   <option value="FEMALE">Feminino</option>
@@ -312,7 +344,9 @@ export default function VoterEdit() {
               <Text color="gray.500" fontWeight="400" margin="0">
                 Endereço:
               </Text>
-              {cepLoading && <Spinner color={office?.primary_color} size="sm" />}
+              {cepLoading && (
+                <Spinner color={office?.primary_color} size="sm" />
+              )}
             </Flex>
             <Flex
               mb="24px"
@@ -340,6 +374,7 @@ export default function VoterEdit() {
                 onBlur={getCep}
                 w={['100%', '200px']}
                 placeholder="CEP"
+                disabled={voterLoading}
               />
 
               <Input
@@ -348,9 +383,12 @@ export default function VoterEdit() {
                 type="text"
                 error={errors?.street}
                 value={values?.street}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
                 flex={1}
+                disabled={voterLoading}
               />
             </Flex>
             <Flex
@@ -366,19 +404,25 @@ export default function VoterEdit() {
                 type="text"
                 error={errors?.neighborhood}
                 value={values?.neighborhood}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
                 flex={1}
+                disabled={voterLoading}
               />
               <Input
                 name="address_number"
                 type="number"
                 error={errors?.address_number}
                 value={values?.address_number}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 placeholder="Numero"
                 w={['100%', '200px']}
                 borderColor="gray.500"
+                disabled={voterLoading}
               />
             </Flex>
             <Flex
@@ -394,8 +438,11 @@ export default function VoterEdit() {
                 type="text"
                 error={errors?.complement}
                 value={values?.complement}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
+                disabled={voterLoading}
               />
               <Input
                 placeholder="Cidade"
@@ -403,8 +450,11 @@ export default function VoterEdit() {
                 type="text"
                 error={errors?.city}
                 value={values?.city}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
+                disabled={voterLoading}
               />
               <Input
                 placeholder="UF"
@@ -412,14 +462,26 @@ export default function VoterEdit() {
                 type="text"
                 error={errors?.state}
                 value={values?.state}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
                 borderColor="gray.500"
+                disabled={voterLoading}
               />
             </Flex>
           </Box>
 
-          <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
-            <Button onClick={handleUpdateVoter} w="280px">
+          <Flex
+            w="100%"
+            alignItems="center"
+            justifyContent="center"
+            mt={['40px', '95px']}
+          >
+            <Button
+              onClick={handleUpdateVoter}
+              w="280px"
+              isDisabled={voterLoading}
+            >
               {loading ? <Spinner color="white" /> : 'Atualizar'}
             </Button>
           </Flex>

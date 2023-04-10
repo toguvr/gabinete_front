@@ -1,4 +1,12 @@
-import { Box, Flex, Select, Spinner, Stack, Text, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Select,
+  Spinner,
+  Stack,
+  Text,
+  useToast,
+} from '@chakra-ui/react';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { PatternFormat } from 'react-number-format';
 import { useNavigate } from 'react-router-dom';
@@ -16,15 +24,18 @@ type RegisterFormData = {
   cellphone: string;
   cellphoneMask?: string;
   email: string;
-  office_id: string;
-  role_id: string;
+  office_id?: string;
+  role_id?: string;
   ddd: string;
   dddMask?: string;
   gender: string;
+  birthdate?: string;
 };
 
 export default function PermissionRegister() {
-  const [values, setValues] = useState<RegisterFormData>({} as RegisterFormData);
+  const [values, setValues] = useState<RegisterFormData>(
+    {} as RegisterFormData
+  );
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
@@ -43,7 +54,9 @@ export default function PermissionRegister() {
       try {
         const schema = Yup.object().shape({
           name: Yup.string().required('Nome completo obrigatório'),
-          email: Yup.string().email('Email inválido').required('Email obrigatório'),
+          email: Yup.string()
+            .email('Email inválido')
+            .required('Email obrigatório'),
         });
 
         await schema.validate(values, {
@@ -57,6 +70,7 @@ export default function PermissionRegister() {
           office_id: office?.id,
           role_id: values?.role_id,
           gender: values?.gender,
+          birthdate: values?.birthdate,
         };
 
         await api.post('/invite', body);
@@ -122,9 +136,23 @@ export default function PermissionRegister() {
       if (response.data.isUserOnThisOffice === false) {
         setVerify(true);
       }
+
+      if (response.data.user) {
+        setValues({
+          name: response.data.user.name,
+          ddd: response?.data?.user?.cellphone.slice(0, 2),
+          dddMask: response?.data?.user?.cellphone.slice(0, 2),
+          cellphone: response?.data?.user?.cellphone.slice(2),
+          cellphoneMask: response?.data?.user?.cellphone.slice(2),
+          email: response?.data?.user?.email,
+          gender: response?.data?.user?.gender,
+        });
+      }
     } catch (err: any) {
       return toast({
-        title: err?.response?.data?.message || 'Não foi possível verificar o e-mail.',
+        title:
+          err?.response?.data?.message ||
+          'Não foi possível verificar o e-mail.',
         status: 'warning',
         position: 'top-right',
         duration: 3000,
@@ -166,7 +194,9 @@ export default function PermissionRegister() {
               type="email"
               error={errors?.email}
               value={values?.email}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               borderColor="gray.500"
               w="100%"
               disabled={verify}
@@ -184,12 +214,44 @@ export default function PermissionRegister() {
             type="text"
             error={errors?.name}
             value={values.name}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             borderColor="gray.500"
             disabled={!verify}
           />
+          <Input
+            labelColor={!verify ? 'gray.300' : 'gray.500'}
+            label="Data de nascimento:"
+            name="birthdate"
+            type="date"
+            error={errors?.birthdate}
+            value={values.birthdate}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
+            placeholder="Data de Nascimento"
+            borderColor="gray.500"
+            css={{
+              '&::-webkit-calendar-picker-indicator': {
+                color: 'gray.500',
+              },
+            }}
+            // rightIcon={
+            //   <Icon
+            //     color="gray.500"
+            //     fontSize="20px"
+            //     as={IoCalendarNumberOutline}
+            //   />
+            // }
+            disabled={!verify}
+          />
           <Box w="100%">
-            <Text color={!verify ? 'gray.300' : 'gray.500'} fontWeight="400" margin="0">
+            <Text
+              color={!verify ? 'gray.300' : 'gray.500'}
+              fontWeight="400"
+              margin="0"
+            >
               Gênero*:
             </Text>
             <Select
@@ -201,7 +263,9 @@ export default function PermissionRegister() {
               disabled={!verify}
               name="gender"
               value={values?.gender}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
             >
               <option value="MALE">Masculino</option>
               <option value="FEMALE">Feminino</option>
@@ -262,7 +326,9 @@ export default function PermissionRegister() {
               color={!verify ? 'gray.300' : 'gray.500'}
               name="role_id"
               value={values?.role_id}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               isDisabled={!verify}
               placeholder="Selecione"
             >
@@ -275,7 +341,12 @@ export default function PermissionRegister() {
               })}
             </Select>
           </Box>
-          <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
+          <Flex
+            w="100%"
+            alignItems="center"
+            justifyContent="center"
+            mt={['40px', '95px']}
+          >
             <Button onClick={handleRegister} width="280px" isDisabled={!verify}>
               {loading ? <Spinner color="white" /> : 'Cadastrar'}
             </Button>

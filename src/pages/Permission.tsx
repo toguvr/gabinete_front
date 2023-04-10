@@ -36,6 +36,7 @@ import HeaderSideBar from '../components/HeaderSideBar';
 import { useAuth } from '../contexts/AuthContext';
 import { PermissionByIdDTO, RoleDTO, StateProps } from '../dtos';
 import api from '../services/api';
+import { getFormatDate } from '../utils/date';
 import { permissionPage } from '../utils/filterTables';
 
 export default function Permission() {
@@ -45,7 +46,7 @@ export default function Permission() {
   const [data, setData] = useState([] as PermissionByIdDTO[]);
   const { role, office } = useAuth();
   const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
-  const { isOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [permissionToDeleteId, setPermissionToDeleteId] = useState('');
   const [selectFilter, setSelectFilter] = useState('name');
   const [filterField, setFilterField] = useState('');
@@ -103,12 +104,12 @@ export default function Permission() {
       });
       getPermissions();
       setPermissionToDeleteId('');
+
     } catch (err: any) {
       return toast({
         title:
           err?.response?.data?.message ||
           'Ocorreu um erro ao excluir a equipe, tente novamente',
-
         status: 'error',
         position: 'top-right',
         duration: 3000,
@@ -124,10 +125,7 @@ export default function Permission() {
     navigate(`/equipe/${permission_id}`);
   };
 
-  const handleUpdateActive = async (
-    permission_id: string,
-    permission_active: boolean
-  ) => {
+  const handleUpdateActive = async (permission_id: string, permission_active: boolean) => {
     setErrors({});
 
     try {
@@ -182,14 +180,13 @@ export default function Permission() {
       });
     }
   };
+
+  useEffect(() => {
+    setFilterField('');
+  }, [selectFilter]);
   return (
     <HeaderSideBar>
-      <AlertDialog
-        leastDestructiveRef={cancelRef}
-        isOpen={isOpen}
-        onClose={onClose}
-        isCentered
-      >
+      <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose} isCentered>
         {/* <AlertDialogOverlay > */}
         <AlertDialogContent mx="12px">
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -197,12 +194,13 @@ export default function Permission() {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            Essa ação é irreversível, ao deletar não será possível desfazer.
-            Você deseja apagar mesmo assim?
+            Essa ação é irreversível, ao deletar não será possível desfazer. Você deseja apagar
+            mesmo assim?
           </AlertDialogBody>
 
           <AlertDialogFooter>
             <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
+
             <ChakraButton
               colorScheme={'red'}
               isLoading={loading}
@@ -220,6 +218,7 @@ export default function Permission() {
         gap={['20px', '0']}
         alignItems={['center', 'flex-start']}
       >
+
         <Text
           color="gray.500"
           fontWeight="semibold"
@@ -227,9 +226,7 @@ export default function Permission() {
           ml={[0, '28px']}
         >
           Equipe
-          {loading && (
-            <Spinner color={office?.primary_color} ml="4" size="sm" />
-          )}
+          {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
         </Text>
         {role?.equipe_page > 1 && (
           <Button
@@ -241,7 +238,7 @@ export default function Permission() {
         )}
       </Flex>
       <Text mt="36px" color="gray.500">
-        Filtar por:
+        Filtrar por:
       </Text>
       <Flex gap={['12px', '24px']}>
         <Select
@@ -309,9 +306,7 @@ export default function Permission() {
               setFilterField(e.target.value);
             }}
             borderColor="gray.500"
-            rightIcon={
-              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-            }
+            rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
           />
         )}
       </Flex>
@@ -346,6 +341,7 @@ export default function Permission() {
               <Th color="gray.600">E-mail</Th>
               <Th color="gray.600">Telefone</Th>
               <Th color="gray.600">Cargo</Th>
+              <Th color="gray.600">Nascimento</Th>
               {role?.equipe_page > 1 && (
                 <Th color="gray.600" w="8">
                   Ações
@@ -358,6 +354,8 @@ export default function Permission() {
               data
                 .filter((currentValue: any) => {
                   switch (selectFilter) {
+                    case 'all':
+                      return currentValue;
                     case 'name':
                       if (filterField?.length >= 3) {
                         return (
@@ -365,6 +363,18 @@ export default function Permission() {
                           currentValue?.user?.name
                             .toLowerCase()
                             .indexOf(filterField?.toLowerCase()) > -1
+                        );
+                      } else {
+                        return currentValue;
+                      }
+                    case 'birthdate':
+                      if (filterField?.length >= 3) {
+                        return (
+                          getFormatDate(
+                            new Date(currentValue?.user?.birthdate),
+
+                            'dd/MM/yyyy'
+                          ).indexOf(filterField) > -1
                         );
                       } else {
                         return currentValue;
@@ -432,12 +442,7 @@ export default function Permission() {
                       >
                         <Switch
                           isChecked={permission?.active}
-                          onChange={() =>
-                            handleUpdateActive(
-                              permission?.id,
-                              permission?.active
-                            )
-                          }
+                          onChange={() => handleUpdateActive(permission?.id, permission?.active)}
                         />
                       </Td>
                       <Td
@@ -499,6 +504,21 @@ export default function Permission() {
                         {permission?.role?.name}
                       </Td>
                       <Td
+                        color={permission?.active ? 'gray.600' : 'gray.400'}
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="0px"
+                      >
+                        {permission?.user?.birthdate
+                          ? getFormatDate(
+                              new Date(permission?.user?.birthdate),
+                              'dd/MM/yyyy'
+                            )
+                          : '-'}
+                      </Td>
+                      <Td
                         py="0px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
@@ -508,9 +528,7 @@ export default function Permission() {
                           {role?.equipe_page > 1 && (
                             <>
                               <IconButton
-                                onClick={() =>
-                                  handleEditPermission(permission?.id)
-                                }
+                                onClick={() => handleEditPermission(permission?.id)}
                                 aria-label="Open navigation"
                                 variant="unstyled"
                                 minW={6}

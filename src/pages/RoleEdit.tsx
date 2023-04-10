@@ -43,11 +43,13 @@ type RegisterFormData = {
 
 export default function RoleEdit() {
   const { id } = useParams();
-  const [values, setValues] = useState<RegisterFormData>({} as RegisterFormData);
+  const [values, setValues] = useState<RegisterFormData>(
+    {} as RegisterFormData
+  );
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
-  const [proceedDialog, setProceedDialog] = useState(false);
   const [roleLoading, setRoleLoading] = useState(false);
+  const [proceedDialog, setProceedDialog] = useState(false);
   const toast = useToast();
 
   const { office, updateRole, role, isAuthenticated } = useAuth();
@@ -59,10 +61,14 @@ export default function RoleEdit() {
   const [dialogText, setDialogText] = useState('');
 
   const getPermissionById = async () => {
+    setRoleLoading(true);
     try {
       const response = await api.get(`/role/${role?.id}`);
       updateRole(response.data);
-    } catch (err) {}
+    } catch (err) {
+    } finally {
+      setRoleLoading(false);
+    }
   };
 
   const openDialog = (dialogType: string) => {
@@ -244,7 +250,12 @@ export default function RoleEdit() {
 
   return (
     <HeaderSideBar backRoute={true}>
-      <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose} isCentered>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
         {/* <AlertDialogOverlay > */}
         <AlertDialogContent mx="12px">
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -272,12 +283,19 @@ export default function RoleEdit() {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            Você está prestes a atualizar a sua própria permissão. Deseja continuar?
+            Você está prestes a atualizar a sua própria permissão. Deseja
+            continuar?
           </AlertDialogBody>
 
           <AlertDialogFooter>
-            <ChakraButton onClick={() => setProceedDialog(false)}>Cancelar</ChakraButton>
-            <ChakraButton marginLeft="24px" colorScheme={'red'} onClick={handleUpdateRole}>
+            <ChakraButton onClick={() => setProceedDialog(false)}>
+              Cancelar
+            </ChakraButton>
+            <ChakraButton
+              marginLeft="24px"
+              colorScheme={'red'}
+              onClick={handleUpdateRole}
+            >
               Continuar
             </ChakraButton>
           </AlertDialogFooter>
@@ -298,8 +316,11 @@ export default function RoleEdit() {
             type="text"
             error={errors?.name}
             value={values?.name}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             borderColor="gray.500"
+            disabled={roleLoading}
           />
           <Box
             w="100%"
@@ -323,7 +344,10 @@ export default function RoleEdit() {
                     h="30px"
                     name={page.fix}
                     value={page.values}
-                    onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                    onChange={(e) =>
+                      setValues({ ...values, [e.target.name]: e.target.value })
+                    }
+                    disabled={roleLoading}
                   >
                     {page.name === 'Tarefa'
                       ? roleStatusTasks.map((role) => {
@@ -361,8 +385,17 @@ export default function RoleEdit() {
             })}
           </Box>
 
-          <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
-            <Button onClick={handleUpdateButton} width="280px">
+          <Flex
+            w="100%"
+            alignItems="center"
+            justifyContent="center"
+            mt={['40px', '95px']}
+          >
+            <Button
+              onClick={handleUpdateButton}
+              width="280px"
+              isDisabled={roleLoading}
+            >
               {loading ? <Spinner color="white" /> : 'Atualizar'}
             </Button>
           </Flex>

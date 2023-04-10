@@ -15,7 +15,13 @@ import {
 } from '@chakra-ui/react';
 import { addHours } from 'date-fns';
 import { Editor } from 'primereact/editor';
-import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { IoCheckmarkCircle, IoSearchSharp } from 'react-icons/io5';
 import { PatternFormat } from 'react-number-format';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -178,7 +184,9 @@ export default function DemandRegister() {
 
     setLoading(true);
     try {
-      const response = await api.get(`/permission/office/${role?.office_id}/responsible`);
+      const response = await api.get(
+        `/permission/office/${role?.office_id}/responsible`
+      );
 
       setResponsibles(
         response.data.map((responsible: PermissionByIdDTO, index: number) => ({
@@ -203,7 +211,8 @@ export default function DemandRegister() {
 
       if (file[0].type !== 'application/pdf') {
         return toast({
-          title: 'Apenas documento em formato de pdf é permitido, tente novamente',
+          title:
+            'Apenas documento em formato de pdf é permitido, tente novamente',
           status: 'error',
           position: 'top-right',
           duration: 3000,
@@ -232,8 +241,16 @@ export default function DemandRegister() {
         <button className="ql-bold" aria-label="Bold"></button>
         <button className="ql-italic" aria-label="Italic"></button>
         <button className="ql-underline" aria-label="Underline"></button>
-        <button className="ql-list" aria-label="Ordered List" value="ordered"></button>
-        <button className="ql-list" aria-label="Unordered List" value="bullet"></button>
+        <button
+          className="ql-list"
+          aria-label="Ordered List"
+          value="ordered"
+        ></button>
+        <button
+          className="ql-list"
+          aria-label="Unordered List"
+          value="bullet"
+        ></button>
       </span>
     );
   };
@@ -252,12 +269,21 @@ export default function DemandRegister() {
 
   return (
     <HeaderSideBar>
-      <Text color="gray.500" fontWeight="semibold" fontSize="20px" ml={[0, '28px']}>
+      <Text
+        color="gray.500"
+        fontWeight="semibold"
+        fontSize="20px"
+        ml={[0, '28px']}
+      >
         Cadastrar Demanda
       </Text>
 
       <Flex alignItems="center" justifyContent="center" as="form">
-        <Stack spacing={['16px', '30px']} mt={['24px', '40px']} w={['100%', '852px']}>
+        <Stack
+          spacing={['16px', '30px']}
+          mt={['24px', '40px']}
+          w={['100%', '852px']}
+        >
           <Box>
             <Flex
               display={'flex'}
@@ -282,7 +308,9 @@ export default function DemandRegister() {
                 format="(##) #####-####"
                 borderColor="gray.500"
                 isDisabled={verify}
-                rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
+                rightIcon={
+                  <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+                }
                 mask="_"
               />
 
@@ -338,7 +366,7 @@ export default function DemandRegister() {
                     as="a"
                     w="220px"
                     h="30px"
-                    href={`${process.env.REACT_APP_WEB}/demanda/registrar-eleitor/${values?.cellphone}`}
+                    href={`${process.env.REACT_APP_WEB}/eleitor/registrar-eleitor/${values?.cellphone}`}
                     target="_blank"
                     bg={office?.primary_color}
                     color={office?.secondary_color}
@@ -357,7 +385,9 @@ export default function DemandRegister() {
               type="text"
               error={errors?.title}
               value={values?.title}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               borderColor="gray.500"
               isDisabled={!verify || notVerify}
             />
@@ -418,7 +448,9 @@ export default function DemandRegister() {
               type="date"
               error={errors?.deadline}
               value={values?.deadline}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               borderColor="gray.500"
               css={{
                 '&::-webkit-calendar-picker-indicator': {
@@ -436,7 +468,9 @@ export default function DemandRegister() {
               color="gray.600"
               value={values?.priority}
               name="priority"
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               isDisabled={!verify || notVerify}
             >
               <option value="BAIXA">Baixa</option>
@@ -450,7 +484,9 @@ export default function DemandRegister() {
               type="date"
               error={errors?.date}
               value={values?.date}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               borderColor="gray.500"
               css={{
                 '&::-webkit-calendar-picker-indicator': {
@@ -520,20 +556,35 @@ export default function DemandRegister() {
             </Flex>
           </FormLabel> */}
           <Flex gap="24px">
-            <Text color={!verify || notVerify ? 'gray.300' : 'gray.500'}>Recurso:</Text>
+            <Text color={!verify || notVerify ? 'gray.300' : 'gray.500'}>
+              Recurso:
+            </Text>
             <HStack>
-              <Text color={!verify || notVerify ? 'gray.300' : 'gray.500'}>Não</Text>
+              <Text color={!verify || notVerify ? 'gray.300' : 'gray.500'}>
+                Não
+              </Text>
               <Switch
                 name="resource"
                 isDisabled={!verify || notVerify}
                 isChecked={resource}
                 onChange={handleResource}
               />
-              <Text color={!verify || notVerify ? 'gray.300' : 'gray.500'}>Sim</Text>
+              <Text color={!verify || notVerify ? 'gray.300' : 'gray.500'}>
+                Sim
+              </Text>
             </HStack>
           </Flex>
-          <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
-            <Button onClick={handleRegister} width="280px" isDisabled={!verify || notVerify}>
+          <Flex
+            w="100%"
+            alignItems="center"
+            justifyContent="center"
+            mt={['40px', '95px']}
+          >
+            <Button
+              onClick={handleRegister}
+              width="280px"
+              isDisabled={!verify || notVerify}
+            >
               {loading ? <Spinner color="white" /> : 'Enviar demanda'}
             </Button>
           </Flex>

@@ -1,44 +1,53 @@
 export const rolePage = [
-  { key: 0, value: 'name', label: 'Nome' },
-  { key: 1, value: 'cargo_page', label: 'Cargo' },
-  { key: 2, value: 'equipe_page', label: 'Equipe' },
-  { key: 3, value: 'eleitor_page', label: 'Eleitor' },
-  { key: 4, value: 'demandas_page', label: 'Demanda' },
-  { key: 5, value: 'tarefas_page', label: 'Tarefa' },
+  { key: 0, value: 'all', label: 'Todos' },
+  { key: 1, value: 'name', label: 'Nome' },
+  { key: 2, value: 'cargo_page', label: 'Cargo' },
+  { key: 3, value: 'equipe_page', label: 'Equipe' },
+  { key: 4, value: 'eleitor_page', label: 'Eleitor' },
+  { key: 5, value: 'demandas_page', label: 'Demanda' },
+  { key: 6, value: 'tarefas_page', label: 'Tarefa' },
 ];
 
 export const permissionPage = [
-  { key: 0, value: 'name', label: 'Nome' },
-  { key: 1, value: 'email', label: 'E-mail' },
-  { key: 2, value: 'cellphone', label: 'Telefone' },
-  { key: 3, value: 'role', label: 'Cargo' },
-  { key: 4, value: 'active', label: 'Ativos' },
+  { key: 0, value: 'all', label: 'Todos' },
+  { key: 1, value: 'name', label: 'Nome' },
+  { key: 2, value: 'email', label: 'E-mail' },
+  { key: 3, value: 'cellphone', label: 'Telefone' },
+  { key: 4, value: 'role', label: 'Cargo' },
+  { key: 5, value: 'active', label: 'Ativos' },
+  { key: 6, value: 'birthdate', label: 'Nascimento' },
+
 ];
 
 export const voterPage = [
-  { key: 0, value: 'name', label: 'Nome' },
-  { key: 1, value: 'reference', label: 'Referência' },
-  { key: 2, value: 'email', label: 'E-mail' },
-  { key: 3, value: 'birthdate', label: 'Nascimento' },
-  { key: 4, value: 'cellphone', label: 'Telefone' },
-  { key: 5, value: 'city', label: 'Cidade' },
-  { key: 6, value: 'neighborhood', label: 'Bairro' },
-  { key: 7, value: 'creator', label: 'Criador' },
+  { key: 0, value: 'all', label: 'Todos' },
+  { key: 1, value: 'name', label: 'Nome' },
+  { key: 2, value: 'reference', label: 'Referência' },
+  { key: 3, value: 'email', label: 'E-mail' },
+  { key: 4, value: 'birthdate', label: 'Nascimento' },
+  { key: 5, value: 'cellphone', label: 'Telefone' },
+  { key: 6, value: 'city', label: 'Cidade' },
+  { key: 7, value: 'neighborhood', label: 'Bairro' },
+  { key: 8, value: 'creator', label: 'Criador' },
+
 ];
 
 export const demandPage = [
-  { key: 0, value: 'title', label: 'Título' },
-  { key: 1, value: 'voter', label: 'Eleitor' },
-  { key: 2, value: 'deadline', label: 'Prazo' },
-  { key: 3, value: 'city', label: 'Cidade' },
-  { key: 4, value: 'neighborhood', label: 'Bairro' },
-  { key: 5, value: 'creator', label: 'Criador' },
+  { key: 0, value: 'all', label: 'Todos' },
+  { key: 1, value: 'title', label: 'Título' },
+  { key: 2, value: 'voter', label: 'Eleitor' },
+  { key: 3, value: 'deadline', label: 'Prazo' },
+  { key: 4, value: 'city', label: 'Cidade' },
+  { key: 5, value: 'neighborhood', label: 'Bairro' },
+  { key: 6, value: 'creator', label: 'Criador' },
+  
 ];
 
 export const taskPage = [
-  { key: 0, value: 'id', label: 'Id' },
-  { key: 1, value: 'title', label: 'Título' },
-  { key: 2, value: 'status', label: 'Status' },
-  { key: 3, value: 'priority', label: 'Prioridade' },
-  { key: 4, value: 'voter', label: 'Eleitor' },
+  { key: 0, value: 'all', label: 'Todos' },
+  { key: 1, value: 'id', label: 'Id' },
+  { key: 2, value: 'title', label: 'Título' },
+  { key: 3, value: 'status', label: 'Status' },
+  { key: 4, value: 'priority', label: 'Prioridade' },
+  { key: 5, value: 'voter', label: 'Eleitor' },
 ];
