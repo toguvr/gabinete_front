@@ -105,6 +105,10 @@ export default function Tarefa() {
     }
   }, [auth.office.id]);
 
+  useEffect(() => {
+    setFilterField('');
+  }, [selectFilter]);
+
   return (
     <HeaderSideBar>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -164,7 +168,7 @@ export default function Tarefa() {
               })}
             </Select>
 
-            {selectFilter === 'id' || selectFilter === 'title' || selectFilter === 'voter' ? (
+            {selectFilter === 'id' || selectFilter === 'title' || selectFilter === 'voter' || selectFilter === 'all' ? (
               <Input
                 maxW="600px"
                 type="text"
@@ -260,6 +264,8 @@ export default function Tarefa() {
                 taskList
                   .filter((currentValue: any) => {
                     switch (selectFilter) {
+                      case 'all':
+                        return currentValue;
                       case 'id':
                         if (filterField) {
                           return (
