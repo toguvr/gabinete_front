@@ -24,6 +24,8 @@ import RoleEdit from '../pages/RoleEdit';
 import RoleRegister from '../pages/RoleRegister';
 import Roles from '../pages/Roles';
 import Gabinete from '../pages/Office';
+import SignUpOwner from '../pages/SignUpOwner';
+import SignUpOffice from '../pages/SignUpOffice';
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -126,6 +128,8 @@ export default function AppRoutes() {
       <Route element={<AuthenticatedRoutes isPrivate={false} />}>
         <Route path="/" element={<Signin />} />
         <Route path="/esqueci-senha" element={<ForgetPassword />} />
+        <Route path="/cadastrar-proprietario" element={<SignUpOwner />} />
+        <Route path="/cadastrar-gabinete" element={<SignUpOffice />} />
       </Route>
       <Route path="/redefinir-senha" element={<RedefinePassword />} />
       <Route path="*" element={<NotFound />} />
