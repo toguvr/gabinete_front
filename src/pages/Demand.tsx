@@ -50,6 +50,7 @@ export default function Demand() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectFilter, setSelectFilter] = useState('title');
   const [filterField, setFilterField] = useState('');
+  const [filterFieldDateMask, setFilterFieldDateMask] = useState('');
   const [errors, setErrors] = useState({} as StateProps);
 
   const openDialog = (task_id: string) => {
@@ -85,6 +86,29 @@ export default function Demand() {
       setLoading(false);
       onClose();
     }
+  };
+
+  const handleDateOfBirthChange = (input: any) => {
+    const dateRegEx = /^(\d{1,2})(\/)?(\d{1,2})?(\d{0,4})?$/;
+    const match = input.match(dateRegEx);
+
+    if (match) {
+      let formattedDate = match[1];
+
+      if (match[3]) {
+        formattedDate += '/' + match[3];
+      }
+
+      if (match[4]) {
+        formattedDate += '/' + match[4];
+      }
+
+      setFilterFieldDateMask(formattedDate);
+    } else {
+      setFilterFieldDateMask(input);
+    }
+
+    setFilterField(input);
   };
 
   async function getTasks() {
@@ -191,22 +215,50 @@ export default function Demand() {
           })}
         </Select>
 
-        <Input
-          maxW="600px"
-          type="text"
-          name="filterField"
-          placeholder="Buscar"
-          error={errors?.filterField}
-          value={filterField}
-          mb="24px"
-          onChange={(e) => {
-            setFilterField(e.target.value);
-          }}
-          borderColor="gray.500"
-          rightIcon={
-            <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-          }
-        />
+        {selectFilter === 'deadline' ? (
+          <Input
+            maxW="600px"
+            type="text"
+            name="filterField"
+            placeholder="Buscar"
+            error={errors?.filterField}
+            value={
+              selectFilter === 'deadline' ? filterFieldDateMask : filterField
+            }
+            mb="24px"
+            onChange={(e) => {
+              const inputValue = e.target.value;
+
+              if (selectFilter === 'deadline') {
+                handleDateOfBirthChange(inputValue);
+              } else {
+                setFilterField(inputValue);
+              }
+            }}
+            pattern="\d*"
+            borderColor="gray.500"
+            rightIcon={
+              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+            }
+          />
+        ) : (
+          <Input
+            maxW="600px"
+            type="text"
+            name="filterField"
+            placeholder="Buscar"
+            error={errors?.filterField}
+            value={filterField}
+            mb="24px"
+            onChange={(e) => {
+              setFilterField(e.target.value);
+            }}
+            borderColor="gray.500"
+            rightIcon={
+              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+            }
+          />
+        )}
       </Flex>
       <Box
         maxH="calc(100vh - 340px)"
