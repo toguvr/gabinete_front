@@ -234,12 +234,7 @@ export default function Demand() {
             mb="24px"
             onChange={(e) => {
               const inputValue = e.target.value;
-
-              if (selectFilter === 'deadline') {
-                handleDateOfBirthChange(inputValue);
-              } else {
-                setFilterField(inputValue);
-              }
+              handleDateOfBirthChange(inputValue);
             }}
             pattern="\d*"
             borderColor="gray.500"

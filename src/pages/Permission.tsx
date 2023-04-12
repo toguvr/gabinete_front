@@ -206,8 +206,6 @@ export default function Permission() {
     }
   };
 
-  console.log('filterField', filterField);
-
   useEffect(() => {
     setFilterField('');
   }, [selectFilter]);
@@ -345,12 +343,7 @@ export default function Permission() {
             mb="24px"
             onChange={(e) => {
               const inputValue = e.target.value;
-
-              if (selectFilter === 'birthdate') {
-                handleDateOfBirthChange(inputValue);
-              } else {
-                setFilterField(inputValue);
-              }
+              handleDateOfBirthChange(inputValue);
             }}
             pattern="\d*"
             borderColor="gray.500"
