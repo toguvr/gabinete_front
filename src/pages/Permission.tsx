@@ -329,8 +329,14 @@ export default function Permission() {
         ) : selectFilter === 'birthdate' ? (
           <Input
             maxW="600px"
-            type="text"
             name="filterField"
+            type="tel"
+            inputMode="numeric"
+            onKeyPress={(e) => {
+              if (!/\d/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
             placeholder="Buscar"
             error={errors?.filterField}
             value={

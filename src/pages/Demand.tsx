@@ -218,7 +218,13 @@ export default function Demand() {
         {selectFilter === 'deadline' ? (
           <Input
             maxW="600px"
-            type="text"
+            type="tel"
+            inputMode="numeric"
+            onKeyPress={(e) => {
+              if (!/\d/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
             name="filterField"
             placeholder="Buscar"
             error={errors?.filterField}
