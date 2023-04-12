@@ -1,44 +1,5 @@
-import {
-  Avatar,
-  Flex,
-  Icon,
-  Progress,
-  Spinner,
-  Text,
-  Input as ChakraInput,
-  useToast,
-  Image,
-  VStack,
-  Box,
-  Select,
-  Button,
-} from '@chakra-ui/react';
-import {
-  IoAddCircleSharp,
-  IoCamera,
-  IoEyeOffOutline,
-  IoEyeOutline,
-  IoLockClosedOutline,
-} from 'react-icons/io5';
-import resize from '../components/Resize';
-import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
-import api from '../services/api';
-import Input from '../components/Form/Input';
-import { StateProps } from '../dtos';
-import * as Yup from 'yup';
-import getValidationErrors from '../utils/validationError';
-import { PatternFormat } from 'react-number-format';
-import { useNavigate } from 'react-router-dom';
+import { Flex, Text, Image } from '@chakra-ui/react';
 import NotPayImage from '../assets/notpay.png';
-
-interface SignUpProps {
-  name: string;
-  gender: string;
-  email: string;
-  password: string;
-  cellphoneMask: string;
-  cellphone: string;
-}
 
 export default function NotPay() {
   return (
