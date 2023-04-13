@@ -104,11 +104,11 @@ export default function ForgetPassword() {
       flexDirection={'column'}
       bg="linear-gradient(180deg, #0084DE 0%, #004279 100%)"
     >
-      <Box height="40px" margin={'0 4px 40px 0'}>
+      {/* <Box height="40px" margin={'0 4px 40px 0'}>
         <Image src={LogoWhite} alt="Logo" />
-      </Box>
+      </Box> */}
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Box rounded={'lg'} bg="white" boxShadow={'lg'} p={['20px', '104px 80px 88px']}>
+        <Box rounded={'sm'} bg="white" boxShadow={'lg'} p={['20px', '104px 80px 88px']}>
           <Heading color="gray.600" size="md" display={'flex'} justifyContent="center">
             Esqueceu sua senha?
           </Heading>
