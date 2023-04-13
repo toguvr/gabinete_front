@@ -50,6 +50,7 @@ export default function Permission() {
   const [permissionToDeleteId, setPermissionToDeleteId] = useState('');
   const [selectFilter, setSelectFilter] = useState('name');
   const [filterField, setFilterField] = useState('');
+  const [filterFieldDateMask, setFilterFieldDateMask] = useState('');
   const [errors, setErrors] = useState({} as StateProps);
   const [selectPageFilter, setSelectPageFilter] = useState('');
   const [selectRoleFilter, setSelectRoleFilter] = useState('');
@@ -104,7 +105,6 @@ export default function Permission() {
       });
       getPermissions();
       setPermissionToDeleteId('');
-
     } catch (err: any) {
       return toast({
         title:
@@ -124,8 +124,33 @@ export default function Permission() {
   const handleEditPermission = (permission_id: string) => {
     navigate(`/equipe/${permission_id}`);
   };
+  const handleDateOfBirthChange = (input: any) => {
+    const dateRegEx = /^(\d{1,2})(\/)?(\d{1,2})?(\d{0,4})?$/;
+    const match = input.match(dateRegEx);
 
-  const handleUpdateActive = async (permission_id: string, permission_active: boolean) => {
+    if (match) {
+      let formattedDate = match[1];
+
+      if (match[3]) {
+        formattedDate += '/' + match[3];
+      }
+
+      if (match[4]) {
+        formattedDate += '/' + match[4];
+      }
+
+      setFilterFieldDateMask(formattedDate);
+    } else {
+      setFilterFieldDateMask(input);
+    }
+
+    setFilterField(input);
+  };
+
+  const handleUpdateActive = async (
+    permission_id: string,
+    permission_active: boolean
+  ) => {
     setErrors({});
 
     try {
@@ -186,7 +211,12 @@ export default function Permission() {
   }, [selectFilter]);
   return (
     <HeaderSideBar>
-      <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose} isCentered>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
         {/* <AlertDialogOverlay > */}
         <AlertDialogContent mx="12px">
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -194,8 +224,8 @@ export default function Permission() {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            Essa ação é irreversível, ao deletar não será possível desfazer. Você deseja apagar
-            mesmo assim?
+            Essa ação é irreversível, ao deletar não será possível desfazer.
+            Você deseja apagar mesmo assim?
           </AlertDialogBody>
 
           <AlertDialogFooter>
@@ -218,7 +248,6 @@ export default function Permission() {
         gap={['20px', '0']}
         alignItems={['center', 'flex-start']}
       >
-
         <Text
           color="gray.500"
           fontWeight="semibold"
@@ -226,7 +255,9 @@ export default function Permission() {
           ml={[0, '28px']}
         >
           Equipe
-          {loading && <Spinner color={office?.primary_color} ml="4" size="sm" />}
+          {loading && (
+            <Spinner color={office?.primary_color} ml="4" size="sm" />
+          )}
         </Text>
         {role?.equipe_page > 1 && (
           <Button
@@ -293,6 +324,33 @@ export default function Permission() {
               </option>
             ))}
           </Select>
+        ) : selectFilter === 'birthdate' ? (
+          <Input
+            maxW="600px"
+            name="filterField"
+            type="tel"
+            inputMode="numeric"
+            onKeyPress={(e) => {
+              if (!/\d/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
+            placeholder="Buscar"
+            error={errors?.filterField}
+            value={
+              selectFilter === 'birthdate' ? filterFieldDateMask : filterField
+            }
+            mb="24px"
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              handleDateOfBirthChange(inputValue);
+            }}
+            pattern="\d*"
+            borderColor="gray.500"
+            rightIcon={
+              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+            }
+          />
         ) : (
           <Input
             maxW="600px"
@@ -306,7 +364,9 @@ export default function Permission() {
               setFilterField(e.target.value);
             }}
             borderColor="gray.500"
-            rightIcon={<Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />}
+            rightIcon={
+              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+            }
           />
         )}
       </Flex>
@@ -442,7 +502,12 @@ export default function Permission() {
                       >
                         <Switch
                           isChecked={permission?.active}
-                          onChange={() => handleUpdateActive(permission?.id, permission?.active)}
+                          onChange={() =>
+                            handleUpdateActive(
+                              permission?.id,
+                              permission?.active
+                            )
+                          }
                         />
                       </Td>
                       <Td
@@ -528,7 +593,9 @@ export default function Permission() {
                           {role?.equipe_page > 1 && (
                             <>
                               <IconButton
-                                onClick={() => handleEditPermission(permission?.id)}
+                                onClick={() =>
+                                  handleEditPermission(permission?.id)
+                                }
                                 aria-label="Open navigation"
                                 variant="unstyled"
                                 minW={6}
