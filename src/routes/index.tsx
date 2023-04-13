@@ -24,6 +24,7 @@ import RoleEdit from '../pages/RoleEdit';
 import RoleRegister from '../pages/RoleRegister';
 import Roles from '../pages/Roles';
 import Gabinete from '../pages/Office';
+import NotOffice from '../pages/NotOffice';
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -128,6 +129,7 @@ export default function AppRoutes() {
         <Route path="/esqueci-senha" element={<ForgetPassword />} />
       </Route>
       <Route path="/redefinir-senha" element={<RedefinePassword />} />
+      <Route path="/sem-gabinete" element={<NotOffice />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
