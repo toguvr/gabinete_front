@@ -1,7 +1,10 @@
-import { Flex, Text, Image } from '@chakra-ui/react';
+import { Flex, Text, Image, Button } from '@chakra-ui/react';
 import NotPayImage from '../assets/notpay.png';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function NotPay() {
+  const { signOut } = useAuth();
+
   return (
     <Flex
       minH={'100vh'}
@@ -25,6 +28,18 @@ export default function NotPay() {
           O pagamento do seu plano não foi identificado. Peça ao proprietário do
           Gabinete para regularizar.
         </Text>
+        <Button
+          onClick={signOut}
+          width="100%"
+          bg="blue.600"
+          color="white"
+          mt="24px"
+          _hover={{
+            bg: 'blue.700',
+          }}
+        >
+          Voltar
+        </Button>
       </Flex>
     </Flex>
   );
