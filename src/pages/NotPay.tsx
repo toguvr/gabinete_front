@@ -1,9 +1,16 @@
 import { Flex, Text, Image, Button } from '@chakra-ui/react';
 import NotPayImage from '../assets/notpay.png';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function NotPay() {
   const { signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    signOut();
+    navigate('/');
+  };
 
   return (
     <Flex
@@ -29,7 +36,7 @@ export default function NotPay() {
           Gabinete para regularizar.
         </Text>
         <Button
-          onClick={signOut}
+          onClick={handleSignOut}
           width="100%"
           bg="blue.600"
           color="white"
