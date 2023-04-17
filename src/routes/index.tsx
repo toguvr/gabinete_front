@@ -59,8 +59,12 @@ const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
     privateRoute.pathname.includes(location.pathname)
   );
 
-  if (location.pathname !== '/sem-vinculo' && isPrivate && !office.id) {
-    return <Navigate to={'/sem-vinculo'} replace />;
+  if (location.pathname !== '/sem-vinculo' && isPrivate && !office) {
+    return <Navigate to={'/sem-gabinete'} replace />;
+  }
+
+  if (Object.keys(office).length !== 0 && isPrivate && !office.active) {
+    return <Navigate to={'/pagamento-nao-efetuado'} replace />;
   }
 
   if (
@@ -73,7 +77,7 @@ const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
   }
 
   const userMainRoute = () => {
-    return filteredRoutes?.pathname || '/sem-vinculo';
+    return filteredRoutes?.pathname || '/sem-gabinete';
   };
 
   return isAuthenticated === isPrivate ? (
@@ -125,18 +129,17 @@ export default function AppRoutes() {
         <Route path="/trocar-senha" element={<ChangePassword />} />
         <Route path="/sem-permissao" element={<NotPermission />} />
         <Route path="/sem-vinculo" element={<NoBond />} />
+        <Route path="/sem-gabinete" element={<NotOffice />} />
+        <Route path="/cadastrar-gabinete" element={<SignUpOffice />} />
+        <Route path="/pagamento-nao-efetuado" element={<NotPay />} />
       </Route>
 
       <Route element={<AuthenticatedRoutes isPrivate={false} />}>
         <Route path="/" element={<Signin />} />
         <Route path="/esqueci-senha" element={<ForgetPassword />} />
         <Route path="/cadastrar-proprietario" element={<SignUpOwner />} />
-        <Route path="/cadastrar-gabinete" element={<SignUpOffice />} />
       </Route>
       <Route path="/redefinir-senha" element={<RedefinePassword />} />
-      <Route path="/pagamento-nao-efetuado" element={<NotPay />} />
-
-      <Route path="/sem-gabinete" element={<NotOffice />} />
 
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -19,6 +19,7 @@ import { StateProps } from '../dtos';
 import * as Yup from 'yup';
 import getValidationErrors from '../utils/validationError';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 interface SignUpOfficeProps {
   name: string;
@@ -37,6 +38,8 @@ export default function SignUpOffice() {
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { updateOffice } = useAuth();
+  const [logo, setLogo] = useState('');
 
   const handleSignUp = useCallback(
     async (e: FormEvent) => {
@@ -57,7 +60,7 @@ export default function SignUpOffice() {
         });
 
         const formData = new FormData();
-        formData.append('logo_url', values.logo_url);
+        formData.append('logo', logo);
         formData.append('name', values.name);
         formData.append('city', values.city);
         formData.append('state', values.state);
@@ -65,7 +68,8 @@ export default function SignUpOffice() {
         formData.append('primary_color', values.primary_color);
         formData.append('secondary_color', values.secondary_color);
 
-        await api.post('/office', formData);
+        const response = await api.post('/office', formData);
+        updateOffice(response.data);
 
         toast({
           title: 'Cadastrado com sucesso',
@@ -110,29 +114,9 @@ export default function SignUpOffice() {
   );
 
   const callback = async (image: any) => {
-    setLoadingPhoto(true);
-
-    try {
-      setValues({ ...values, logo_url: image });
-      console.log('values.logo_url222', values.logo_url);
-      return toast({
-        title: 'Logo atualizada!',
-        status: 'success',
-        position: 'top-right',
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (err) {
-      toast({
-        title: 'Logo não atualizada, tente novamente.',
-        status: 'error',
-        position: 'top-right',
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setLoadingPhoto(false);
-    }
+    setLogo(image);
+    const url = URL.createObjectURL(image);
+    setValues({ ...values, logo_url: url });
   };
 
   const handleLogoChange = useCallback(

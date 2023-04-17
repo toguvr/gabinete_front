@@ -198,24 +198,10 @@ export default function Signin() {
               direction={{ base: 'column', sm: 'row' }}
               w={'100%'}
               justifyContent={'flex-end'}
-              mt="24px"
-            >
-              <Link
-                href="/cadastrar-proprietario"
-                color={'blue.600'}
-                fontSize={'14px'}
-              >
-                Cadastre Proprietário
-              </Link>
-            </Flex>
-            <Flex
-              direction={{ base: 'column', sm: 'row' }}
-              w={'100%'}
-              justifyContent={'flex-end'}
               mt="8px"
             >
               <Link
-                href="/cadastrar-gabinete"
+                href="/cadastrar-proprietario"
                 color={'blue.600'}
                 fontSize={'14px'}
               >
