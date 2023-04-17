@@ -24,10 +24,10 @@ import RoleEdit from '../pages/RoleEdit';
 import RoleRegister from '../pages/RoleRegister';
 import Roles from '../pages/Roles';
 import Gabinete from '../pages/Office';
+import NotPay from '../pages/NotPay';
 import SignUpOwner from '../pages/SignUpOwner';
 import SignUpOffice from '../pages/SignUpOffice';
 import NotOffice from '../pages/NotOffice';
-
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -134,7 +134,10 @@ export default function AppRoutes() {
         <Route path="/cadastrar-gabinete" element={<SignUpOffice />} />
       </Route>
       <Route path="/redefinir-senha" element={<RedefinePassword />} />
+      <Route path="/pagamento-nao-efetuado" element={<NotPay />} />
+
       <Route path="/sem-gabinete" element={<NotOffice />} />
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
