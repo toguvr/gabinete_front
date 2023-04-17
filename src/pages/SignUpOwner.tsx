@@ -47,6 +47,9 @@ export default function SignUpOwner() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const phoneRegExp =
+    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+
   const handleSignUp = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
@@ -60,20 +63,37 @@ export default function SignUpOwner() {
             .email('Email inválido')
             .required('Email obrigatório'),
           password: Yup.string().required('Senha obrigatória'),
+          gender: Yup.string().required('Gênero obrigatório'),
+          cellphone: Yup.string()
+            .matches(phoneRegExp, 'Número de celular inválido.')
+            .required('Número de celular obrigatório'),
         });
 
         await schema.validate(values, {
           abortEarly: false,
         });
 
-        return toast({
+        const { name, email, gender, cellphone, password } = values;
+
+        const body = {
+          name,
+          email,
+          password,
+          gender,
+          cellphone,
+        };
+
+        await api.post('/users', body);
+
+        toast({
           title: 'Cadastrado com sucesso',
-          description: 'Você conseguiu se cadastrar.',
+          description: 'Você realizou o cadastro com sucesso.',
           status: 'success',
           duration: 3000,
           isClosable: true,
           position: 'top-right',
         });
+        return navigate('/cadastrar-gabinete');
       } catch (err: any) {
         if (err instanceof Yup.ValidationError) {
           setErrors(getValidationErrors(err));
@@ -107,66 +127,12 @@ export default function SignUpOwner() {
     [values]
   );
 
-  const callback = async (image: any) => {
-    setLoadingPhoto(true);
-    const formData = new FormData();
-    formData.append('avatar', image);
-
-    try {
-      const response = await api.patch('/users/avatar', formData);
-      // setValues(response.data);
-      // updateUser(response.data);
-
-      return toast({
-        title: 'Foto atualizada!',
-        status: 'success',
-        position: 'top-right',
-        duration: 3000,
-        isClosable: true,
-      });
-    } catch (err) {
-      toast({
-        title: 'Foto não atualizada, tente novamente.',
-        status: 'error',
-        position: 'top-right',
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setLoadingPhoto(false);
-    }
-  };
-
-  const handleAvatarChange = useCallback(
-    async (e: ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files) {
-        const file = e.target.files;
-
-        if (file.length === 0) {
-          return; // se não selecionar nenhum file
-        }
-
-        // const reader = new FileReader();
-
-        // reader.onloadend = () => {
-        //   setUserData({ ...userData, file, preview: reader.result });
-        // };
-
-        // reader.readAsDataURL(file[0]);
-
-        // funcao de resize
-        resize(file[0], callback);
-      }
-    },
-    []
-  );
-
   const handleViewPassword = () => setShowPassword(!showPassword);
 
   const handleKeyPress = (event: any) => {
-    // if (event.key === 'Enter') {
-    //   handleSignUp(event);
-    // }
+    if (event.key === 'Enter') {
+      handleSignUp(event);
+    }
   };
 
   return (
@@ -192,40 +158,7 @@ export default function SignUpOwner() {
         <Text fontSize={'24px'} color="gray.500" fontWeight="600" mt="24px">
           Cadastrar Proprietário
         </Text>
-        <Flex justifyContent={'center'} position="relative" mt="48px">
-          <label htmlFor="avatar">
-            <Avatar bg="gray.100" position="unset" size="xl" />
-            <Flex
-              position="absolute"
-              justify="center"
-              align="center"
-              borderRadius="full"
-              right="0"
-              bottom="0"
-              width="32px"
-              height="32px"
-              cursor={'pointer'}
-            >
-              {loadingPhoto ? (
-                <Spinner />
-              ) : (
-                <Icon
-                  as={IoAddCircleSharp}
-                  boxSize={5}
-                  color="blue.500"
-                  w={8}
-                  h={8}
-                />
-              )}
-            </Flex>
-            <ChakraInput
-              type="file"
-              onChange={handleAvatarChange}
-              id="avatar"
-              display="none"
-            />
-          </label>
-        </Flex>
+
         <VStack spacing={6} maxW="850px" w="100%" mt="32px">
           <Input
             labelColor="gray.500"
@@ -326,7 +259,7 @@ export default function SignUpOwner() {
           />
         </VStack>
         <Button
-          onClick={() => navigate('/cadastrar-gabinete')}
+          onClick={handleSignUp}
           bg={'blue.600'}
           color={'white'}
           _hover={{
