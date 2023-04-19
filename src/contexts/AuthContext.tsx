@@ -11,6 +11,7 @@ import { key } from '../config/key';
 import { OfficeDTO, UserDTO } from '../dtos';
 import { RoleDTO } from '../dtos/index';
 import api from '../services/api';
+import { PermissionByIdDTO } from '../dtos';
 
 interface SignInCredentials {
   email: string;
@@ -22,6 +23,7 @@ interface AuthContextData {
   updateUser: (user: UserDTO) => Promise<void>;
   updateRole: (role: RoleDTO) => Promise<void>;
   updateOffice: (office: OfficeDTO) => Promise<void>;
+  bindPermissions: (permissions: PermissionByIdDTO[]) => void;
   signOut: () => void;
   isAuthenticated: boolean;
   user: UserDTO;
@@ -101,6 +103,15 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   //   loadStorageData();
   // }, [user?.id]);
 
+  const bindPermissions = (permissions: PermissionByIdDTO[]) => {
+    if (Array.isArray(permissions) && permissions.length > 0) {
+      localStorage.setItem(key.office, JSON.stringify(permissions[0]?.office));
+      localStorage.setItem(key.role, JSON.stringify(permissions[0]?.role));
+      setRole(permissions[0]?.role);
+      setOffice(permissions[0]?.office);
+    }
+  };
+
   const signIn = useCallback(
     async ({ email, password }: { email: string; password: string }) => {
       const response = await api.post('/sessions', {
@@ -113,15 +124,8 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem(key.refreshToken, refresh_token);
       localStorage.setItem(key.token, token);
       localStorage.setItem(key.user, JSON.stringify(user));
-      if (Array.isArray(permissions) && permissions.length > 0) {
-        localStorage.setItem(
-          key.office,
-          JSON.stringify(permissions[0]?.office)
-        );
-        localStorage.setItem(key.role, JSON.stringify(permissions[0]?.role));
-        setRole(permissions[0]?.role);
-        setOffice(permissions[0]?.office);
-      }
+
+      bindPermissions(permissions);
 
       api.defaults.headers.authorization = `Bearer ${token}`;
 
@@ -157,6 +161,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         updateOffice,
         role,
         office,
+        bindPermissions,
       }}
     >
       {children}

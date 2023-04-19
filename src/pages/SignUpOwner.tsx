@@ -28,6 +28,7 @@ import * as Yup from 'yup';
 import getValidationErrors from '../utils/validationError';
 import { PatternFormat } from 'react-number-format';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 interface SignUpProps {
   name: string;
@@ -46,6 +47,7 @@ export default function SignUpOwner() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { signIn } = useAuth();
 
   const phoneRegExp =
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -84,6 +86,10 @@ export default function SignUpOwner() {
         };
 
         await api.post('/users', body);
+        await signIn({
+          email: values.email,
+          password: values.password,
+        });
 
         toast({
           title: 'Cadastrado com sucesso',
