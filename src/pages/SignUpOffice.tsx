@@ -33,12 +33,12 @@ interface SignUpOfficeProps {
 
 export default function SignUpOffice() {
   const [values, setValues] = useState({} as SignUpOfficeProps);
-  const [loadingPhoto, setLoadingPhoto] = useState(false);
+  const [loadingPhoto] = useState(false);
   const toast = useToast();
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { updateOffice } = useAuth();
+  const { bindPermissions } = useAuth();
   const [logo, setLogo] = useState('');
 
   const handleSignUp = useCallback(
@@ -69,7 +69,8 @@ export default function SignUpOffice() {
         formData.append('secondary_color', values.secondary_color);
 
         const response = await api.post('/office', formData);
-        updateOffice(response.data);
+
+        bindPermissions([response.data]);
 
         toast({
           title: 'Cadastrado com sucesso',
@@ -110,7 +111,7 @@ export default function SignUpOffice() {
         setLoading(false);
       }
     },
-    [values]
+    [values, logo, bindPermissions, toast, navigate]
   );
 
   const callback = async (image: any) => {
@@ -277,7 +278,7 @@ export default function SignUpOffice() {
               error={errors?.primary_color}
               value={values?.primary_color}
               onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
+                setValues({ ...values, primary_color: e.target.value })
               }
               borderColor="gray.500"
               w="100%"
@@ -291,7 +292,7 @@ export default function SignUpOffice() {
               error={errors?.secondary_color}
               value={values?.secondary_color}
               onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
+                setValues({ ...values, secondary_color: e.target.value })
               }
               borderColor="gray.500"
               w="100%"

@@ -46,7 +46,7 @@ export const privateRoute = [
 ];
 
 const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
-  const { isAuthenticated, role, office, updateRole } = useAuth();
+  const { isAuthenticated, role, office } = useAuth();
   const currentRole = role as any;
 
   const filteredRoutes = privateRoute.find((route) => {
@@ -55,29 +55,39 @@ const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
 
   const location = useLocation();
 
-  const isMyCurrentRouteInPrivateRoutes = privateRoute.find((privateRoute) =>
-    privateRoute.pathname.includes(location.pathname)
-  );
+  // const isMyCurrentRouteInPrivateRoutes = privateRoute.find((privateRoute) =>
+  //   privateRoute.pathname.includes(location.pathname)
+  // );
 
-  if (location.pathname !== '/sem-vinculo' && isPrivate && !office) {
+  if (
+    location.pathname !== '/sem-gabinete' &&
+    location.pathname !== '/cadastrar-gabinete' &&
+    isAuthenticated &&
+    !office.id
+  ) {
     return <Navigate to={'/sem-gabinete'} replace />;
   }
 
-  if (Object.keys(office).length !== 0 && isPrivate && !office.active) {
+  if (
+    location.pathname !== '/pagamento-nao-efetuado' &&
+    Object.keys(office).length !== 0 &&
+    isAuthenticated &&
+    !office.active
+  ) {
     return <Navigate to={'/pagamento-nao-efetuado'} replace />;
   }
 
-  if (
-    location.pathname !== '/sem-permissao' &&
-    isPrivate &&
-    isMyCurrentRouteInPrivateRoutes &&
-    currentRole[isMyCurrentRouteInPrivateRoutes?.permissionName] === 0
-  ) {
-    return <Navigate to={'/sem-permissao'} replace />;
-  }
+  // if (
+  //   location.pathname !== '/sem-permissao' &&
+  //   isPrivate &&
+  //   isMyCurrentRouteInPrivateRoutes &&
+  //   currentRole[isMyCurrentRouteInPrivateRoutes?.permissionName] === 0
+  // ) {
+  //   return <Navigate to={'/sem-permissao'} replace />;
+  // }
 
   const userMainRoute = () => {
-    return filteredRoutes?.pathname || '/sem-gabinete';
+    return filteredRoutes?.pathname || '/sem-permissao';
   };
 
   return isAuthenticated === isPrivate ? (
