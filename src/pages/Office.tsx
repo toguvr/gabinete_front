@@ -308,33 +308,6 @@ export default function Gabinete() {
                 })}
               </Select>
             </Box>
-
-            {/* <Input
-              labelColor="gray.500"
-              label="Estado:"
-              placeholder="Estado do Gabinete"
-              name="state"
-              type="text"
-              error={errors?.state}
-              value={values?.state}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
-              borderColor="gray.500"
-            /> */}
-            {/* <Input
-              labelColor="gray.500"
-              label="Cidade:"
-              placeholder="Cidade do Gabinete"
-              name="city"
-              type="text"
-              error={errors?.city}
-              value={values?.city}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
-              borderColor="gray.500"
-            /> */}
           </Flex>
           <Box w="100%">
             <Text color="gray.500" fontWeight="400" margin="0">
