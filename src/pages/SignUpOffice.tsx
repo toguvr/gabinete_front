@@ -9,6 +9,8 @@ import {
   Icon,
   VStack,
   Button,
+  Box,
+  Select,
 } from '@chakra-ui/react';
 import { useCallback, useState, ChangeEvent, FormEvent } from 'react';
 import { IoAddCircleSharp } from 'react-icons/io5';
@@ -257,21 +259,28 @@ export default function SignUpOffice() {
               borderColor="gray.500"
             />
           </Flex>
-          <Input
-            color="gray.500"
-            label="Cargo:"
-            placeholder="Cargo do líder"
-            name="owner_position"
-            type="text"
-            error={errors?.owner_position}
-            value={values?.owner_position}
-            onChange={(e) =>
-              setValues({ ...values, [e.target.name]: e.target.value })
-            }
-            borderColor="gray.500"
-            w="100%"
-            onKeyPress={handleKeyPress}
-          />
+          <Box w="100%">
+            <Text color="gray.500" fontWeight="400" margin="0">
+              Cargo:
+            </Text>
+            <Select
+              placeholder="Cargo do líder"
+              borderColor="gray.500"
+              bg="gray.50"
+              _placeholder={{ color: 'gray.500' }}
+              color="gray.600"
+              value={values?.owner_position}
+              name="owner_position"
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+            >
+              <option value="DeputadoEstadual">Desputado Estadual</option>
+              <option value="Vereador">Vereador</option>
+              <option value="Outro">Outro</option>
+            </Select>
+          </Box>
+
           <Flex w="100%" gap={['20px', '44px']}>
             <Input
               color="gray.500"
