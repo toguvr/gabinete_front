@@ -446,6 +446,7 @@ export default function Roles() {
                                   color="gray.600"
                                 />
                               }
+                              isDisabled={roleData?.name === 'Proprietário'}
                             />
 
                             <IconButton
@@ -461,6 +462,7 @@ export default function Roles() {
                                   color="gray.600"
                                 />
                               }
+                              isDisabled={roleData?.name === 'Proprietário'}
                             />
                           </HStack>
                         </Td>
