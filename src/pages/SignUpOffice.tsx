@@ -32,7 +32,10 @@ interface SignUpOfficeProps {
 }
 
 export default function SignUpOffice() {
-  const [values, setValues] = useState({} as SignUpOfficeProps);
+  const [values, setValues] = useState({
+    primary_color: '#0066AA',
+    secondary_color: '#ffffff',
+  } as SignUpOfficeProps);
   const [loadingPhoto] = useState(false);
   const toast = useToast();
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
