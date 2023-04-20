@@ -76,7 +76,8 @@ export interface TaskPropsDTO {
   date: Date;
   status: string;
   priority: string;
-  responsible: string;
+  responsible: UserDTO;
+  responsible_id: string;
   creator: UserDTO;
   office: string;
   resources: boolean;
