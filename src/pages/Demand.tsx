@@ -482,104 +482,106 @@ export default function Demand() {
       <Text mt="36px" color="gray.500">
         Filtrar por:
       </Text>
-      <Flex gap={['12px', '24px']}>
-        <Select
-          w="220px"
-          borderColor="gray.500"
-          name="filterType"
-          value={selectFilter}
-          onChange={(e) => {
-            setSelectFilter(e.target.value);
-          }}
-        >
-          {demandPage.map((task) => {
-            return (
-              <option key={task?.key} value={task?.value}>
-                {task?.label}
-              </option>
-            );
-          })}
-        </Select>
-
-        {selectFilter === 'responsible' ? (
+      <Flex justifyContent="space-between">
+        <Flex gap={['12px', '24px']}>
           <Select
+            w="220px"
             borderColor="gray.500"
-            bg="gray.50"
-            _placeholder={{ color: 'gray.500' }}
-            color="gray.600"
-            maxW="600px"
-            name="selectResponsibleFilter"
-            value={
-              responsibles.find(
-                (responsible) => responsible.label === responsibleFilterField
-              )?.value || ''
-            }
+            name="filterType"
+            value={selectFilter}
             onChange={(e) => {
-              const selectedValue = e.target.value;
-              console.log('Event target value:', selectedValue);
-              const selectedResponsible = responsibles.find(
-                (responsible) => responsible.value === selectedValue
-              );
-              if (selectedResponsible) {
-                setResponsibleFilterField(selectedResponsible.label);
-              } else {
-                setResponsibleFilterField('');
-              }
+              setSelectFilter(e.target.value);
             }}
           >
-            {responsibles.map((responsible, index) => {
+            {demandPage.map((task) => {
               return (
-                <option value={responsible?.value} key={index}>
-                  {responsible?.label}
+                <option key={task?.key} value={task?.value}>
+                  {task?.label}
                 </option>
               );
             })}
           </Select>
-        ) : selectFilter === 'deadline' ? (
-          <Input
-            maxW="600px"
-            type="tel"
-            inputMode="numeric"
-            onKeyPress={(e) => {
-              if (!/\d/.test(e.key)) {
-                e.preventDefault();
+
+          {selectFilter === 'responsible' ? (
+            <Select
+              borderColor="gray.500"
+              bg="gray.50"
+              _placeholder={{ color: 'gray.500' }}
+              color="gray.600"
+              maxW="600px"
+              name="selectResponsibleFilter"
+              value={
+                responsibles.find(
+                  (responsible) => responsible.label === responsibleFilterField
+                )?.value || ''
               }
-            }}
-            name="filterField"
-            placeholder="Buscar"
-            error={errors?.filterField}
-            value={
-              selectFilter === 'deadline' ? filterFieldDateMask : filterField
-            }
-            mb="24px"
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              handleDateOfBirthChange(inputValue);
-            }}
-            pattern="\d*"
-            borderColor="gray.500"
-            rightIcon={
-              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-            }
-          />
-        ) : (
-          <Input
-            maxW="600px"
-            type="text"
-            name="filterField"
-            placeholder="Buscar"
-            error={errors?.filterField}
-            value={filterField}
-            mb="24px"
-            onChange={(e) => {
-              setFilterField(e.target.value);
-            }}
-            borderColor="gray.500"
-            rightIcon={
-              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-            }
-          />
-        )}
+              onChange={(e) => {
+                const selectedValue = e.target.value;
+                console.log('Event target value:', selectedValue);
+                const selectedResponsible = responsibles.find(
+                  (responsible) => responsible.value === selectedValue
+                );
+                if (selectedResponsible) {
+                  setResponsibleFilterField(selectedResponsible.label);
+                } else {
+                  setResponsibleFilterField('');
+                }
+              }}
+            >
+              {responsibles.map((responsible, index) => {
+                return (
+                  <option value={responsible?.value} key={index}>
+                    {responsible?.label}
+                  </option>
+                );
+              })}
+            </Select>
+          ) : selectFilter === 'deadline' ? (
+            <Input
+              maxW="600px"
+              type="tel"
+              inputMode="numeric"
+              onKeyPress={(e) => {
+                if (!/\d/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+              name="filterField"
+              placeholder="Buscar"
+              error={errors?.filterField}
+              value={
+                selectFilter === 'deadline' ? filterFieldDateMask : filterField
+              }
+              mb="24px"
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                handleDateOfBirthChange(inputValue);
+              }}
+              pattern="\d*"
+              borderColor="gray.500"
+              rightIcon={
+                <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+              }
+            />
+          ) : (
+            <Input
+              maxW="600px"
+              type="text"
+              name="filterField"
+              placeholder="Buscar"
+              error={errors?.filterField}
+              value={filterField}
+              mb="24px"
+              onChange={(e) => {
+                setFilterField(e.target.value);
+              }}
+              borderColor="gray.500"
+              rightIcon={
+                <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+              }
+            />
+          )}
+        </Flex>
         <Button
           onClick={() => onOpenModal()}
           leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
