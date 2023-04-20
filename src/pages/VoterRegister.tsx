@@ -265,53 +265,56 @@ export default function VoterRegister() {
             >
               Telefone*:
             </Text>
-            <Flex>
-              <PatternFormat
-                customInput={Input}
-                name="ddd"
-                type="text"
-                error={errors?.ddd}
-                value={values?.dddMask}
-                onValueChange={(value) => {
-                  setValues({
-                    ...values,
-                    ddd: value?.value,
-                    dddMask: value?.formattedValue,
-                  });
-                }}
-                placeholder="DDD"
-                w="72px"
-                mr="8px"
-                borderColor="gray.500"
-                isDisabled={verify}
-                format="##"
-                mask="_"
-              />
-              <PatternFormat
-                customInput={Input}
-                format="#####-####"
-                mask="_"
-                name="cellphone"
-                type="tel"
-                error={errors?.cellphone}
-                value={values?.cellphoneMask}
-                onValueChange={(value) => {
-                  setValues({
-                    ...values,
-                    cellphone: value?.value,
-                    cellphoneMask: value?.formattedValue,
-                  });
-                }}
-                placeholder="00000-0000"
-                w={['100%', '180px']}
-                borderColor="gray.500"
-                isDisabled={verify}
-              />
+            <Flex flexDir={['column', 'row']}>
+              <Flex>
+                <PatternFormat
+                  customInput={Input}
+                  name="ddd"
+                  type="text"
+                  error={errors?.ddd}
+                  value={values?.dddMask}
+                  onValueChange={(value) => {
+                    setValues({
+                      ...values,
+                      ddd: value?.value,
+                      dddMask: value?.formattedValue,
+                    });
+                  }}
+                  placeholder="DDD"
+                  w="72px"
+                  mr="8px"
+                  borderColor="gray.500"
+                  isDisabled={verify}
+                  format="##"
+                  mask="_"
+                />
+                <PatternFormat
+                  customInput={Input}
+                  format="#####-####"
+                  mask="_"
+                  name="cellphone"
+                  type="tel"
+                  error={errors?.cellphone}
+                  value={values?.cellphoneMask}
+                  onValueChange={(value) => {
+                    setValues({
+                      ...values,
+                      cellphone: value?.value,
+                      cellphoneMask: value?.formattedValue,
+                    });
+                  }}
+                  placeholder="00000-0000"
+                  w={['100%', '180px']}
+                  borderColor="gray.500"
+                  isDisabled={verify}
+                />
+              </Flex>
               <Button
                 onClick={verifyVoter}
-                width="220px"
-                ml="45px"
+                w={['100%', '220px']}
+                ml={['0', '45px']}
                 isDisabled={verify}
+                mt={['12px', '0']}
               >
                 {loading ? <Spinner color="white" /> : 'Verificar'}
               </Button>
