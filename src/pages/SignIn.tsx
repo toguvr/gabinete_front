@@ -1,6 +1,22 @@
-import { Box, Button, Flex, Icon, Image, Link, Spinner, Stack, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  Icon,
+  Image,
+  Link,
+  Spinner,
+  Stack,
+  useToast,
+  Text,
+} from '@chakra-ui/react';
 import { FormEvent, useCallback, useState } from 'react';
-import { IoEyeOffOutline, IoEyeOutline, IoLockClosedOutline, IoMailOutline } from 'react-icons/io5';
+import {
+  IoEyeOffOutline,
+  IoEyeOutline,
+  IoLockClosedOutline,
+  IoMailOutline,
+} from 'react-icons/io5';
 import * as Yup from 'yup';
 import LogoWhite from '../assets/logoWhite.png';
 import Input from '../components/Form/Input';
@@ -31,7 +47,9 @@ export default function Signin() {
       setLoading(true);
       try {
         const schema = Yup.object().shape({
-          email: Yup.string().email('Email inválido').required('Email obrigatório'),
+          email: Yup.string()
+            .email('Email inválido')
+            .required('Email obrigatório'),
           password: Yup.string().required('Senha obrigatória'),
         });
 
@@ -58,7 +76,8 @@ export default function Signin() {
         if (err.response) {
           return toast({
             title:
-              err.response.data.message || 'Ocorreu um erro ao fazer login, cheque as credenciais',
+              err.response.data.message ||
+              'Ocorreu um erro ao fazer login, cheque as credenciais',
 
             status: 'error',
             position: 'top-right',
@@ -96,70 +115,99 @@ export default function Signin() {
       flexDirection={'column'}
       bg="linear-gradient(180deg, #0084DE 0%, #004279 100%)"
     >
-      <Box height="40px" margin={'0 4px 40px 0'}>
+      {/* <Box height="40px" margin={'0 4px 40px 0'}>
         <Image src={LogoWhite} alt="Logo" />
-      </Box>
+      </Box> */}
       <Flex>
-        <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-          <Box rounded={'lg'} bg="white" boxShadow={'lg'} p={['20px', '104px 80px 88px']}>
-            <Stack spacing={4}>
-              <Input
-                name="email"
-                type="email"
-                error={errors?.email}
-                value={values.email}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
-                leftIcon={<Icon as={IoMailOutline} />}
-                placeholder="E-mail"
-              />
-              <Input
-                onKeyPress={handleKeyPress}
-                mt="6"
-                mb="2"
-                name="password"
-                value={values.password}
-                error={errors?.password}
-                onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
-                type={showPassword ? 'text' : 'password'}
-                leftIcon={<Icon as={IoLockClosedOutline} />}
-                rightIcon={
-                  <Button
-                    _focus={{ outline: 'none' }}
-                    size="sm"
-                    variant="ghost"
-                    onClick={handleViewPassword}
-                  >
-                    {showPassword ? (
-                      <Icon fontSize="20px" as={IoEyeOffOutline} />
-                    ) : (
-                      <Icon fontSize="20px" as={IoEyeOutline} />
-                    )}
-                  </Button>
-                }
-                placeholder="Senha"
-              />
-              <Stack spacing={6}>
-                <Stack
-                  direction={{ base: 'column', sm: 'row' }}
-                  align={'start'}
-                  justify={'space-between'}
-                >
-                  <Link href="/esqueci-senha" color={'blue.600'}>
-                    Esqueci senha
-                  </Link>
-                </Stack>
+        <Stack mx={'auto'} maxW={'lg'} py={12} px={6}>
+          <Box
+            rounded={'sm'}
+            bg="white"
+            boxShadow={'lg'}
+            p={['20px', '60px 80px 64px']}
+          >
+            <Text textAlign={'center'} mb="40px" color="gray.500">
+              Seja bem vindo
+            </Text>
+
+            <Input
+              name="email"
+              type="email"
+              error={errors?.email}
+              value={values.email}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+              leftIcon={<Icon as={IoMailOutline} color="blue.500" />}
+              placeholder="E-mail"
+            />
+            <Input
+              onKeyPress={handleKeyPress}
+              name="password"
+              value={values.password}
+              error={errors?.password}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+              type={showPassword ? 'text' : 'password'}
+              leftIcon={<Icon as={IoLockClosedOutline} color="blue.500" />}
+              rightIcon={
                 <Button
-                  onClick={handleSignIn}
-                  bg={'blue.600'}
-                  color={'white'}
-                  _hover={{
-                    bg: 'blue.700',
-                  }}
+                  _focus={{ outline: 'none' }}
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleViewPassword}
                 >
-                  {loading ? <Spinner color="white" /> : 'Entrar'}
+                  {showPassword ? (
+                    <Icon
+                      fontSize="20px"
+                      as={IoEyeOffOutline}
+                      color="blue.500"
+                    />
+                  ) : (
+                    <Icon fontSize="20px" as={IoEyeOutline} color="blue.500" />
+                  )}
                 </Button>
-              </Stack>
-            </Stack>
+              }
+              placeholder="Senha"
+              mt="24px"
+            />
+            <Flex
+              direction={{ base: 'column', sm: 'row' }}
+              align={'start'}
+              justify={'space-between'}
+              mt="8px"
+            >
+              <Link href="/esqueci-senha" color={'blue.600'} fontSize={'14px'}>
+                Esqueci senha
+              </Link>
+            </Flex>
+            <Button
+              onClick={handleSignIn}
+              bg={'blue.600'}
+              color={'white'}
+              _hover={{
+                bg: 'blue.700',
+              }}
+              mt="24px"
+              w={'100%'}
+            >
+              {loading ? <Spinner color="white" /> : 'Entrar'}
+            </Button>
+            <Flex
+              direction={{ base: 'column', sm: 'row' }}
+              w={'100%'}
+              justifyContent={'flex-end'}
+              mt="8px"
+            >
+              <Link
+                href="/cadastrar-proprietario"
+                color={'blue.600'}
+                fontSize={'14px'}
+              >
+                Cadastre seu Gabinete
+              </Link>
+            </Flex>
           </Box>
         </Stack>
       </Flex>

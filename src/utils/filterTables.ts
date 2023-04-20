@@ -16,7 +16,6 @@ export const permissionPage = [
   { key: 4, value: 'role', label: 'Cargo' },
   { key: 5, value: 'active', label: 'Ativos' },
   { key: 6, value: 'birthdate', label: 'Nascimento' },
-
 ];
 
 export const voterPage = [
@@ -29,7 +28,6 @@ export const voterPage = [
   { key: 6, value: 'city', label: 'Cidade' },
   { key: 7, value: 'neighborhood', label: 'Bairro' },
   { key: 8, value: 'creator', label: 'Criador' },
-
 ];
 
 export const demandPage = [
@@ -40,7 +38,7 @@ export const demandPage = [
   { key: 4, value: 'city', label: 'Cidade' },
   { key: 5, value: 'neighborhood', label: 'Bairro' },
   { key: 6, value: 'creator', label: 'Criador' },
-  
+  { key: 7, value: 'responsible', label: 'Responsável' },
 ];
 
 export const taskPage = [

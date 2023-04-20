@@ -24,6 +24,10 @@ import RoleEdit from '../pages/RoleEdit';
 import RoleRegister from '../pages/RoleRegister';
 import Roles from '../pages/Roles';
 import Gabinete from '../pages/Office';
+import NotPay from '../pages/NotPay';
+import SignUpOwner from '../pages/SignUpOwner';
+import SignUpOffice from '../pages/SignUpOffice';
+import NotOffice from '../pages/NotOffice';
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -42,7 +46,7 @@ export const privateRoute = [
 ];
 
 const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
-  const { isAuthenticated, role, office, updateRole } = useAuth();
+  const { isAuthenticated, role, office } = useAuth();
   const currentRole = role as any;
 
   const filteredRoutes = privateRoute.find((route) => {
@@ -51,25 +55,39 @@ const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
 
   const location = useLocation();
 
-  const isMyCurrentRouteInPrivateRoutes = privateRoute.find((privateRoute) =>
-    privateRoute.pathname.includes(location.pathname)
-  );
+  // const isMyCurrentRouteInPrivateRoutes = privateRoute.find((privateRoute) =>
+  //   privateRoute.pathname.includes(location.pathname)
+  // );
 
-  if (location.pathname !== '/sem-vinculo' && isPrivate && !office.id) {
-    return <Navigate to={'/sem-vinculo'} replace />;
+  if (
+    location.pathname !== '/sem-gabinete' &&
+    location.pathname !== '/cadastrar-gabinete' &&
+    isAuthenticated &&
+    !office.id
+  ) {
+    return <Navigate to={'/sem-gabinete'} replace />;
   }
 
   if (
-    location.pathname !== '/sem-permissao' &&
-    isPrivate &&
-    isMyCurrentRouteInPrivateRoutes &&
-    currentRole[isMyCurrentRouteInPrivateRoutes?.permissionName] === 0
+    location.pathname !== '/pagamento-nao-efetuado' &&
+    Object.keys(office).length !== 0 &&
+    isAuthenticated &&
+    !office.active
   ) {
-    return <Navigate to={'/sem-permissao'} replace />;
+    return <Navigate to={'/pagamento-nao-efetuado'} replace />;
   }
 
+  // if (
+  //   location.pathname !== '/sem-permissao' &&
+  //   isPrivate &&
+  //   isMyCurrentRouteInPrivateRoutes &&
+  //   currentRole[isMyCurrentRouteInPrivateRoutes?.permissionName] === 0
+  // ) {
+  //   return <Navigate to={'/sem-permissao'} replace />;
+  // }
+
   const userMainRoute = () => {
-    return filteredRoutes?.pathname || '/sem-vinculo';
+    return filteredRoutes?.pathname || '/sem-permissao';
   };
 
   return isAuthenticated === isPrivate ? (
@@ -121,13 +139,18 @@ export default function AppRoutes() {
         <Route path="/trocar-senha" element={<ChangePassword />} />
         <Route path="/sem-permissao" element={<NotPermission />} />
         <Route path="/sem-vinculo" element={<NoBond />} />
+        <Route path="/sem-gabinete" element={<NotOffice />} />
+        <Route path="/cadastrar-gabinete" element={<SignUpOffice />} />
+        <Route path="/pagamento-nao-efetuado" element={<NotPay />} />
       </Route>
 
       <Route element={<AuthenticatedRoutes isPrivate={false} />}>
         <Route path="/" element={<Signin />} />
         <Route path="/esqueci-senha" element={<ForgetPassword />} />
+        <Route path="/cadastrar-proprietario" element={<SignUpOwner />} />
       </Route>
       <Route path="/redefinir-senha" element={<RedefinePassword />} />
+
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

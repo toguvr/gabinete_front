@@ -61,6 +61,7 @@ import { paginationArray } from '../utils/pdfPagination';
 export default function Voter() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [filterFieldDateMask, setFilterFieldDateMask] = useState('');
   const toast = useToast();
   const [data, setData] = useState([] as VoterDTO[]);
   const [voterToDeleteId, setVoterToDeleteId] = useState('');
@@ -99,6 +100,28 @@ export default function Voter() {
     } finally {
       setLoading(false);
     }
+  };
+  const handleDateOfBirthChange = (input: any) => {
+    const dateRegEx = /^(\d{1,2})(\/)?(\d{1,2})?(\d{0,4})?$/;
+    const match = input.match(dateRegEx);
+
+    if (match) {
+      let formattedDate = match[1];
+
+      if (match[3]) {
+        formattedDate += '/' + match[3];
+      }
+
+      if (match[4]) {
+        formattedDate += '/' + match[4];
+      }
+
+      setFilterFieldDateMask(formattedDate);
+    } else {
+      setFilterFieldDateMask(input);
+    }
+
+    setFilterField(input);
   };
 
   useEffect(() => {
@@ -418,7 +441,7 @@ export default function Voter() {
         Filtar por:
       </Text>
       <Flex justifyContent="space-between">
-        <Flex gap={['12px', '24px']} flex="1" mr={['0', '24px']}>
+        <Flex gap={['12px', '24px']}>
           <Select
             w="220px"
             borderColor="gray.500"
@@ -437,22 +460,51 @@ export default function Voter() {
             })}
           </Select>
 
-          <Input
-            maxW="600px"
-            type="text"
-            name="filterField"
-            placeholder="Buscar"
-            error={errors?.filterField}
-            value={filterField}
-            mb="24px"
-            onChange={(e) => {
-              setFilterField(e.target.value);
-            }}
-            borderColor="gray.500"
-            rightIcon={
-              <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-            }
-          />
+          {selectFilter === 'birthdate' ? (
+            <Input
+              maxW="600px"
+              name="filterField"
+              type="tel"
+              inputMode="numeric"
+              onKeyPress={(e) => {
+                if (!/\d/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+              placeholder="Buscar"
+              error={errors?.filterField}
+              value={
+                selectFilter === 'birthdate' ? filterFieldDateMask : filterField
+              }
+              mb="24px"
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                handleDateOfBirthChange(inputValue);
+              }}
+              pattern="\d*"
+              borderColor="gray.500"
+              rightIcon={
+                <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+              }
+            />
+          ) : (
+            <Input
+              maxW="600px"
+              type="text"
+              name="filterField"
+              placeholder="Buscar"
+              error={errors?.filterField}
+              value={filterField}
+              mb="24px"
+              onChange={(e) => {
+                setFilterField(e.target.value);
+              }}
+              borderColor="gray.500"
+              rightIcon={
+                <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+              }
+            />
+          )}
         </Flex>
 
         <Button
