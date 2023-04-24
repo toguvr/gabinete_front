@@ -440,7 +440,7 @@ export default function Voter() {
       <Text mt="36px" color="gray.500">
         Filtar por:
       </Text>
-      <Flex justifyContent="space-between">
+      <Flex justifyContent="space-between" flexDir={['column', 'row']}>
         <Flex gap={['12px', '24px']}>
           <Select
             w="220px"

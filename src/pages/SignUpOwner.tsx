@@ -185,7 +185,7 @@ export default function SignUpOwner() {
             </Text>
             <Select
               placeholder="Gênero"
-              borderColor="gray.500"
+              borderColor={errors.gender ? 'red' : 'gray.500'}
               bg="gray.50"
               _placeholder={{ color: 'gray.500' }}
               color="gray.600"
@@ -198,6 +198,11 @@ export default function SignUpOwner() {
               <option value="MALE">Masculino</option>
               <option value="FEMALE">Feminino</option>
             </Select>
+            {errors.gender && (
+              <Text mt="2" align="left" fontSize={14} color="red">
+                {errors.gender}
+              </Text>
+            )}
           </Box>
           <Input
             color="gray.500"
