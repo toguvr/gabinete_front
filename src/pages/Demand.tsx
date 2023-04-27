@@ -328,6 +328,39 @@ export default function Demand() {
             switch (selectFilter) {
               case 'all':
                 return currentValue;
+              case 'title':
+                if (filterField?.length >= 3) {
+                  return (
+                    currentValue?.title &&
+                    currentValue?.title
+                      .toLowerCase()
+                      .indexOf(filterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              case 'voter':
+                if (filterField?.length >= 3) {
+                  return (
+                    currentValue?.voter?.name &&
+                    currentValue?.voter?.name
+                      .toLowerCase()
+                      .indexOf(filterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              case 'creator':
+                if (filterField?.length >= 3) {
+                  return (
+                    currentValue?.creator?.name &&
+                    currentValue?.creator?.name
+                      .toLowerCase()
+                      .indexOf(filterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
               case 'responsible':
                 if (responsibleFilterField?.length >= 3) {
                   return (
@@ -335,6 +368,39 @@ export default function Demand() {
                     currentValue?.responsible?.name
                       .toLowerCase()
                       .indexOf(responsibleFilterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              case 'deadline':
+                if (filterField?.length >= 3) {
+                  return (
+                    getFormatDate(
+                      new Date(currentValue?.deadline),
+                      'dd/MM/yyyy'
+                    ).indexOf(filterField) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              case 'city':
+                if (filterField?.length >= 3) {
+                  return (
+                    currentValue?.voter?.city &&
+                    currentValue?.voter?.city
+                      .toLowerCase()
+                      .indexOf(filterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              case 'neighborhood':
+                if (filterField?.length >= 3) {
+                  return (
+                    currentValue?.voter?.neighborhood &&
+                    currentValue?.voter?.neighborhood
+                      .toLowerCase()
+                      .indexOf(filterField?.toLowerCase()) > -1
                   );
                 } else {
                   return currentValue;
