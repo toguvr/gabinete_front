@@ -26,8 +26,6 @@ export default function Home() {
   );
   const [voterBirthDates, setVoterBirthDates] = useState([] as VoterDTO[]);
 
-  console.log('vote', voterBirthDates);
-
   async function getResumeOffice() {
     try {
       const response = await api.get(`/dashboard/resume-office/${office?.id}`);
@@ -277,28 +275,26 @@ export default function Home() {
                   Aniversariantes
                 </Text>
               </Flex>
-
               {permissionBirthDates.length === 0 &&
                 voterBirthDates.length === 0 && (
-                <Flex
-                  margin="20px 0px"
-                  height="40px"
-                  width="100%"
-                  alignItems="center"
-                  justifyContent="start"
-                  paddingLeft={{ base: '16px', md: '24px' }}
-                >
-                  <Text
-                    textAlign="center"
-                    fontWeight="500"
-                    fontSize="16px"
-                    color="#718096"
+                  <Flex
+                    margin="20px 0px"
+                    height="40px"
+                    width="100%"
+                    alignItems="center"
+                    justifyContent="start"
+                    paddingLeft={{ base: '16px', md: '24px' }}
                   >
-                    Nenhum aniversariante hoje.
-                  </Text>
-                </Flex>
-              )}
-
+                    <Text
+                      textAlign="center"
+                      fontWeight="500"
+                      fontSize="16px"
+                      color="#718096"
+                    >
+                      Nenhum aniversariante hoje.
+                    </Text>
+                  </Flex>
+                )}
               {permissionBirthDates &&
                 permissionBirthDates.map((permission) => (
                   <Flex
