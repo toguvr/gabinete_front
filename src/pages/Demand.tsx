@@ -322,77 +322,95 @@ export default function Demand() {
   const MyDocument = () => {
     return (
       <Document>
-        {paginationArray(filteredData, numberOfLines).map(
-          (pageItems, index) => {
-            return (
-              <Page
-                key={index}
-                size="A4"
-                style={styles.page}
-                orientation="landscape"
-              >
-                <View style={styles.table}>
-                  <View style={styles.flexBetween}>
-                    {office?.logo_url && (
-                      <Image style={styles.image} src={office?.logo_url} />
-                    )}
-                    <TextPDF style={styles.tableTitle}>{office?.name}</TextPDF>
-                  </View>
-                  {selectFilter === 'responsible' ? (
-                    <TextPDF style={styles.tableSubTitle}>
-                      Lista de Demandas -{' '}
-                      {responsibles.find(
-                        (responsible) =>
-                          responsible.label === responsibleFilterField
-                      )?.label || ''}
-                    </TextPDF>
-                  ) : (
-                    <TextPDF style={styles.tableSubTitle}>
-                      Lista de Demandas
-                    </TextPDF>
+        {paginationArray(
+          data.filter((currentValue: any) => {
+            switch (selectFilter) {
+              case 'all':
+                return currentValue;
+              case 'responsible':
+                if (responsibleFilterField?.length >= 3) {
+                  return (
+                    currentValue?.responsible?.name &&
+                    currentValue?.responsible?.name
+                      .toLowerCase()
+                      .indexOf(responsibleFilterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              default:
+                return currentValue;
+            }
+          }),
+          numberOfLines
+        ).map((pageItems, index) => {
+          return (
+            <Page
+              key={index}
+              size="A4"
+              style={styles.page}
+              orientation="landscape"
+            >
+              <View style={styles.table}>
+                <View style={styles.flexBetween}>
+                  {office?.logo_url && (
+                    <Image style={styles.image} src={office?.logo_url} />
                   )}
+                  <TextPDF style={styles.tableTitle}>{office?.name}</TextPDF>
+                </View>
+                {selectFilter === 'responsible' ? (
+                  <TextPDF style={styles.tableSubTitle}>
+                    Lista de Demandas -{' '}
+                    {responsibles.find(
+                      (responsible) =>
+                        responsible.label === responsibleFilterField
+                    )?.label || ''}
+                  </TextPDF>
+                ) : (
+                  <TextPDF style={styles.tableSubTitle}>
+                    Lista de Demandas
+                  </TextPDF>
+                )}
 
-                  <View style={styles.tableContainer}>
-                    <View style={styles.rowTitle}>
-                      <TextPDF style={styles.voter}>Eleitor</TextPDF>
-                      <TextPDF style={styles.status}>Status</TextPDF>
-                      <TextPDF style={styles.title}>Título</TextPDF>
-                      <TextPDF style={styles.description}>Descrição</TextPDF>
-                      <TextPDF style={styles.cell}>Telefone</TextPDF>
-                      <TextPDF style={styles.address}>Endereço</TextPDF>
-                    </View>
+                <View style={styles.tableContainer}>
+                  <View style={styles.rowTitle}>
+                    <TextPDF style={styles.voter}>Eleitor</TextPDF>
+                    <TextPDF style={styles.status}>Status</TextPDF>
+                    <TextPDF style={styles.title}>Título</TextPDF>
+                    <TextPDF style={styles.description}>Descrição</TextPDF>
+                    <TextPDF style={styles.cell}>Telefone</TextPDF>
+                    <TextPDF style={styles.address}>Endereço</TextPDF>
+                  </View>
 
-                    {pageItems.map((item: TaskPropsDTO) => {
-                      return (
-                        <View
-                          style={
-                            item?.id === pageItems[pageItems.length - 1]?.id
-                              ? styles.finalRow
-                              : styles.row
-                          }
-                          key={item.id}
-                        >
-                          <TextPDF style={styles.voter}>
-                            {item?.voter.name}
-                          </TextPDF>
-                          <TextPDF style={styles.status}>
-                            {item?.status}
-                          </TextPDF>
-                          <TextPDF style={styles.title}>{item?.title}</TextPDF>
+                  {pageItems.map((item: TaskPropsDTO) => {
+                    return (
+                      <View
+                        style={
+                          item?.id === pageItems[pageItems.length - 1]?.id
+                            ? styles.finalRow
+                            : styles.row
+                        }
+                        key={item.id}
+                      >
+                        <TextPDF style={styles.voter}>
+                          {item?.voter.name}
+                        </TextPDF>
+                        <TextPDF style={styles.status}>{item?.status}</TextPDF>
+                        <TextPDF style={styles.title}>{item?.title}</TextPDF>
 
-                          <TextPDF style={styles.description}>
-                            {parseHTMLToText(item?.description)}
-                          </TextPDF>
-                          <TextPDF style={styles.cell}>
-                            {item?.voter.cellphone}
-                          </TextPDF>
-                          <TextPDF style={styles.address}>
-                            {item?.voter?.zip
-                              ? `${
-                                  item?.voter?.street
-                                    ? item?.voter?.street + ','
-                                    : ''
-                                }
+                        <TextPDF style={styles.description}>
+                          {parseHTMLToText(item?.description)}
+                        </TextPDF>
+                        <TextPDF style={styles.cell}>
+                          {item?.voter.cellphone}
+                        </TextPDF>
+                        <TextPDF style={styles.address}>
+                          {item?.voter?.zip
+                            ? `${
+                                item?.voter?.street
+                                  ? item?.voter?.street + ','
+                                  : ''
+                              }
                               ${
                                 item?.voter?.address_number
                                   ? item?.voter?.address_number + ','
@@ -416,17 +434,16 @@ export default function Demand() {
                                   ? item?.voter?.state + ','
                                   : ''
                               }`
-                              : '-'}
-                          </TextPDF>
-                        </View>
-                      );
-                    })}
-                  </View>
+                            : '-'}
+                        </TextPDF>
+                      </View>
+                    );
+                  })}
                 </View>
-              </Page>
-            );
-          }
-        )}
+              </View>
+            </Page>
+          );
+        })}
       </Document>
     );
   };
