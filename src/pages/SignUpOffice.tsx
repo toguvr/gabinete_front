@@ -67,12 +67,20 @@ export default function SignUpOffice() {
       `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${state}/municipios`
     );
     const data = await response.json();
-    setCities(data.sort((a: any, b: any) => a.nome.localeCompare(b.nome)));
+    const myCities = data.sort((a: any, b: any) =>
+      a.nome.localeCompare(b.nome)
+    );
+    setCities(myCities);
+    setValues({ ...values, city: myCities[0].nome });
   };
 
   useEffect(() => {
     getStates();
   }, []);
+
+  useEffect(() => {
+    getCities(values?.state);
+  }, [values?.state]);
 
   const handleSignUp = useCallback(
     async (e: FormEvent) => {
@@ -274,7 +282,6 @@ export default function SignUpOffice() {
                 name="state"
                 onChange={(e) => {
                   setValues({ ...values, [e.target.name]: e.target.value });
-                  getCities(e.target.value);
                 }}
               >
                 {states.map((state: any) => {
