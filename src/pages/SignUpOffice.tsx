@@ -9,8 +9,16 @@ import {
   Icon,
   VStack,
   Button,
+  Box,
+  Select,
 } from '@chakra-ui/react';
-import { useCallback, useState, ChangeEvent, FormEvent } from 'react';
+import {
+  useCallback,
+  useState,
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+} from 'react';
 import { IoAddCircleSharp } from 'react-icons/io5';
 import resize from '../components/Resize';
 import api from '../services/api';
@@ -43,6 +51,36 @@ export default function SignUpOffice() {
   const navigate = useNavigate();
   const { bindPermissions } = useAuth();
   const [logo, setLogo] = useState('');
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+
+  const getStates = async () => {
+    const response = await fetch(
+      'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
+    );
+    const data = await response.json();
+    setStates(data.sort((a: any, b: any) => a.nome.localeCompare(b.nome)));
+  };
+
+  const getCities = async (state: string) => {
+    const response = await fetch(
+      `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${state}/municipios`
+    );
+    const data = await response.json();
+    const myCities = data.sort((a: any, b: any) =>
+      a.nome.localeCompare(b.nome)
+    );
+    setCities(myCities);
+    setValues({ ...values, city: myCities[0].nome });
+  };
+
+  useEffect(() => {
+    getStates();
+  }, []);
+
+  useEffect(() => {
+    getCities(values?.state);
+  }, [values?.state]);
 
   const handleSignUp = useCallback(
     async (e: FormEvent) => {
@@ -230,48 +268,90 @@ export default function SignUpOffice() {
             borderColor="gray.500"
           />
           <Flex w="100%" gap={['20px', '44px']}>
-            <Input
-              labelColor="gray.500"
-              label="Cidade:"
-              placeholder="Cidade do Gabinete"
-              name="city"
-              type="text"
-              error={errors?.city}
-              value={values?.city}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
-              borderColor="gray.500"
-            />
-            <Input
-              labelColor="gray.500"
-              label="Estado:"
-              placeholder="Estado do Gabinete"
-              name="state"
-              type="text"
-              error={errors?.state}
-              value={values?.state}
-              onChange={(e) =>
-                setValues({ ...values, [e.target.name]: e.target.value })
-              }
-              borderColor="gray.500"
-            />
+            <Box w="100%">
+              <Text color="gray.500" fontWeight="400" margin="0">
+                Estado:
+              </Text>
+              <Select
+                placeholder="Estado do Gabinete"
+                borderColor="gray.500"
+                bg="gray.50"
+                _placeholder={{ color: 'gray.500' }}
+                color="gray.600"
+                value={values?.state}
+                name="state"
+                onChange={(e) => {
+                  setValues({ ...values, [e.target.name]: e.target.value });
+                }}
+              >
+                {states.map((state: any) => {
+                  return (
+                    <option key={state.id} value={state.sigla}>
+                      {state.nome}
+                    </option>
+                  );
+                })}
+              </Select>
+              {errors.state && (
+                <Text mt="2" align="left" fontSize={14} color="red">
+                  {errors.state}
+                </Text>
+              )}
+            </Box>
+            <Box w="100%">
+              <Text color="gray.500" fontWeight="400" margin="0">
+                Cidade:
+              </Text>
+              <Select
+                placeholder="Cidade do Gabinete"
+                borderColor="gray.500"
+                bg="gray.50"
+                _placeholder={{ color: 'gray.500' }}
+                color="gray.600"
+                value={values?.city}
+                name="city"
+                onChange={(e) => {
+                  setValues({ ...values, [e.target.name]: e.target.value });
+                }}
+                disabled={!values.state}
+              >
+                {cities.map((city: any) => {
+                  return (
+                    <option key={city.id} value={city.sigla}>
+                      {city.nome}
+                    </option>
+                  );
+                })}
+              </Select>
+              {errors.city && (
+                <Text mt="2" align="left" fontSize={14} color="red">
+                  {errors.city}
+                </Text>
+              )}
+            </Box>
           </Flex>
-          <Input
-            color="gray.500"
-            label="Cargo:"
-            placeholder="Cargo do líder"
-            name="owner_position"
-            type="text"
-            error={errors?.owner_position}
-            value={values?.owner_position}
-            onChange={(e) =>
-              setValues({ ...values, [e.target.name]: e.target.value })
-            }
-            borderColor="gray.500"
-            w="100%"
-            onKeyPress={handleKeyPress}
-          />
+          <Box w="100%">
+            <Text color="gray.500" fontWeight="400" margin="0">
+              Cargo:
+            </Text>
+            <Select
+              placeholder="Cargo do líder"
+              borderColor="gray.500"
+              bg="gray.50"
+              _placeholder={{ color: 'gray.500' }}
+              color="gray.600"
+              value={values?.owner_position}
+              name="owner_position"
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+            >
+              <option value="DeputadoEstadual">Desputado Estadual</option>
+              <option value="Vereador">Vereador</option>
+              <option value="Outro">Outro</option>
+            </Select>
+          </Box>
+
           <Flex w="100%" gap={['20px', '44px']}>
             <Input
               color="gray.500"
