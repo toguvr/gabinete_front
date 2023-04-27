@@ -517,7 +517,6 @@ export default function Demand() {
               }
               onChange={(e) => {
                 const selectedValue = e.target.value;
-                console.log('Event target value:', selectedValue);
                 const selectedResponsible = responsibles.find(
                   (responsible) => responsible.value === selectedValue
                 );

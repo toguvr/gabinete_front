@@ -37,23 +37,40 @@ export default function Gabinete() {
   const [cities, setCities] = useState([]);
 
   const getStates = async () => {
-    const response = await fetch(
-      'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
-    );
-    const data = await response.json();
-    setStates(data);
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
+      );
+      const data = await response.json();
+      setStates(data.sort((a: any, b: any) => a.nome.localeCompare(b.nome)));
+    } catch {
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getCities = async (state: string) => {
-    const response = await fetch(
-      `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${state}/municipios`
-    );
-    const data = await response.json();
-    setCities(data);
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${state}/municipios`
+      );
+      console.log('response,'response)
+      const data = await response.json();
+      setCities(data.sort((a: any, b: any) => a.nome.localeCompare(b.nome)));
+      setValues({ ...values, [values?.city]: data[0].nome });
+    } catch {
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     getStates();
+    getCities(values?.state);
   }, []);
 
   const callback = async (image: any) => {
@@ -250,9 +267,9 @@ export default function Gabinete() {
             type="text"
             error={errors?.name}
             value={values?.name}
-            onChange={(e) =>
-              setValues({ ...values, [e.target.name]: e.target.value })
-            }
+            onChange={(e) => {
+              setValues({ ...values, [e.target.name]: e.target.value });
+            }}
             borderColor="gray.500"
           />
           <Flex w="100%" gap={['20px', '44px']}>
@@ -261,7 +278,6 @@ export default function Gabinete() {
                 Estado:
               </Text>
               <Select
-                placeholder="Estado do Gabinete"
                 borderColor="gray.500"
                 bg="gray.50"
                 _placeholder={{ color: 'gray.500' }}
@@ -281,13 +297,17 @@ export default function Gabinete() {
                   );
                 })}
               </Select>
+              {errors.state && (
+                <Text mt="2" align="left" fontSize={14} color="red">
+                  {errors.state}
+                </Text>
+              )}
             </Box>
             <Box w="100%">
               <Text color="gray.500" fontWeight="400" margin="0">
                 Cidade:
               </Text>
               <Select
-                placeholder="Cidade do Gabinete"
                 borderColor="gray.500"
                 bg="gray.50"
                 _placeholder={{ color: 'gray.500' }}
@@ -307,6 +327,11 @@ export default function Gabinete() {
                   );
                 })}
               </Select>
+              {errors.city && (
+                <Text mt="2" align="left" fontSize={14} color="red">
+                  {errors.city}
+                </Text>
+              )}
             </Box>
           </Flex>
           <Box w="100%">
@@ -329,6 +354,11 @@ export default function Gabinete() {
               <option value="Vereador">Vereador</option>
               <option value="Outro">Outro</option>
             </Select>
+            {errors.owner_position && (
+              <Text mt="2" align="left" fontSize={14} color="red">
+                {errors.owner_position}
+              </Text>
+            )}
           </Box>
           <Flex w="100%" gap={['20px', '44px']}>
             <Input

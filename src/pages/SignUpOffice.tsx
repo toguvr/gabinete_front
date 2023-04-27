@@ -59,7 +59,7 @@ export default function SignUpOffice() {
       'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
     );
     const data = await response.json();
-    setStates(data);
+    setStates(data.sort((a: any, b: any) => a.nome.localeCompare(b.nome)));
   };
 
   const getCities = async (state: string) => {
@@ -67,7 +67,7 @@ export default function SignUpOffice() {
       `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${state}/municipios`
     );
     const data = await response.json();
-    setCities(data);
+    setCities(data.sort((a: any, b: any) => a.nome.localeCompare(b.nome)));
   };
 
   useEffect(() => {
@@ -285,6 +285,11 @@ export default function SignUpOffice() {
                   );
                 })}
               </Select>
+              {errors.state && (
+                <Text mt="2" align="left" fontSize={14} color="red">
+                  {errors.state}
+                </Text>
+              )}
             </Box>
             <Box w="100%">
               <Text color="gray.500" fontWeight="400" margin="0">
@@ -311,6 +316,11 @@ export default function SignUpOffice() {
                   );
                 })}
               </Select>
+              {errors.city && (
+                <Text mt="2" align="left" fontSize={14} color="red">
+                  {errors.city}
+                </Text>
+              )}
             </Box>
           </Flex>
           <Box w="100%">
