@@ -63,7 +63,10 @@ export default function Gabinete() {
         a.nome.localeCompare(b.nome)
       );
       setCities(myCities);
-      setValues({ ...values, city: myCities[0].nome });
+
+      if (values.state !== office.state) {
+        setValues({ ...values, city: myCities[0].nome });
+      }
     } catch {
     } finally {
       setLoading(false);
