@@ -58,7 +58,7 @@ import { paginationArray } from '../utils/pdfPagination';
 export default function Demand() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [numberOfLines, setNumberOfLines] = useState(20);
+  const [numberOfLines, setNumberOfLines] = useState(10);
   const toast = useToast();
   const [filteredData, setFilteredData] = useState([] as TaskPropsDTO[]);
   const [data, setData] = useState([] as TaskPropsDTO[]);
@@ -77,6 +77,8 @@ export default function Demand() {
   const [filterField, setFilterField] = useState('');
   const [filterFieldDateMask, setFilterFieldDateMask] = useState('');
   const [errors, setErrors] = useState({} as StateProps);
+
+  console.log('filteredData', filteredData);
 
   const openDialog = (task_id: string) => {
     setDemandToDeleteId(task_id);
@@ -200,14 +202,18 @@ export default function Demand() {
   }, [responsibles]);
 
   useEffect(() => {
-    if (responsibleFilterField) {
-      setFilteredData(
-        data.filter((task) => task.responsible.name === responsibleFilterField)
-      );
-    } else {
-      setFilteredData(data);
+    if (filterField === 'reponsible') {
+      if (responsibleFilterField) {
+        setFilteredData(
+          data.filter(
+            (task) => task.responsible.name === responsibleFilterField
+          )
+        );
+      } else {
+        setFilteredData(data);
+      }
     }
-  }, [data, responsibleFilterField]);
+  }, [data, responsibleFilterField, filterField]);
 
   const handleEditTask = (task_id: string) => {
     navigate(`/demanda/${task_id}`);
@@ -218,7 +224,7 @@ export default function Demand() {
 
   const styles = StyleSheet.create({
     title: {
-      width: '25%',
+      width: '20%',
       fontSize: 12,
       textAlign: 'left',
       paddingRight: 8,
@@ -229,15 +235,28 @@ export default function Demand() {
       textAlign: 'center',
     },
     description: {
-      width: '45%',
+      width: '30%',
       fontSize: 10,
       textAlign: 'left',
       paddingLeft: 8,
     },
     voter: {
+      width: '10%',
+      fontSize: 12,
+      textAlign: 'center',
+      paddingLeft: 8,
+    },
+    cell: {
+      width: '10%',
+      fontSize: 12,
+      textAlign: 'center',
+      paddingLeft: 8,
+    },
+    address: {
       width: '20%',
       fontSize: 12,
       textAlign: 'center',
+      paddingLeft: 8,
     },
     page: {
       fontSize: 11,
@@ -306,7 +325,12 @@ export default function Demand() {
         {paginationArray(filteredData, numberOfLines).map(
           (pageItems, index) => {
             return (
-              <Page key={index} size="A4" style={styles.page}>
+              <Page
+                key={index}
+                size="A4"
+                style={styles.page}
+                orientation="landscape"
+              >
                 <View style={styles.table}>
                   <View style={styles.flexBetween}>
                     {office?.logo_url && (
@@ -330,10 +354,12 @@ export default function Demand() {
 
                   <View style={styles.tableContainer}>
                     <View style={styles.rowTitle}>
-                      <TextPDF style={styles.title}>Título</TextPDF>
-                      <TextPDF style={styles.status}>Status</TextPDF>
                       <TextPDF style={styles.voter}>Eleitor</TextPDF>
+                      <TextPDF style={styles.status}>Status</TextPDF>
+                      <TextPDF style={styles.title}>Título</TextPDF>
                       <TextPDF style={styles.description}>Descrição</TextPDF>
+                      <TextPDF style={styles.cell}>Telefone</TextPDF>
+                      <TextPDF style={styles.address}>Endereço</TextPDF>
                     </View>
 
                     {pageItems.map((item: TaskPropsDTO) => {
@@ -346,16 +372,51 @@ export default function Demand() {
                           }
                           key={item.id}
                         >
-                          <TextPDF style={styles.title}>{item?.title}</TextPDF>
-                          <TextPDF style={styles.status}>
-                            {item?.status}
-                          </TextPDF>
-
                           <TextPDF style={styles.voter}>
                             {item?.voter.name}
                           </TextPDF>
+                          <TextPDF style={styles.status}>
+                            {item?.status}
+                          </TextPDF>
+                          <TextPDF style={styles.title}>{item?.title}</TextPDF>
+
                           <TextPDF style={styles.description}>
                             {parseHTMLToText(item?.description)}
+                          </TextPDF>
+                          <TextPDF style={styles.cell}>
+                            {item?.voter.cellphone}
+                          </TextPDF>
+                          <TextPDF style={styles.address}>
+                            {item?.voter?.zip
+                              ? `${
+                                  item?.voter?.street
+                                    ? item?.voter?.street + ','
+                                    : ''
+                                }
+                              ${
+                                item?.voter?.address_number
+                                  ? item?.voter?.address_number + ','
+                                  : ''
+                              }
+                              ${
+                                item?.voter?.neighborhood
+                                  ? item?.voter?.neighborhood + ','
+                                  : ''
+                              }
+                              ${
+                                item?.voter?.complement
+                                  ? item?.voter?.complement + ','
+                                  : ''
+                              }
+                              ${
+                                item?.voter?.city ? item?.voter?.city + ',' : ''
+                              }
+                              ${
+                                item?.voter?.state
+                                  ? item?.voter?.state + ','
+                                  : ''
+                              }`
+                              : '-'}
                           </TextPDF>
                         </View>
                       );
@@ -517,7 +578,6 @@ export default function Demand() {
               }
               onChange={(e) => {
                 const selectedValue = e.target.value;
-                console.log('Event target value:', selectedValue);
                 const selectedResponsible = responsibles.find(
                   (responsible) => responsible.value === selectedValue
                 );
