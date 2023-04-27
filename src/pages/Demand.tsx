@@ -58,7 +58,7 @@ import { paginationArray } from '../utils/pdfPagination';
 export default function Demand() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [numberOfLines, setNumberOfLines] = useState(10);
+  const [numberOfLines, setNumberOfLines] = useState(5);
   const toast = useToast();
   const [filteredData, setFilteredData] = useState([] as TaskPropsDTO[]);
   const [data, setData] = useState([] as TaskPropsDTO[]);
@@ -225,7 +225,7 @@ export default function Demand() {
   const styles = StyleSheet.create({
     title: {
       width: '20%',
-      fontSize: 12,
+      fontSize: 10,
       textAlign: 'left',
       paddingRight: 8,
     },
@@ -242,20 +242,21 @@ export default function Demand() {
     },
     voter: {
       width: '10%',
-      fontSize: 12,
+      fontSize: 10,
       textAlign: 'center',
       paddingLeft: 8,
     },
     cell: {
       width: '10%',
-      fontSize: 12,
+      fontSize: 10,
       textAlign: 'center',
       paddingLeft: 8,
+      paddingRight: 8,
     },
     address: {
       width: '20%',
-      fontSize: 12,
-      textAlign: 'center',
+      fontSize: 10,
+      textAlign: 'left',
       paddingLeft: 8,
     },
     page: {
