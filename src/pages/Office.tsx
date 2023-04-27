@@ -58,10 +58,12 @@ export default function Gabinete() {
       const response = await fetch(
         `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${state}/municipios`
       );
-      console.log('response,'response)
       const data = await response.json();
-      setCities(data.sort((a: any, b: any) => a.nome.localeCompare(b.nome)));
-      setValues({ ...values, [values?.city]: data[0].nome });
+      const myCities = data.sort((a: any, b: any) =>
+        a.nome.localeCompare(b.nome)
+      );
+      setCities(myCities);
+      setValues({ ...values, city: myCities[0].nome });
     } catch {
     } finally {
       setLoading(false);
@@ -71,7 +73,7 @@ export default function Gabinete() {
   useEffect(() => {
     getStates();
     getCities(values?.state);
-  }, []);
+  }, [values?.state]);
 
   const callback = async (image: any) => {
     setLoadingPhoto(true);
@@ -286,7 +288,6 @@ export default function Gabinete() {
                 name="state"
                 onChange={(e) => {
                   setValues({ ...values, [e.target.name]: e.target.value });
-                  getCities(e.target.value);
                 }}
               >
                 {states.map((state: any) => {
