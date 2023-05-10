@@ -354,7 +354,7 @@ export default function Gabinete() {
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
             >
-              <option value="DeputadoEstadual">Desputado Estadual</option>
+              <option value="Deputado Estadual">Desputado Estadual</option>
               <option value="Vereador">Vereador</option>
               <option value="Outro">Outro</option>
             </Select>
