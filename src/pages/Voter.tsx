@@ -276,7 +276,105 @@ export default function Voter() {
   const MyDocument = () => {
     return (
       <Document>
-        {paginationArray(data, numberOfLines).map((pageItems, index) => {
+        {paginationArray(
+          data.filter((currentValue: any) => {
+            switch (selectFilter) {
+              case 'all':
+                return currentValue;
+              case 'name':
+                if (filterField?.length >= 3) {
+                  return (
+                    currentValue?.name &&
+                    currentValue?.name
+                      .toLowerCase()
+                      .indexOf(filterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              case 'reference':
+                if (filterField?.length >= 3) {
+                  return (
+                    currentValue?.reference &&
+                    currentValue?.reference
+                      .toLowerCase()
+                      .indexOf(filterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              case 'creator':
+                if (filterField?.length >= 3) {
+                  return (
+                    currentValue?.creator?.name &&
+                    currentValue?.creator?.name
+                      .toLowerCase()
+                      .indexOf(filterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              case 'email':
+                if (filterField?.length >= 3) {
+                  return (
+                    currentValue?.email &&
+                    currentValue?.email
+                      .toLowerCase()
+                      .indexOf(filterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              case 'birthdate':
+                if (filterField?.length >= 3) {
+                  return (
+                    getFormatDate(
+                      new Date(currentValue?.birthdate),
+                      'dd/MM/yyyy'
+                    ).indexOf(filterField) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              case 'cellphone':
+                if (filterField?.length >= 3) {
+                  return (
+                    currentValue?.cellphone &&
+                    currentValue?.cellphone
+                      .toLowerCase()
+                      .indexOf(filterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              case 'city':
+                if (filterField?.length >= 3) {
+                  return (
+                    currentValue?.city &&
+                    currentValue?.city
+                      .toLowerCase()
+                      .indexOf(filterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              case 'neighborhood':
+                if (filterField?.length >= 3) {
+                  return (
+                    currentValue?.neighborhood &&
+                    currentValue?.neighborhood
+                      .toLowerCase()
+                      .indexOf(filterField?.toLowerCase()) > -1
+                  );
+                } else {
+                  return currentValue;
+                }
+              default:
+                return currentValue;
+            }
+          }),
+          numberOfLines
+        ).map((pageItems, index) => {
           return (
             <Page key={index} size="A4" style={styles.page}>
               <View style={styles.table}>
