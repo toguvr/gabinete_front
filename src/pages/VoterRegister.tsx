@@ -26,7 +26,7 @@ export default function VoterRegister() {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [verify, setVerify] = useState(false);
-  const { office, role } = useAuth();
+  const { office } = useAuth();
   const navigate = useNavigate();
   const [cepLoading, setCepLoading] = useState(false);
   const { id } = useParams();
