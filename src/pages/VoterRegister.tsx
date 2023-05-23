@@ -6,9 +6,16 @@ import {
   Stack,
   Text,
   useToast,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  useDisclosure,
+  Button as ChakraButton,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { PatternFormat } from 'react-number-format';
 import { useNavigate, useParams } from 'react-router';
 import * as Yup from 'yup';
@@ -30,6 +37,8 @@ export default function VoterRegister() {
   const navigate = useNavigate();
   const [cepLoading, setCepLoading] = useState(false);
   const { id } = useParams();
+  const cancelRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleRegister = useCallback(
     async (e: FormEvent) => {
@@ -88,7 +97,8 @@ export default function VoterRegister() {
           isClosable: true,
           position: 'top-right',
         });
-        return navigate('/eleitor');
+
+        return onOpen();
       } catch (err: any) {
         if (err instanceof Yup.ValidationError) {
           setErrors(getValidationErrors(err));
@@ -252,6 +262,39 @@ export default function VoterRegister() {
 
   return (
     <HeaderSideBar backRoute={true}>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isOpen}
+        onClose={() => {}}
+        isCentered
+      >
+        {/* <AlertDialogOverlay > */}
+        <AlertDialogContent mx="12px">
+          <AlertDialogHeader fontSize="lg" fontWeight="bold">
+            Deseja adicionar uma demanda para este eleitor?
+          </AlertDialogHeader>
+
+          <AlertDialogBody>
+            Ao continuar, você será direcionado para tela de criação de demanda.
+            Caso contrário, ira retornar para a lista de eleitores.
+          </AlertDialogBody>
+
+          <AlertDialogFooter>
+            <ChakraButton onClick={() => navigate('/eleitor')}>
+              Cancelar
+            </ChakraButton>
+            <ChakraButton
+              colorScheme={'green'}
+              isLoading={loading}
+              onClick={() => navigate('/demanda/registrar-demanda')}
+              ml={3}
+            >
+              Continuar
+            </ChakraButton>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+        {/* </AlertDialogOverlay> */}
+      </AlertDialog>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
         Cadastrar Eleitor
       </Text>
