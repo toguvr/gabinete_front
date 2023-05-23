@@ -112,7 +112,7 @@ export default function DemandRegister() {
 
         const body = {
           name,
-          cellphone: values.ddd + values.cellphone,
+          cellphone: values.cellphone,
           email,
           office_id: office.id,
           address_number,
@@ -128,6 +128,21 @@ export default function DemandRegister() {
         };
         await api.post('/voter', body);
 
+        setValues({
+          name: '',
+          email: '',
+          address_number: '',
+          birthdate: '',
+          city: '',
+          complement: '',
+          gender: '',
+          neighborhood: '',
+          reference: '',
+          state: '',
+          street: '',
+          zip: '',
+        });
+
         toast({
           title: 'Eleitor cadastrado com sucesso',
           description: 'Você cadastrou um eleitor.',
@@ -136,7 +151,9 @@ export default function DemandRegister() {
           isClosable: true,
           position: 'top-right',
         });
-        return onCloseModal();
+        onCloseModal();
+
+        return verifyPermission();
       } catch (err: any) {
         if (err instanceof Yup.ValidationError) {
           setErrors(getValidationErrors(err));
@@ -210,7 +227,8 @@ export default function DemandRegister() {
         isClosable: true,
         position: 'top-right',
       });
-      return navigate('/demanda');
+
+      return verifyPermission();
     } catch (err: any) {
       if (err instanceof Yup.ValidationError) {
         setErrors(getValidationErrors(err));
@@ -404,14 +422,9 @@ export default function DemandRegister() {
 
   return (
     <HeaderSideBar>
-      <Modal
-        isOpen={isOpenModal}
-        onClose={onCloseModal}
-        isCentered
-        size={['2x1', '4xl']}
-      >
+      <Modal isOpen={isOpenModal} onClose={onCloseModal} size={['2x1', '4xl']}>
         <ModalOverlay />
-        <ModalContent px={['8px', '100px']} mt={[320, 0]}>
+        <ModalContent px={['8px', '100px']}>
           <ModalHeader
             alignItems="center"
             display="flex"
@@ -438,19 +451,14 @@ export default function DemandRegister() {
                     name="ddd"
                     type="text"
                     error={errors?.ddd}
-                    value={values?.dddMask}
-                    onValueChange={(value) => {
-                      setValues({
-                        ...values,
-                        ddd: value?.value,
-                        dddMask: value?.formattedValue,
-                      });
-                    }}
+                    value={
+                      values?.cellphone ? values?.cellphone.slice(0, 2) : ''
+                    }
                     placeholder="DDD"
                     w="72px"
                     mr="8px"
                     borderColor="gray.500"
-                    isDisabled={verify}
+                    isDisabled
                     format="##"
                     mask="_"
                   />
@@ -461,18 +469,11 @@ export default function DemandRegister() {
                     name="cellphone"
                     type="tel"
                     error={errors?.cellphone}
-                    value={values?.cellphoneMask}
-                    onValueChange={(value) => {
-                      setValues({
-                        ...values,
-                        cellphone: value?.value,
-                        cellphoneMask: value?.formattedValue,
-                      });
-                    }}
+                    value={values?.cellphone ? values?.cellphone.slice(2) : ''}
                     placeholder="00000-0000"
                     w={['100%', '180px']}
                     borderColor="gray.500"
-                    isDisabled={verify}
+                    isDisabled
                   />
                 </Flex>
               </Flex>
@@ -789,7 +790,7 @@ export default function DemandRegister() {
                 px={'20px'}
                 py={'10px'}
                 alignItems="center"
-                gap="40px"
+                gap={['12px', '40px']}
                 borderRadius="4px"
                 cursor="pointer"
               >
