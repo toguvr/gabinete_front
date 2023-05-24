@@ -18,12 +18,13 @@ import axios from 'axios';
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { PatternFormat } from 'react-number-format';
 import { useNavigate, useParams } from 'react-router';
+import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
 import HeaderSideBar from '../components/HeaderSideBar';
 import { useAuth } from '../contexts/AuthContext';
-import { StateProps } from '../dtos';
+import { StateProps, VoterDTO } from '../dtos';
 import api from '../services/api';
 import getValidationErrors from '../utils/validationError';
 
@@ -275,22 +276,28 @@ export default function VoterRegister() {
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            Ao continuar, você será direcionado para tela de criação de demanda.
-            Caso contrário, ira retornar para a lista de eleitores.
+            O eleitor foi criado com sucesso e ao clicar em Demanda, você será
+            direcionado para tela de criação de demanda para ele. Caso
+            contrário, ira retornar para a lista de eleitores.
           </AlertDialogBody>
 
           <AlertDialogFooter>
             <ChakraButton onClick={() => navigate('/eleitor')}>
-              Cancelar
+              Eleitor
             </ChakraButton>
-            <ChakraButton
-              colorScheme={'green'}
-              isLoading={loading}
-              onClick={() => navigate('/demanda/registrar-demanda')}
-              ml={3}
+            <Link
+              target="_blank"
+              to={`/demanda/registrar-demanda/${values?.ddd}${values?.cellphone}`}
             >
-              Continuar
-            </ChakraButton>
+              <ChakraButton
+                colorScheme={'green'}
+                isLoading={loading}
+                onClick={() => navigate('/demanda/registrar-demanda')}
+                ml={3}
+              >
+                Demanda
+              </ChakraButton>
+            </Link>
           </AlertDialogFooter>
         </AlertDialogContent>
         {/* </AlertDialogOverlay> */}
