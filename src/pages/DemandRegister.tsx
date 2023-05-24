@@ -128,21 +128,6 @@ export default function DemandRegister() {
         };
         await api.post('/voter', body);
 
-        setValues({
-          name: '',
-          email: '',
-          address_number: '',
-          birthdate: '',
-          city: '',
-          complement: '',
-          gender: '',
-          neighborhood: '',
-          reference: '',
-          state: '',
-          street: '',
-          zip: '',
-        });
-
         toast({
           title: 'Eleitor cadastrado com sucesso',
           description: 'Você cadastrou um eleitor.',
@@ -228,7 +213,7 @@ export default function DemandRegister() {
         position: 'top-right',
       });
 
-      return verifyPermission();
+      return navigate('/demanda');
     } catch (err: any) {
       if (err instanceof Yup.ValidationError) {
         setErrors(getValidationErrors(err));
@@ -259,7 +244,7 @@ export default function DemandRegister() {
       setLoading(false);
     }
   };
-
+  console.log(values, 'values');
   const verifyPermission = async () => {
     setErrors({});
     setLoading(true);
