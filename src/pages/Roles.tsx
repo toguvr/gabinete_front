@@ -4,6 +4,7 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button as ChakraButton,
   Flex,
@@ -174,30 +175,30 @@ export default function Roles() {
         onClose={onClose}
         isCentered
       >
-        {/* <AlertDialogOverlay > */}
-        <AlertDialogContent mx="12px">
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Deseja excluir este cargo?
-          </AlertDialogHeader>
+        <AlertDialogOverlay>
+          <AlertDialogContent mx="12px">
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Deseja excluir este cargo?
+            </AlertDialogHeader>
 
-          <AlertDialogBody>
-            Essa ação é irreversível, ao deletar não será possível desfazer.
-            Você deseja apagar mesmo assim?
-          </AlertDialogBody>
+            <AlertDialogBody>
+              Essa ação é irreversível, ao deletar não será possível desfazer.
+              Você deseja apagar mesmo assim?
+            </AlertDialogBody>
 
-          <AlertDialogFooter>
-            <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
-            <ChakraButton
-              colorScheme={'red'}
-              isLoading={loading}
-              onClick={deleteRole}
-              ml={3}
-            >
-              Continuar
-            </ChakraButton>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-        {/* </AlertDialogOverlay> */}
+            <AlertDialogFooter>
+              <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
+              <ChakraButton
+                colorScheme={'red'}
+                isLoading={loading}
+                onClick={deleteRole}
+                ml={3}
+              >
+                Continuar
+              </ChakraButton>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
       </AlertDialog>
       <Flex
         justifyContent={'space-between'}

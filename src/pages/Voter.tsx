@@ -4,6 +4,7 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button as ChakraButton,
   Flex,
@@ -434,30 +435,30 @@ export default function Voter() {
         onClose={onCloseAlert}
         isCentered
       >
-        {/* <AlertDialogOverlay > */}
-        <AlertDialogContent mx="12px">
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Deseja excluir este eleitor?
-          </AlertDialogHeader>
+        <AlertDialogOverlay>
+          <AlertDialogContent mx="12px">
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Deseja excluir este eleitor?
+            </AlertDialogHeader>
 
-          <AlertDialogBody>
-            Essa ação é irreversível, ao deletar não será possível desfazer.
-            Você deseja apagar mesmo assim?
-          </AlertDialogBody>
+            <AlertDialogBody>
+              Essa ação é irreversível, ao deletar não será possível desfazer.
+              Você deseja apagar mesmo assim?
+            </AlertDialogBody>
 
-          <AlertDialogFooter>
-            <ChakraButton onClick={onCloseAlert}>Cancelar</ChakraButton>
-            <ChakraButton
-              colorScheme={'red'}
-              isLoading={loading}
-              onClick={deleteVoter}
-              ml={3}
-            >
-              Continuar
-            </ChakraButton>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-        {/* </AlertDialogOverlay> */}
+            <AlertDialogFooter>
+              <ChakraButton onClick={onCloseAlert}>Cancelar</ChakraButton>
+              <ChakraButton
+                colorScheme={'red'}
+                isLoading={loading}
+                onClick={deleteVoter}
+                ml={3}
+              >
+                Continuar
+              </ChakraButton>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
       </AlertDialog>
       <Modal isOpen={isOpenModal} onClose={onCloseModal} size="lg" isCentered>
         <ModalOverlay />
