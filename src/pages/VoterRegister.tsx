@@ -13,6 +13,7 @@ import {
   AlertDialogHeader,
   useDisclosure,
   Button as ChakraButton,
+  AlertDialogOverlay,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
@@ -269,38 +270,35 @@ export default function VoterRegister() {
         onClose={() => {}}
         isCentered
       >
-        {/* <AlertDialogOverlay > */}
-        <AlertDialogContent mx="12px">
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Deseja adicionar uma demanda para este eleitor?
-          </AlertDialogHeader>
+        <AlertDialogOverlay>
+          <AlertDialogContent mx="12px">
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Eleitor criado com sucesso!
+            </AlertDialogHeader>
 
-          <AlertDialogBody>
-            O eleitor foi criado com sucesso e ao clicar em Demanda, você será
-            direcionado para tela de criação de demanda para ele. Caso
-            contrário, ira retornar para a lista de eleitores.
-          </AlertDialogBody>
+            <AlertDialogBody>
+              Deseja adicionar uma demanda para este eleitor?
+            </AlertDialogBody>
 
-          <AlertDialogFooter>
-            <ChakraButton onClick={() => navigate('/eleitor')}>
-              Eleitor
-            </ChakraButton>
-            <Link
-              target="_blank"
-              to={`/demanda/registrar-demanda/${values?.ddd}${values?.cellphone}`}
-            >
+            <AlertDialogFooter>
+              <ChakraButton onClick={() => navigate('/eleitor')}>
+                Não
+              </ChakraButton>
+
               <ChakraButton
-                colorScheme={'green'}
                 isLoading={loading}
-                onClick={() => navigate('/demanda/registrar-demanda')}
+                onClick={() =>
+                  navigate(
+                    `/demanda/registrar-demanda/${values?.ddd}${values?.cellphone}`
+                  )
+                }
                 ml={3}
               >
-                Demanda
+                Sim
               </ChakraButton>
-            </Link>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-        {/* </AlertDialogOverlay> */}
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
       </AlertDialog>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
         Cadastrar Eleitor

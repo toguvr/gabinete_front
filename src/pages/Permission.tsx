@@ -4,6 +4,7 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button as ChakraButton,
   Flex,
@@ -217,31 +218,31 @@ export default function Permission() {
         onClose={onClose}
         isCentered
       >
-        {/* <AlertDialogOverlay > */}
-        <AlertDialogContent mx="12px">
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Deseja excluir este eleitor?
-          </AlertDialogHeader>
+        <AlertDialogOverlay>
+          <AlertDialogContent mx="12px">
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Deseja excluir este eleitor?
+            </AlertDialogHeader>
 
-          <AlertDialogBody>
-            Essa ação é irreversível, ao deletar não será possível desfazer.
-            Você deseja apagar mesmo assim?
-          </AlertDialogBody>
+            <AlertDialogBody>
+              Essa ação é irreversível, ao deletar não será possível desfazer.
+              Você deseja apagar mesmo assim?
+            </AlertDialogBody>
 
-          <AlertDialogFooter>
-            <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
+            <AlertDialogFooter>
+              <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
 
-            <ChakraButton
-              colorScheme={'red'}
-              isLoading={loading}
-              onClick={deletePermission}
-              ml={3}
-            >
-              Continuar
-            </ChakraButton>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-        {/* </AlertDialogOverlay> */}
+              <ChakraButton
+                colorScheme={'red'}
+                isLoading={loading}
+                onClick={deletePermission}
+                ml={3}
+              >
+                Continuar
+              </ChakraButton>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
       </AlertDialog>
       <Flex
         justifyContent={'space-between'}

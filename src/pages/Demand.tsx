@@ -4,6 +4,7 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button as ChakraButton,
   Flex,
@@ -523,30 +524,30 @@ export default function Demand() {
         onClose={onClose}
         isCentered
       >
-        {/* <AlertDialogOverlay > */}
-        <AlertDialogContent mx="12px">
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Deseja excluir esta demanda?
-          </AlertDialogHeader>
+        <AlertDialogOverlay>
+          <AlertDialogContent mx="12px">
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Deseja excluir esta demanda?
+            </AlertDialogHeader>
 
-          <AlertDialogBody>
-            Essa ação é irreversível, ao deletar não será possível desfazer.
-            Você deseja apagar mesmo assim?
-          </AlertDialogBody>
+            <AlertDialogBody>
+              Essa ação é irreversível, ao deletar não será possível desfazer.
+              Você deseja apagar mesmo assim?
+            </AlertDialogBody>
 
-          <AlertDialogFooter>
-            <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
-            <ChakraButton
-              colorScheme={'red'}
-              isLoading={loading}
-              onClick={deleteDemand}
-              ml={3}
-            >
-              Continuar
-            </ChakraButton>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-        {/* </AlertDialogOverlay> */}
+            <AlertDialogFooter>
+              <ChakraButton onClick={onClose}>Cancelar</ChakraButton>
+              <ChakraButton
+                colorScheme={'red'}
+                isLoading={loading}
+                onClick={deleteDemand}
+                ml={3}
+              >
+                Continuar
+              </ChakraButton>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
       </AlertDialog>
       <Modal isOpen={isOpenModal} onClose={onCloseModal} size="lg" isCentered>
         <ModalOverlay />

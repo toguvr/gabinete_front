@@ -4,6 +4,7 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogOverlay,
   Button,
 } from '@chakra-ui/react';
 import { useRef } from 'react';
@@ -34,28 +35,33 @@ export default function Dialog({
   };
 
   return (
-    <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose} isCentered>
-      {/* <AlertDialogOverlay > */}
-      <AlertDialogContent mx="12px">
-        <AlertDialogHeader fontSize="lg" fontWeight="bold">
-          {title}
-        </AlertDialogHeader>
+    <AlertDialog
+      leastDestructiveRef={cancelRef}
+      isOpen={isOpen}
+      onClose={onClose}
+      isCentered
+    >
+      <AlertDialogOverlay>
+        <AlertDialogContent mx="12px">
+          <AlertDialogHeader fontSize="lg" fontWeight="bold">
+            {title}
+          </AlertDialogHeader>
 
-        <AlertDialogBody>{subtitle}</AlertDialogBody>
+          <AlertDialogBody>{subtitle}</AlertDialogBody>
 
-        <AlertDialogFooter>
-          <Button onClick={onClose}>Cancelar</Button>
-          <Button
-            colorScheme={type === 'error' ? 'red' : 'teal'}
-            isLoading={loading}
-            onClick={onContinue}
-            ml={3}
-          >
-            {buttonTitle || 'Continuar'}
-          </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-      {/* </AlertDialogOverlay> */}
+          <AlertDialogFooter>
+            <Button onClick={onClose}>Cancelar</Button>
+            <Button
+              colorScheme={type === 'error' ? 'red' : 'teal'}
+              isLoading={loading}
+              onClick={onContinue}
+              ml={3}
+            >
+              {buttonTitle || 'Continuar'}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialogOverlay>
     </AlertDialog>
   );
 }

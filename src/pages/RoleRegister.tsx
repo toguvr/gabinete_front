@@ -4,6 +4,7 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button as ChakraButton,
   Flex,
@@ -41,7 +42,9 @@ type RegisterFormData = {
 };
 
 export default function RoleRegister() {
-  const [values, setValues] = useState<RegisterFormData>({} as RegisterFormData);
+  const [values, setValues] = useState<RegisterFormData>(
+    {} as RegisterFormData
+  );
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
@@ -219,20 +222,25 @@ export default function RoleRegister() {
 
   return (
     <HeaderSideBar backRoute={true}>
-      <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose} isCentered>
-        {/* <AlertDialogOverlay > */}
-        <AlertDialogContent mx="12px">
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            {dialogTitle}
-          </AlertDialogHeader>
+      <AlertDialog
+        leastDestructiveRef={cancelRef}
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent mx="12px">
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {dialogTitle}
+            </AlertDialogHeader>
 
-          <AlertDialogBody>{dialogText}</AlertDialogBody>
+            <AlertDialogBody>{dialogText}</AlertDialogBody>
 
-          <AlertDialogFooter>
-            <ChakraButton onClick={onClose}>Ok</ChakraButton>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-        {/* </AlertDialogOverlay> */}
+            <AlertDialogFooter>
+              <ChakraButton onClick={onClose}>Ok</ChakraButton>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
       </AlertDialog>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
         Cadastrar Cargo
@@ -247,7 +255,9 @@ export default function RoleRegister() {
             type="text"
             error={errors?.name}
             value={values?.name}
-            onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
             borderColor="gray.500"
           />
           <Box
@@ -272,7 +282,9 @@ export default function RoleRegister() {
                     h="30px"
                     name={page.fix}
                     value={page.values}
-                    onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+                    onChange={(e) =>
+                      setValues({ ...values, [e.target.name]: e.target.value })
+                    }
                   >
                     {page.name === 'Tarefa'
                       ? roleStatusTasks.map((role) => {
@@ -310,7 +322,12 @@ export default function RoleRegister() {
             })}
           </Box>
 
-          <Flex w="100%" alignItems="center" justifyContent="center" mt={['40px', '95px']}>
+          <Flex
+            w="100%"
+            alignItems="center"
+            justifyContent="center"
+            mt={['40px', '95px']}
+          >
             <Button onClick={handleRegister} width="280px">
               {loading ? <Spinner color="white" /> : 'Cadastrar'}
             </Button>
