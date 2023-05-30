@@ -12,6 +12,13 @@ import {
   Text,
   Textarea,
   useToast,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { addHours } from 'date-fns';
 import { Editor } from 'primereact/editor';
@@ -35,6 +42,7 @@ import api from '../services/api';
 import '../styles/editor.css';
 import { getFormatDate } from '../utils/date';
 import getValidationErrors from '../utils/validationError';
+import axios from 'axios';
 
 export type SelectProps = {
   label: string;
@@ -60,10 +68,110 @@ export default function DemandRegister() {
   const [voterData, setVoterData] = useState({} as UserDTO);
   const [resource, setResource] = useState(false);
   const { id } = useParams();
+  const {
+    isOpen: isOpenModal,
+    onOpen: onOpenModal,
+    onClose: onCloseModal,
+  } = useDisclosure();
+  const [cepLoading, setCepLoading] = useState(false);
 
   const handleResource = () => {
     setResource(!resource);
   };
+
+  const handleRegisterVoter = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
+
+      setErrors({});
+
+      setLoading(true);
+      try {
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Nome completo obrigatório'),
+        });
+
+        await schema.validate(values, {
+          abortEarly: false,
+        });
+
+        const {
+          name,
+          email,
+          address_number,
+          birthdate,
+          complement,
+          city,
+          gender,
+          neighborhood,
+          reference,
+          state,
+          zip,
+          street,
+        } = values;
+
+        const body = {
+          name,
+          cellphone: values.cellphone,
+          email,
+          office_id: office.id,
+          address_number,
+          birthdate,
+          city,
+          complement,
+          gender,
+          neighborhood,
+          reference,
+          state,
+          street,
+          zip,
+        };
+        await api.post('/voter', body);
+
+        toast({
+          title: 'Eleitor cadastrado com sucesso',
+          description: 'Você cadastrou um eleitor.',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+          position: 'top-right',
+        });
+        onCloseModal();
+
+        return verifyPermission();
+      } catch (err: any) {
+        if (err instanceof Yup.ValidationError) {
+          setErrors(getValidationErrors(err));
+
+          return;
+        }
+        if (err.response) {
+          return toast({
+            title:
+              err.response.data.message ||
+              'Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais',
+
+            status: 'error',
+            position: 'top-right',
+            duration: 3000,
+            isClosable: true,
+          });
+        }
+        return toast({
+          title:
+            'Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais',
+
+          status: 'error',
+          position: 'top-right',
+          duration: 3000,
+          isClosable: true,
+        });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [values]
+  );
 
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
@@ -104,6 +212,7 @@ export default function DemandRegister() {
         isClosable: true,
         position: 'top-right',
       });
+
       return navigate('/demanda');
     } catch (err: any) {
       if (err instanceof Yup.ValidationError) {
@@ -135,7 +244,7 @@ export default function DemandRegister() {
       setLoading(false);
     }
   };
-
+  console.log(values, 'values');
   const verifyPermission = async () => {
     setErrors({});
     setLoading(true);
@@ -267,8 +376,318 @@ export default function DemandRegister() {
     }
   }, [responsibles]);
 
+  const getCep = async () => {
+    setCepLoading(true);
+    try {
+      const response = await axios.get(
+        `https://viacep.com.br/ws/${values?.zip}/json/`
+      );
+
+      const { bairro, localidade, logradouro, uf } = response.data;
+
+      setValues({
+        ...values,
+        street: logradouro,
+        neighborhood: bairro,
+        city: localidade,
+        state: uf,
+      });
+    } catch (err) {
+      return toast({
+        title: 'Ocorreu um erro ao buscar o cep, tente novamente',
+        status: 'error',
+        position: 'top-right',
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setCepLoading(false);
+    }
+  };
+
   return (
     <HeaderSideBar>
+      <Modal isOpen={isOpenModal} onClose={onCloseModal} size={['2x1', '4xl']}>
+        <ModalOverlay />
+        <ModalContent px={['8px', '100px']}>
+          <ModalHeader
+            alignItems="center"
+            display="flex"
+            justifyContent="center"
+          >
+            <Text fontSize="20px" color="gray.500" fontWeight="semibold">
+              Cadastrar Eleitor
+            </Text>
+          </ModalHeader>
+
+          <ModalBody>
+            <Flex flexDir={'column'}>
+              <Text
+                color={verify ? 'gray.300' : 'gray.500'}
+                fontWeight="400"
+                margin="0"
+              >
+                Telefone*:
+              </Text>
+              <Flex flexDir={['column', 'row']}>
+                <Flex>
+                  <PatternFormat
+                    customInput={Input}
+                    name="ddd"
+                    type="text"
+                    error={errors?.ddd}
+                    value={
+                      values?.cellphone ? values?.cellphone.slice(0, 2) : ''
+                    }
+                    placeholder="DDD"
+                    w="72px"
+                    mr="8px"
+                    borderColor="gray.500"
+                    isDisabled
+                    format="##"
+                    mask="_"
+                  />
+                  <PatternFormat
+                    customInput={Input}
+                    format="#####-####"
+                    mask="_"
+                    name="cellphone"
+                    type="tel"
+                    error={errors?.cellphone}
+                    value={values?.cellphone ? values?.cellphone.slice(2) : ''}
+                    placeholder="00000-0000"
+                    w={['100%', '180px']}
+                    borderColor="gray.500"
+                    isDisabled
+                  />
+                </Flex>
+              </Flex>
+              <Input
+                label="Nome*:"
+                placeholder="Nome completo"
+                name="name"
+                type="text"
+                error={errors?.name}
+                value={values?.name}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
+                borderColor="gray.500"
+                mt={[2, 5]}
+              />
+              <Input
+                label="Pessoa referência:"
+                placeholder="Referência do eleitor"
+                name="reference"
+                type="text"
+                error={errors?.reference}
+                value={values.reference}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
+                borderColor="gray.500"
+                mt={[2, 5]}
+              />
+              <Input
+                label="E-mail:"
+                placeholder="E-mail"
+                name="email"
+                type="email"
+                error={errors?.email}
+                value={values?.email}
+                onChange={(e) =>
+                  setValues({ ...values, [e.target.name]: e.target.value })
+                }
+                borderColor="gray.500"
+                mt={[2, 5]}
+              />
+              <Box>
+                <Flex
+                  justifyContent={['flex-start', 'space-between']}
+                  alignItems={['flex-start', 'flex-end']}
+                  flexDirection={['column', 'row']}
+                  gap={[5, '48px']}
+                  mt={[2, 5]}
+                >
+                  <Input
+                    label="Data de nascimento:"
+                    name="birthdate"
+                    type="date"
+                    error={errors?.birthdate}
+                    value={values?.birthdate}
+                    onChange={(e) =>
+                      setValues({ ...values, [e.target.name]: e.target.value })
+                    }
+                    placeholder="Data de Nascimento"
+                    borderColor="gray.500"
+                    css={{
+                      '&::-webkit-calendar-picker-indicator': {
+                        color: 'gray.500',
+                      },
+                    }}
+                  />
+
+                  <Box w="100%">
+                    <Text color="gray.500" fontWeight="400" margin="0">
+                      Gênero:
+                    </Text>
+                    <Select
+                      placeholder="Gênero"
+                      borderColor="gray.500"
+                      bg="gray.50"
+                      _placeholder={{ color: 'gray.500' }}
+                      color="gray.600"
+                      value={values?.gender}
+                      name="gender"
+                      onChange={(e) =>
+                        setValues({
+                          ...values,
+                          [e.target.name]: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="MALE">Masculino</option>
+                      <option value="FEMALE">Feminino</option>
+                    </Select>
+                  </Box>
+                </Flex>
+              </Box>
+              <Box>
+                <Flex mt={[2, 5]}>
+                  <Text color={'gray.500'} fontWeight="400" margin="0">
+                    Endereço:
+                  </Text>
+                  {cepLoading && (
+                    <Spinner color={office?.primary_color} size="sm" />
+                  )}
+                </Flex>
+                <Flex
+                  mb="24px"
+                  justifyContent={['flex-start']}
+                  alignItems={['flex-start', 'flex-end']}
+                  flexDirection={['column', 'row']}
+                  gap={[5, '44px']}
+                >
+                  <PatternFormat
+                    customInput={Input}
+                    type="text"
+                    format="#####-###"
+                    mask="_"
+                    name="zip"
+                    error={errors?.zip}
+                    value={values?.zipMask}
+                    onValueChange={(value) => {
+                      setValues({
+                        ...values,
+                        zip: value?.value,
+                        zipMask: value?.formattedValue,
+                      });
+                    }}
+                    borderColor="gray.500"
+                    w={['100%', '200px']}
+                    placeholder="CEP"
+                  />
+                  <Button onClick={getCep} width="280px">
+                    {loading ? <Spinner color="white" /> : 'Buscar'}
+                  </Button>
+                </Flex>
+
+                <Flex
+                  mb="24px"
+                  justifyContent={['flex-start', 'space-between']}
+                  alignItems={['flex-start', 'flex-end']}
+                  flexDirection={['column', 'row']}
+                  gap={[5, '44px']}
+                >
+                  <Input
+                    placeholder="Rua"
+                    name="street"
+                    type="text"
+                    error={errors?.street}
+                    value={values.street}
+                    onChange={(e) =>
+                      setValues({ ...values, [e.target.name]: e.target.value })
+                    }
+                    borderColor="gray.500"
+                    flex={1}
+                  />
+                  <Input
+                    placeholder="Bairro"
+                    name="neighborhood"
+                    type="text"
+                    error={errors?.neighborhood}
+                    value={values.neighborhood}
+                    onChange={(e) =>
+                      setValues({ ...values, [e.target.name]: e.target.value })
+                    }
+                    borderColor="gray.500"
+                    flex={1}
+                  />
+                  <Input
+                    name="address_number"
+                    type="number"
+                    error={errors?.address_number}
+                    value={values.address_number}
+                    onChange={(e) =>
+                      setValues({ ...values, [e.target.name]: e.target.value })
+                    }
+                    placeholder="Numero"
+                    w={['100%', '200px']}
+                    borderColor="gray.500"
+                  />
+                </Flex>
+                <Flex
+                  mb="24px"
+                  justifyContent={['flex-start', 'space-between']}
+                  alignItems={['flex-start', 'flex-end']}
+                  flexDirection={['column', 'row']}
+                  gap={[5, '44px']}
+                >
+                  <Input
+                    placeholder="Complemento"
+                    name="complement"
+                    type="text"
+                    error={errors?.complement}
+                    value={values.complement}
+                    onChange={(e) =>
+                      setValues({ ...values, [e.target.name]: e.target.value })
+                    }
+                    borderColor="gray.500"
+                  />
+                  <Input
+                    placeholder="Cidade"
+                    name="city"
+                    type="text"
+                    error={errors?.city}
+                    value={values.city}
+                    onChange={(e) =>
+                      setValues({ ...values, [e.target.name]: e.target.value })
+                    }
+                    borderColor="gray.500"
+                  />
+                  <Input
+                    placeholder="UF"
+                    name="state"
+                    type="text"
+                    error={errors?.state}
+                    value={values.state}
+                    onChange={(e) =>
+                      setValues({ ...values, [e.target.name]: e.target.value })
+                    }
+                    borderColor="gray.500"
+                  />
+                </Flex>
+              </Box>
+            </Flex>
+          </ModalBody>
+
+          <ModalFooter w="100%" alignItems="center" justifyContent="center">
+            <Button onClick={handleRegisterVoter} width="280px">
+              {loading ? <Spinner color="white" /> : 'Cadastrar Eleitor'}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <Text
         color="gray.500"
         fontWeight="semibold"
@@ -356,21 +775,19 @@ export default function DemandRegister() {
                 px={'20px'}
                 py={'10px'}
                 alignItems="center"
-                gap="40px"
+                gap={['12px', '40px']}
                 borderRadius="4px"
                 cursor="pointer"
               >
                 <Text color="gray.400">Eleitor não encontrado</Text>
                 {role?.eleitor_page > 1 && (
                   <ChakraButton
-                    as="a"
                     w="220px"
                     h="30px"
-                    href={`${process.env.REACT_APP_WEB}/eleitor/registrar-eleitor/${values?.cellphone}`}
-                    target="_blank"
                     bg={office?.primary_color}
                     color={office?.secondary_color}
                     _hover={{ bg: office?.primary_color }}
+                    onClick={() => onOpenModal()}
                   >
                     Cadastrar eleitor
                   </ChakraButton>
