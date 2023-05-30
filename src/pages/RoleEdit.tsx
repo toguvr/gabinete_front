@@ -4,6 +4,7 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button as ChakraButton,
   Flex,
@@ -256,19 +257,19 @@ export default function RoleEdit() {
         onClose={onClose}
         isCentered
       >
-        {/* <AlertDialogOverlay > */}
-        <AlertDialogContent mx="12px">
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            {dialogTitle}
-          </AlertDialogHeader>
+        <AlertDialogOverlay>
+          <AlertDialogContent mx="12px">
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {dialogTitle}
+            </AlertDialogHeader>
 
-          <AlertDialogBody>{dialogText}</AlertDialogBody>
+            <AlertDialogBody>{dialogText}</AlertDialogBody>
 
-          <AlertDialogFooter>
-            <ChakraButton onClick={onClose}>Ok</ChakraButton>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-        {/* </AlertDialogOverlay> */}
+            <AlertDialogFooter>
+              <ChakraButton onClick={onClose}>Ok</ChakraButton>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
       </AlertDialog>
 
       <AlertDialog
