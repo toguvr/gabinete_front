@@ -12,7 +12,7 @@ import Tarefa from '../pages/Tarefa';
 import Voter from '../pages/Voter';
 import VoterEdit from '../pages/VoterEdit';
 import VoterRegister from '../pages/VoterRegister';
-
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../contexts/AuthContext';
 import ChangePassword from '../pages/ChangePassword';
 import DemandEdit from '../pages/DemandEdit';
@@ -28,6 +28,7 @@ import NotPay from '../pages/NotPay';
 import SignUpOwner from '../pages/SignUpOwner';
 import SignUpOffice from '../pages/SignUpOffice';
 import NotOffice from '../pages/NotOffice';
+import nossogabinete from '../assets/nossogabinete.png';
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -98,60 +99,77 @@ const AuthenticatedRoutes = ({ isPrivate }: PrivateRoutesProps) => {
 };
 
 export default function AppRoutes() {
+  const { isAuthenticated, office } = useAuth();
+
+  const title = isAuthenticated ? ` Gabinete ${office.name}` : 'Nosso Gabinete';
+  const favicon = isAuthenticated ? office.logo_url : nossogabinete;
+  const faviconType = isAuthenticated ? 'image/png' : 'image/png';
   return (
-    <Routes>
-      <Route element={<AuthenticatedRoutes isPrivate />}>
-        <Route path="/home" element={<Home />} />
+    <>
+      <Helmet>
+        <title>{title}</title>
+        <link rel="icon" href={favicon} type={faviconType} />
+      </Helmet>
+      <Routes>
+        <Route element={<AuthenticatedRoutes isPrivate />}>
+          <Route path="/home" element={<Home />} />
 
-        {/* <Route path="/solicitacoes" element={<Solicitations />} /> */}
+          {/* <Route path="/solicitacoes" element={<Solicitations />} /> */}
 
-        <Route path="/equipe" element={<Permission />} />
-        <Route path="/equipe/:id" element={<PermissionEdit />} />
-        <Route
-          path="/equipe/registrar-equipe"
-          element={<PermissionRegister />}
-        />
+          <Route path="/equipe" element={<Permission />} />
+          <Route path="/equipe/:id" element={<PermissionEdit />} />
+          <Route
+            path="/equipe/registrar-equipe"
+            element={<PermissionRegister />}
+          />
 
-        <Route path="/eleitor" element={<Voter />} />
-        <Route path="/eleitor/:id" element={<VoterEdit />} />
-        <Route path="/eleitor/registrar-eleitor" element={<VoterRegister />} />
-        <Route
-          path="/eleitor/registrar-eleitor/:id"
-          element={<VoterRegister />}
-        />
+          <Route path="/eleitor" element={<Voter />} />
+          <Route path="/eleitor/:id" element={<VoterEdit />} />
+          <Route
+            path="/eleitor/registrar-eleitor"
+            element={<VoterRegister />}
+          />
+          <Route
+            path="/eleitor/registrar-eleitor/:id"
+            element={<VoterRegister />}
+          />
 
-        <Route path="/demanda" element={<Demand />} />
-        <Route path="/demanda/:id" element={<DemandEdit />} />
-        <Route
-          path="/demanda/registrar-demanda/:id"
-          element={<DemandRegister />}
-        />
-        <Route path="/demanda/registrar-demanda" element={<DemandRegister />} />
+          <Route path="/demanda" element={<Demand />} />
+          <Route path="/demanda/:id" element={<DemandEdit />} />
+          <Route
+            path="/demanda/registrar-demanda/:id"
+            element={<DemandRegister />}
+          />
+          <Route
+            path="/demanda/registrar-demanda"
+            element={<DemandRegister />}
+          />
 
-        <Route path="/cargo" element={<Roles />} />
-        <Route path="/cargo/registrar-cargo" element={<RoleRegister />} />
-        <Route path="/cargo/:id" element={<RoleEdit />} />
+          <Route path="/cargo" element={<Roles />} />
+          <Route path="/cargo/registrar-cargo" element={<RoleRegister />} />
+          <Route path="/cargo/:id" element={<RoleEdit />} />
 
-        <Route path="/tarefa" element={<Tarefa />} />
+          <Route path="/tarefa" element={<Tarefa />} />
 
-        <Route path="/perfil" element={<Perfil />} />
-        <Route path="/gabinete" element={<Gabinete />} />
-        <Route path="/trocar-senha" element={<ChangePassword />} />
-        <Route path="/sem-permissao" element={<NotPermission />} />
-        <Route path="/sem-vinculo" element={<NoBond />} />
-        <Route path="/sem-gabinete" element={<NotOffice />} />
-        <Route path="/cadastrar-gabinete" element={<SignUpOffice />} />
-        <Route path="/pagamento-nao-efetuado" element={<NotPay />} />
-      </Route>
+          <Route path="/perfil" element={<Perfil />} />
+          <Route path="/gabinete" element={<Gabinete />} />
+          <Route path="/trocar-senha" element={<ChangePassword />} />
+          <Route path="/sem-permissao" element={<NotPermission />} />
+          <Route path="/sem-vinculo" element={<NoBond />} />
+          <Route path="/sem-gabinete" element={<NotOffice />} />
+          <Route path="/cadastrar-gabinete" element={<SignUpOffice />} />
+          <Route path="/pagamento-nao-efetuado" element={<NotPay />} />
+        </Route>
 
-      <Route element={<AuthenticatedRoutes isPrivate={false} />}>
-        <Route path="/" element={<Signin />} />
-        <Route path="/esqueci-senha" element={<ForgetPassword />} />
-        <Route path="/cadastrar-proprietario" element={<SignUpOwner />} />
-      </Route>
-      <Route path="/redefinir-senha" element={<RedefinePassword />} />
+        <Route element={<AuthenticatedRoutes isPrivate={false} />}>
+          <Route path="/" element={<Signin />} />
+          <Route path="/esqueci-senha" element={<ForgetPassword />} />
+          <Route path="/cadastrar-proprietario" element={<SignUpOwner />} />
+        </Route>
+        <Route path="/redefinir-senha" element={<RedefinePassword />} />
 
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
   );
 }
