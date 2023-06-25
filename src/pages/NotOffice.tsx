@@ -16,7 +16,7 @@ export default function NotOffice() {
       align={'center'}
       justify={'center'}
       flexDirection={'column'}
-      bg="linear-gradient(180deg, #0084DE 0%, #004279 100%)"
+      bg="linear-gradient(180deg, #265B5A 0%, #073431 100%)"
       px={['16px', 0]}
     >
       <Flex
@@ -34,10 +34,10 @@ export default function NotOffice() {
         </Text>
         <Button
           onClick={() => navigate('/cadastrar-gabinete')}
-          bg={'blue.600'}
+          bg={'#00A39C'}
           color={'white'}
           _hover={{
-            bg: 'blue.700',
+            bg: '#265B5A',
           }}
           mt="20px"
           w={['240px', '372px']}
@@ -48,10 +48,10 @@ export default function NotOffice() {
           onClick={handleSignOut}
           bg={'transparent'}
           border={'1px solid'}
-          borderColor={'blue.600'}
-          color={'blue.600'}
+          borderColor={'#00A39C'}
+          color={'#00A39C'}
           _hover={{
-            bg: 'blue.700',
+            bg: '#265B5A',
             color: 'white',
           }}
           mt="20px"

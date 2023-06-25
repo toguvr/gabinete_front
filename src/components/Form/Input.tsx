@@ -24,6 +24,7 @@ interface InputProps extends ChakraInputProps {
   error?: string | null;
   value?: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  focusBorderColor?: string;
 }
 
 export default function Input({
@@ -38,6 +39,7 @@ export default function Input({
   name,
   label,
   disabled,
+  focusBorderColor,
   error = null,
   ...rest
 }: InputProps) {
@@ -76,7 +78,9 @@ export default function Input({
           color="gray.700"
           fontSize="16px"
           fontWeight="400"
-          focusBorderColor={office?.primary_color}
+          focusBorderColor={
+            focusBorderColor ? focusBorderColor : office?.primary_color
+          }
           type={type}
           placeholder={placeholder}
           id={name}

@@ -1,34 +1,30 @@
 import {
-  Avatar,
+  Box,
+  Button,
+  extendTheme,
   Flex,
   Icon,
   Progress,
+  Select,
   Spinner,
   Text,
-  Input as ChakraInput,
   useToast,
   VStack,
-  Box,
-  Select,
-  Button,
 } from '@chakra-ui/react';
+import { FormEvent, useCallback, useState } from 'react';
 import {
-  IoAddCircleSharp,
-  IoCamera,
   IoEyeOffOutline,
   IoEyeOutline,
   IoLockClosedOutline,
 } from 'react-icons/io5';
-import resize from '../components/Resize';
-import { ChangeEvent, FormEvent, useCallback, useState } from 'react';
-import api from '../services/api';
-import Input from '../components/Form/Input';
-import { StateProps } from '../dtos';
-import * as Yup from 'yup';
-import getValidationErrors from '../utils/validationError';
 import { PatternFormat } from 'react-number-format';
 import { useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
+import Input from '../components/Form/Input';
 import { useAuth } from '../contexts/AuthContext';
+import { StateProps } from '../dtos';
+import api from '../services/api';
+import getValidationErrors from '../utils/validationError';
 
 interface SignUpProps {
   name: string;
@@ -48,6 +44,13 @@ export default function SignUpOwner() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { signIn } = useAuth();
+  const theme = extendTheme({
+    colors: {
+      myColor: {
+        500: '#265B5A',
+      },
+    },
+  });
 
   const phoneRegExp =
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -148,7 +151,7 @@ export default function SignUpOwner() {
       justify={'center'}
       padding={['12px', '56px 156px']}
       flexDirection={'column'}
-      bg="linear-gradient(180deg, #0084DE 0%, #004279 100%)"
+      bg="linear-gradient(180deg, #265B5A 0%, #073431 100%)"
     >
       <Flex
         bg="white"
@@ -160,7 +163,8 @@ export default function SignUpOwner() {
         flexDir={'column'}
         borderRadius="8px"
       >
-        <Progress value={50} w={['100%', '100%', '450px']} />
+        <Progress colorScheme="gray" value={50} w={['100%', '100%', '450px']} />
+
         <Text fontSize={'24px'} color="gray.500" fontWeight="600" mt="24px">
           Cadastrar Proprietário
         </Text>
@@ -172,6 +176,7 @@ export default function SignUpOwner() {
             placeholder="Nome completo"
             name="name"
             type="text"
+            focusBorderColor="#00A39C"
             error={errors?.name}
             value={values?.name}
             onChange={(e) =>
@@ -185,6 +190,7 @@ export default function SignUpOwner() {
             </Text>
             <Select
               placeholder="Gênero"
+              focusBorderColor="#00A39C"
               borderColor={errors.gender ? 'red' : 'gray.500'}
               bg="gray.50"
               _placeholder={{ color: 'gray.500' }}
@@ -208,6 +214,7 @@ export default function SignUpOwner() {
             color="gray.500"
             label="E-mail:"
             placeholder="E-mail"
+            focusBorderColor="#00A39C"
             name="email"
             type="email"
             error={errors?.email}
@@ -234,6 +241,7 @@ export default function SignUpOwner() {
                   cellphoneMask: value?.formattedValue,
                 })
               }
+              focusBorderColor="#00A39C"
               type="tel"
               format="(##) #####-####"
               borderColor="gray.500"
@@ -243,6 +251,7 @@ export default function SignUpOwner() {
           <Input
             label="Senha:"
             onKeyPress={handleKeyPress}
+            focusBorderColor="#00A39C"
             name="password"
             value={values.password}
             error={errors?.password}
@@ -250,7 +259,7 @@ export default function SignUpOwner() {
               setValues({ ...values, [e.target.name]: e.target.value })
             }
             type={showPassword ? 'text' : 'password'}
-            leftIcon={<Icon as={IoLockClosedOutline} color="blue.500" />}
+            leftIcon={<Icon as={IoLockClosedOutline} color="#00A39C" />}
             rightIcon={
               <Button
                 _focus={{ outline: 'none' }}
@@ -261,7 +270,7 @@ export default function SignUpOwner() {
                 {showPassword ? (
                   <Icon fontSize="20px" as={IoEyeOffOutline} color="blue.500" />
                 ) : (
-                  <Icon fontSize="20px" as={IoEyeOutline} color="blue.500" />
+                  <Icon fontSize="20px" as={IoEyeOutline} color="#00A39C" />
                 )}
               </Button>
             }
@@ -271,10 +280,10 @@ export default function SignUpOwner() {
         </VStack>
         <Button
           onClick={handleSignUp}
-          bg={'blue.600'}
+          bg={'#00A39C'}
           color={'white'}
           _hover={{
-            bg: 'blue.700',
+            bg: '#265B5A',
           }}
           mt="40px"
           w={'280px'}

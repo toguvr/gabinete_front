@@ -198,7 +198,7 @@ export default function SignUpOffice() {
       justify={'center'}
       padding={['12px', '56px 156px']}
       flexDirection={'column'}
-      bg="linear-gradient(180deg, #0084DE 0%, #004279 100%)"
+      bg="linear-gradient(180deg, #265B5A 0%, #073431 100%)"
     >
       <Flex
         bg="white"
@@ -210,7 +210,11 @@ export default function SignUpOffice() {
         flexDir={'column'}
         borderRadius="8px"
       >
-        <Progress value={100} w={['100%', '100%', '450px']} />
+        <Progress
+          colorScheme="gray"
+          value={100}
+          w={['100%', '100%', '450px']}
+        />
         <Text fontSize={'24px'} color="gray.500" fontWeight="600" mt="24px">
           Cadastrar Gabinete
         </Text>
@@ -239,7 +243,7 @@ export default function SignUpOffice() {
                 <Icon
                   as={IoAddCircleSharp}
                   boxSize={5}
-                  color="blue.500"
+                  color="#00A39C"
                   w={8}
                   h={8}
                 />
@@ -257,6 +261,7 @@ export default function SignUpOffice() {
           <Input
             labelColor="gray.500"
             label="Nome:"
+            focusBorderColor="#00A39C"
             placeholder="Nome do Gabinete"
             name="name"
             type="text"
@@ -275,6 +280,7 @@ export default function SignUpOffice() {
               <Select
                 placeholder="Estado do Gabinete"
                 borderColor="gray.500"
+                focusBorderColor="#00A39C"
                 bg="gray.50"
                 _placeholder={{ color: 'gray.500' }}
                 color="gray.600"
@@ -304,6 +310,7 @@ export default function SignUpOffice() {
               </Text>
               <Select
                 placeholder="Cidade do Gabinete"
+                focusBorderColor="#00A39C"
                 borderColor="gray.500"
                 bg="gray.50"
                 _placeholder={{ color: 'gray.500' }}
@@ -336,6 +343,7 @@ export default function SignUpOffice() {
             </Text>
             <Select
               placeholder="Cargo do líder"
+              focusBorderColor="#00A39C"
               borderColor="gray.500"
               bg="gray.50"
               _placeholder={{ color: 'gray.500' }}
@@ -356,6 +364,7 @@ export default function SignUpOffice() {
             <Input
               color="gray.500"
               label="Cor primária:"
+              focusBorderColor="#00A39C"
               name="primary_color"
               type="color"
               error={errors?.primary_color}
@@ -369,6 +378,7 @@ export default function SignUpOffice() {
             <Input
               color="gray.500"
               label="Cor secundária:"
+              focusBorderColor="#00A39C"
               placeholder="Cargo do líder"
               name="secondary_color"
               type="color"
@@ -384,10 +394,10 @@ export default function SignUpOffice() {
         </VStack>
         <Button
           onClick={handleSignUp}
-          bg={'blue.600'}
+          bg={'#00A39C'}
           color={'white'}
           _hover={{
-            bg: 'blue.700',
+            bg: '#265B5A',
           }}
           mt="40px"
           w={'280px'}
