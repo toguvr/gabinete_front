@@ -122,8 +122,6 @@ export default function Home() {
   }, [office?.id]);
   useEffect(() => {}, []);
 
-  console.log('chartData', chartData);
-
   return (
     <HeaderSideBar>
       <Flex
