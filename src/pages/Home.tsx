@@ -6,6 +6,14 @@ import { MdHowToReg, MdOutlineChecklist } from 'react-icons/md';
 import { RiSuitcaseLine, RiTeamLine } from 'react-icons/ri';
 import { SiMicrosoftteams } from 'react-icons/si';
 import { Link } from 'react-router-dom';
+import {
+  LabelList,
+  LabelProps,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  XAxis,
+} from 'recharts';
 import HeaderSideBar from '../components/HeaderSideBar';
 import { useAuth } from '../contexts/AuthContext';
 import { PermissionByIdDTO, VoterDTO } from '../dtos';
@@ -17,10 +25,19 @@ interface IResumeOffice {
   user: number;
   voter: number;
 }
+interface IChartData {
+  date: string;
+  primaryValue: number;
+  secondaryValue: number;
+}
 
 export default function Home() {
   const { office, updateUser, user } = useAuth();
   const [resumeOffice, setResumeOffice] = useState({} as IResumeOffice);
+  const [chartData, setChartData] = useState<IChartData[]>([]);
+
+  const [hoverData, setHoverData] = useState<IChartData | null>(null);
+
   const [permissionBirthDates, setPermissionBirthDates] = useState(
     [] as PermissionByIdDTO[]
   );
@@ -30,6 +47,58 @@ export default function Home() {
     try {
       const response = await api.get(`/dashboard/resume-office/${office?.id}`);
       setResumeOffice(response.data);
+    } catch (error) {}
+  }
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      year: '2-digit',
+      month: 'short',
+      day: 'numeric',
+    };
+    return new Date(dateString).toLocaleDateString('pt-BR', options);
+  };
+
+  const handleMouseHover = (data: any) => {
+    if (data && data.activePayload) {
+      setHoverData(data.activePayload[0].payload);
+    }
+  };
+  const CustomizedLabel: React.FC<LabelProps> = ({ x, y, value }) => {
+    if (typeof x !== 'number' || typeof y !== 'number' || value === undefined) {
+      return null;
+    }
+    return (
+      <g>
+        <text x={x} y={y - 10} fill="#000" textAnchor="middle">
+          {value}
+        </text>
+      </g>
+    );
+  };
+
+  const renderCustomizedLabel: (props: LabelProps) => JSX.Element | null = (
+    props
+  ) => {
+    const { x, y, value } = props;
+
+    if (typeof x !== 'number' || typeof y !== 'number' || value === undefined) {
+      return null;
+    }
+
+    return (
+      <text x={x} y={y - 10} fill="#BEBEBE" textAnchor="middle">
+        {value}
+      </text>
+    );
+  };
+
+  async function getChartData() {
+    try {
+      const response = await api.get(`/dashboard/graph/${office?.id}`);
+      setChartData(response.data);
+
+      setHoverData(response.data[response.data.length - 1]);
     } catch (error) {}
   }
 
@@ -48,8 +117,12 @@ export default function Home() {
     if (office?.id) {
       getResumeOffice();
       getBirthDates();
+      getChartData();
     }
   }, [office?.id]);
+  useEffect(() => {}, []);
+
+  console.log('chartData', chartData);
 
   return (
     <HeaderSideBar>
@@ -378,21 +451,144 @@ export default function Home() {
                   </Flex>
                 ))}
             </Flex>
-            {/* <Flex
-              borderRadius="8px"
-              boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
-              background="white"
-              height="100%"
-              width="100%"
-            ></Flex> */}
           </Flex>
-          {/* <Flex
+          <Flex
             borderRadius="8px"
             boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
             background="white"
             height="100%"
-            width={{ base: '100%', md: 'calc(66% - 10px)' }}
-          ></Flex> */}
+            width="100%"
+            display="flex"
+            flexDirection="column"
+          >
+            <Flex
+              margin="20px 0px"
+              height="20px"
+              width="100%"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Text fontWeight="600" fontSize="20px" color="#718096">
+                Evolução do Gabinete
+              </Text>
+            </Flex>
+            <Flex
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              px={10}
+              pb={2}
+            >
+              <Flex alignItems="center">
+                {hoverData && (
+                  <>
+                    <Text
+                      fontFamily="Inter"
+                      fontSize="20px"
+                      lineHeight="30px"
+                      color="#525B72"
+                      mr="10px"
+                    >
+                      {new Date(hoverData.date).toLocaleString('pt-BR', {
+                        month: 'short',
+                      })}{' '}
+                      {new Date(hoverData.date).getFullYear()}
+                    </Text>
+                    <Text
+                      fontFamily="Inter"
+                      fontWeight="500"
+                      fontSize="20px"
+                      lineHeight="30px"
+                      color="#2D3648"
+                    >
+                      - {hoverData.primaryValue} eleitores
+                    </Text>
+                    <Text
+                      fontFamily="Inter"
+                      fontWeight="500"
+                      fontSize="20px"
+                      lineHeight="30px"
+                      color="#2D3648"
+                      ml="10px"
+                    >
+                      - {hoverData.secondaryValue} tarefas
+                    </Text>
+                  </>
+                )}
+              </Flex>
+            </Flex>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={chartData}
+                margin={{
+                  top: 80,
+                  right: 30,
+                  left: 30,
+                  bottom: 0,
+                }}
+                onMouseMove={handleMouseHover}
+              >
+                <XAxis
+                  dataKey="date"
+                  tick={{
+                    fontSize: '12px',
+                    fontFamily: 'Inter',
+                    fill: '#2D3648',
+                  }}
+                  padding={{ left: 10, right: 0 }}
+                  tickLine={false}
+                  interval={0}
+                  tickFormatter={(date: string) => {
+                    const [year, month, day] = date.split('-');
+                    const dateObj = new Date(
+                      parseInt(year),
+                      parseInt(month) - 1,
+                      parseInt(day)
+                    );
+                    return `${dateObj.toLocaleString('pt-BR', {
+                      month: 'short',
+                    })}/${dateObj.getFullYear()}`;
+                  }}
+                />
+
+                <Line
+                  type="monotone"
+                  dataKey="primaryValue"
+                  stroke="#BEBEBE"
+                  strokeWidth={3}
+                  dot={{ r: 6, fill: '#BEBEBE', strokeWidth: 0 }}
+                  activeDot={{ r: 8, fill: '#BEBEBE' }}
+                  isAnimationActive={false}
+                >
+                  <LabelList
+                    dataKey="primaryValue"
+                    position="top"
+                    fill="#BEBEBE"
+                    style={{ fontSize: '12px', fontWeight: 'bold' }}
+                    content={<CustomizedLabel />}
+                  />
+                </Line>
+
+                <Line
+                  type="monotone"
+                  dataKey="secondaryValue"
+                  stroke="#00A39C"
+                  strokeWidth={3}
+                  dot={{ r: 6, fill: '#00A39C', strokeWidth: 0 }}
+                  activeDot={{ r: 8, fill: '#00A39C' }}
+                  isAnimationActive={false}
+                >
+                  <LabelList
+                    dataKey="secondaryValue"
+                    position="top"
+                    fill="#00A39C"
+                    style={{ fontSize: '12px', fontWeight: 'bold' }}
+                    content={<CustomizedLabel />}
+                  />
+                </Line>
+              </LineChart>
+            </ResponsiveContainer>
+          </Flex>
         </Flex>
       </Flex>
     </HeaderSideBar>

@@ -18,7 +18,7 @@ export default function NotPay() {
       align={'center'}
       justify={'center'}
       flexDirection={'column'}
-      bg="linear-gradient(180deg, #0084DE 0%, #004279 100%)"
+      bg="linear-gradient(180deg, #265B5A 0%, #073431 100%)"
     >
       <Flex
         bg="white"
@@ -38,11 +38,11 @@ export default function NotPay() {
         <Button
           onClick={handleSignOut}
           width="100%"
-          bg="blue.600"
+          bg="#00A39C"
           color="white"
           mt="24px"
           _hover={{
-            bg: 'blue.700',
+            bg: '#265B5A',
           }}
         >
           Voltar
