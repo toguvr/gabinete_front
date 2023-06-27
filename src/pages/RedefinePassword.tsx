@@ -11,7 +11,11 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { FormEvent, useCallback, useState } from 'react';
-import { IoEyeOffOutline, IoEyeOutline, IoLockClosedOutline } from 'react-icons/io5';
+import {
+  IoEyeOffOutline,
+  IoEyeOutline,
+  IoLockClosedOutline,
+} from 'react-icons/io5';
 import { useLocation, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import LogoWhite from '../assets/logoWhite.png';
@@ -26,7 +30,9 @@ type RedefineFormInputs = {
 };
 
 export default function RedefinePassword() {
-  const [values, setValues] = useState<RedefineFormInputs>({} as RedefineFormInputs);
+  const [values, setValues] = useState<RedefineFormInputs>(
+    {} as RedefineFormInputs
+  );
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
@@ -42,7 +48,9 @@ export default function RedefinePassword() {
       setLoading(true);
       try {
         const schema = Yup.object().shape({
-          password: Yup.string().required('Senha obrigatória').min(6, 'Mínimo de 6 dígitos'),
+          password: Yup.string()
+            .required('Senha obrigatória')
+            .min(6, 'Mínimo de 6 dígitos'),
           confirmationPassword: Yup.string()
             .oneOf([Yup.ref('password')], 'Confirmação incorreta')
             .required('Senha obrigatória'),
@@ -118,18 +126,29 @@ export default function RedefinePassword() {
       justify={'center'}
       padding={'0 0 40px 0'}
       flexDirection={'column'}
-      bg="linear-gradient(180deg, #0084DE 0%, #004279 100%)"
+      bg="linear-gradient(180deg, #265B5A 0%, #073431 100%)"
     >
       {/* <Box height="40px" margin={'0 4px 40px 0'}>
         <Image src={LogoWhite} alt="Logo" />
       </Box> */}
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Box rounded={'sm'} bg="white" boxShadow={'lg'} p={['20px', '104px 80px 88px']}>
-          <Heading color="gray.600" size="md" display={'flex'} justifyContent="center">
+        <Box
+          rounded={'sm'}
+          bg="white"
+          boxShadow={'lg'}
+          p={['20px', '104px 80px 88px']}
+        >
+          <Heading
+            color="gray.600"
+            size="md"
+            display={'flex'}
+            justifyContent="center"
+          >
             Insira uma nova senha
           </Heading>
           <Text color="gray.600" mt="16px" fontSize="sm">
-            Digite uma nova senha e clique em confirmar para redefinição de senha.
+            Digite uma nova senha e clique em confirmar para redefinição de
+            senha.
           </Text>
           <Stack spacing={6} mt="24px">
             <Input
@@ -137,7 +156,10 @@ export default function RedefinePassword() {
               name="password"
               value={values.password}
               error={errors?.password}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              focusBorderColor="#00A39C"
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               type={showPassword ? 'text' : 'password'}
               leftIcon={<Icon as={IoLockClosedOutline} />}
               rightIcon={
@@ -148,9 +170,13 @@ export default function RedefinePassword() {
                   onClick={handleViewPassword}
                 >
                   {showPassword ? (
-                    <Icon color="blue.600" fontSize="20px" as={IoEyeOffOutline} />
+                    <Icon
+                      color="#00A39C"
+                      fontSize="20px"
+                      as={IoEyeOffOutline}
+                    />
                   ) : (
-                    <Icon color="blue.600" fontSize="20px" as={IoEyeOutline} />
+                    <Icon color="#00A39C" fontSize="20px" as={IoEyeOutline} />
                   )}
                 </Button>
               }
@@ -158,12 +184,15 @@ export default function RedefinePassword() {
             />
             <Input
               mt="6"
+              focusBorderColor="#00A39C"
               name="confirmationPassword"
               value={values.confirmationPassword}
               error={errors?.confirmationPassword}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               type={showPassword ? 'text' : 'password'}
-              leftIcon={<Icon as={IoLockClosedOutline} />}
+              leftIcon={<Icon as={IoLockClosedOutline} color="#00A39C" />}
               rightIcon={
                 <Button
                   _focus={{ outline: 'none' }}
@@ -172,9 +201,13 @@ export default function RedefinePassword() {
                   onClick={handleViewPassword}
                 >
                   {showPassword ? (
-                    <Icon color="blue.600" fontSize="20px" as={IoEyeOffOutline} />
+                    <Icon
+                      color="#00A39C"
+                      fontSize="20px"
+                      as={IoEyeOffOutline}
+                    />
                   ) : (
-                    <Icon color="blue.600" fontSize="20px" as={IoEyeOutline} />
+                    <Icon color="#00A39C" fontSize="20px" as={IoEyeOutline} />
                   )}
                 </Button>
               }
@@ -183,10 +216,10 @@ export default function RedefinePassword() {
             <Button
               onClick={handleResetPassword}
               mt="6"
-              bg={'blue.600'}
+              bg={'#00A39C'}
               color={'white'}
               _hover={{
-                bg: 'blue.700',
+                bg: '#265B5A',
               }}
             >
               {loading ? <Spinner color="white" /> : 'Confirmar'}
