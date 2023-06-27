@@ -117,7 +117,7 @@ export default function Signin() {
     >
       <Flex>
         <Stack alignItems="center" mx={'auto'} maxW={'lg'} py={12} px={6}>
-          <Img height="304px" width="327px" src={logo} />
+          <Img height="230px" width="250px" src={logo} />
 
           <Box
             rounded={'sm'}

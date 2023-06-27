@@ -41,7 +41,7 @@ interface SignUpOfficeProps {
 
 export default function SignUpOffice() {
   const [values, setValues] = useState({
-    primary_color: '#0066AA',
+    primary_color: '#00A39C',
     secondary_color: '#ffffff',
   } as SignUpOfficeProps);
   const [loadingPhoto] = useState(false);

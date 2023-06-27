@@ -460,7 +460,6 @@ export default function Home() {
             width="100%"
             display="flex"
             flexDirection="column"
-            bg="pink"
           >
             <Flex
               margin="20px 0px"
