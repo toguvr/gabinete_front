@@ -139,7 +139,7 @@ export default function Signin() {
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
               leftIcon={<Icon as={IoMailOutline} color="#00A39C" />}
-              placeholder="E-mail asdasdasd"
+              placeholder="E-mail"
             />
 
             <Input
