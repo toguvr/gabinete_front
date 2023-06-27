@@ -3,12 +3,12 @@ import {
   Button,
   Flex,
   Icon,
-  Image,
+  Img,
   Link,
   Spinner,
   Stack,
-  useToast,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { FormEvent, useCallback, useState } from 'react';
 import {
@@ -18,7 +18,7 @@ import {
   IoMailOutline,
 } from 'react-icons/io5';
 import * as Yup from 'yup';
-import LogoWhite from '../assets/logoWhite.png';
+import logo from '../assets/nossoGabienteLogo.png';
 import Input from '../components/Form/Input';
 import { useAuth } from '../contexts/AuthContext';
 import { StateProps } from '../dtos';
@@ -113,13 +113,12 @@ export default function Signin() {
       justify={'center'}
       padding={'0 0 40px 0'}
       flexDirection={'column'}
-      bg="linear-gradient(180deg, #0084DE 0%, #004279 100%)"
+      bg="linear-gradient(180deg, #265B5A 0%, #073431 100%)"
     >
-      {/* <Box height="40px" margin={'0 4px 40px 0'}>
-        <Image src={LogoWhite} alt="Logo" />
-      </Box> */}
       <Flex>
-        <Stack mx={'auto'} maxW={'lg'} py={12} px={6}>
+        <Stack alignItems="center" mx={'auto'} maxW={'lg'} py={12} px={6}>
+          <Img height="230px" width="250px" src={logo} />
+
           <Box
             rounded={'sm'}
             bg="white"
@@ -135,22 +134,25 @@ export default function Signin() {
               type="email"
               error={errors?.email}
               value={values.email}
+              focusBorderColor="#00A39C"
               onChange={(e) =>
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
-              leftIcon={<Icon as={IoMailOutline} color="blue.500" />}
-              placeholder="E-mail"
+              leftIcon={<Icon as={IoMailOutline} color="#00A39C" />}
+              placeholder="E-mail asdasdasd"
             />
+
             <Input
               onKeyPress={handleKeyPress}
               name="password"
+              focusBorderColor="#00A39C"
               value={values.password}
               error={errors?.password}
               onChange={(e) =>
                 setValues({ ...values, [e.target.name]: e.target.value })
               }
               type={showPassword ? 'text' : 'password'}
-              leftIcon={<Icon as={IoLockClosedOutline} color="blue.500" />}
+              leftIcon={<Icon as={IoLockClosedOutline} color="#00A39C" />}
               rightIcon={
                 <Button
                   _focus={{ outline: 'none' }}
@@ -162,10 +164,10 @@ export default function Signin() {
                     <Icon
                       fontSize="20px"
                       as={IoEyeOffOutline}
-                      color="blue.500"
+                      color="#00A39C"
                     />
                   ) : (
-                    <Icon fontSize="20px" as={IoEyeOutline} color="blue.500" />
+                    <Icon fontSize="20px" as={IoEyeOutline} color="#00A39C" />
                   )}
                 </Button>
               }
@@ -178,16 +180,16 @@ export default function Signin() {
               justify={'space-between'}
               mt="8px"
             >
-              <Link href="/esqueci-senha" color={'blue.600'} fontSize={'14px'}>
+              <Link href="/esqueci-senha" color={'#00A39C'} fontSize={'14px'}>
                 Esqueci senha
               </Link>
             </Flex>
             <Button
               onClick={handleSignIn}
-              bg={'blue.600'}
+              bg={'#00A39C'}
               color={'white'}
               _hover={{
-                bg: 'blue.700',
+                bg: '#265B5A',
               }}
               mt="24px"
               w={'100%'}
@@ -202,7 +204,7 @@ export default function Signin() {
             >
               <Link
                 href="/cadastrar-proprietario"
-                color={'blue.600'}
+                color={'#00A39C'}
                 fontSize={'14px'}
               >
                 Cadastre seu Gabinete

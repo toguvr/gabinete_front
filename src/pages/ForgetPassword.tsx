@@ -25,7 +25,9 @@ type ForgotPasswordFormInputs = {
 };
 
 export default function ForgetPassword() {
-  const [values, setValues] = useState<ForgotPasswordFormInputs>({} as ForgotPasswordFormInputs);
+  const [values, setValues] = useState<ForgotPasswordFormInputs>(
+    {} as ForgotPasswordFormInputs
+  );
   const [errors, setErrors] = useState<StateProps>({} as StateProps);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
@@ -39,7 +41,9 @@ export default function ForgetPassword() {
       setLoading(true);
       try {
         const schema = Yup.object().shape({
-          email: Yup.string().email('Email inválido').required('Email obrigatório'),
+          email: Yup.string()
+            .email('Email inválido')
+            .required('Email obrigatório'),
         });
 
         await schema.validate(values, {
@@ -102,18 +106,26 @@ export default function ForgetPassword() {
       justify={'center'}
       padding={'0 0 40px 0'}
       flexDirection={'column'}
-      bg="linear-gradient(180deg, #0084DE 0%, #004279 100%)"
+      bg="linear-gradient(180deg, #265B5A 0%, #073431 100%)"
     >
-      {/* <Box height="40px" margin={'0 4px 40px 0'}>
-        <Image src={LogoWhite} alt="Logo" />
-      </Box> */}
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
-        <Box rounded={'sm'} bg="white" boxShadow={'lg'} p={['20px', '104px 80px 88px']}>
-          <Heading color="gray.600" size="md" display={'flex'} justifyContent="center">
+        <Box
+          rounded={'sm'}
+          bg="white"
+          boxShadow={'lg'}
+          p={['20px', '104px 80px 88px']}
+        >
+          <Heading
+            color="gray.600"
+            size="md"
+            display={'flex'}
+            justifyContent="center"
+          >
             Esqueceu sua senha?
           </Heading>
           <Text color="gray.600" mt="16px" fontSize="sm">
-            Digite seu e-mail registrado abaixo para receber instruções de redefinição de senha.
+            Digite seu e-mail registrado abaixo para receber instruções de
+            redefinição de senha.
           </Text>
           <Stack spacing={6} mt="24px">
             <Input
@@ -121,16 +133,19 @@ export default function ForgetPassword() {
               type="email"
               error={errors?.email}
               value={values.email}
-              onChange={(e) => setValues({ ...values, [e.target.name]: e.target.value })}
+              focusBorderColor="#00A39C"
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
               leftIcon={<Icon as={IoMailOutline} />}
               placeholder="E-mail"
             />
             <Button
               onClick={handleResetPassword}
-              bg={'blue.600'}
+              bg={'#00A39C'}
               color={'white'}
               _hover={{
-                bg: 'blue.700',
+                bg: '#265B5A',
               }}
             >
               {loading ? <Spinner color="white" /> : 'Enviar'}
