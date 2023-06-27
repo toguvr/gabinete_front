@@ -456,7 +456,7 @@ export default function Home() {
             borderRadius="8px"
             boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
             background="white"
-            height="100%"
+            height={{ base: '50vh', md: '100%' }}
             width="100%"
             display="flex"
             flexDirection="column"
@@ -468,23 +468,28 @@ export default function Home() {
               alignItems="center"
               justifyContent="center"
             >
-              <Text fontWeight="600" fontSize="20px" color="#718096">
+              <Text
+                fontWeight="600"
+                fontSize={{ base: '16px', md: '20px' }}
+                color="#718096"
+              >
                 Evolução do Gabinete
               </Text>
             </Flex>
             <Flex
+              // direction={{ base: 'column', md: 'row' }}
               direction="row"
               justifyContent="space-between"
               alignItems="center"
               px={10}
-              pb={2}
+              pb={{ base: 0, md: 2 }}
             >
               <Flex alignItems="center">
                 {hoverData && (
                   <>
                     <Text
                       fontFamily="Inter"
-                      fontSize="20px"
+                      fontSize={{ base: '12px', md: '20px' }}
                       lineHeight="30px"
                       color="#525B72"
                       mr="10px"
@@ -497,7 +502,7 @@ export default function Home() {
                     <Text
                       fontFamily="Inter"
                       fontWeight="500"
-                      fontSize="20px"
+                      fontSize={{ base: '12px', md: '20px' }}
                       lineHeight="30px"
                       color="#2D3648"
                     >
@@ -506,7 +511,7 @@ export default function Home() {
                     <Text
                       fontFamily="Inter"
                       fontWeight="500"
-                      fontSize="20px"
+                      fontSize={{ base: '12px', md: '20px' }}
                       lineHeight="30px"
                       color="#2D3648"
                       ml="10px"
@@ -517,77 +522,70 @@ export default function Home() {
                 )}
               </Flex>
             </Flex>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={chartData}
-                margin={{
-                  top: 80,
-                  right: 30,
-                  left: 30,
-                  bottom: 0,
-                }}
-                onMouseMove={handleMouseHover}
-              >
-                <XAxis
-                  dataKey="date"
-                  tick={{
-                    fontSize: '12px',
-                    fontFamily: 'Inter',
-                    fill: '#2D3648',
+            <Flex w="full" h={{ base: '80%', md: 'full' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={chartData}
+                  margin={{
+                    top: 80,
+                    right: 30,
+                    left: 30,
+                    bottom: 0,
                   }}
-                  padding={{ left: 10, right: 0 }}
-                  tickLine={false}
-                  interval={0}
-                  tickFormatter={(date: string) => {
-                    const [year, month, day] = date.split('-');
-                    const dateObj = new Date(
-                      parseInt(year),
-                      parseInt(month) - 1,
-                      parseInt(day)
-                    );
-                    return `${dateObj.toLocaleString('pt-BR', {
-                      month: 'short',
-                    })}/${dateObj.getFullYear()}`;
-                  }}
-                />
-
-                <Line
-                  type="monotone"
-                  dataKey="primaryValue"
-                  stroke="#BEBEBE"
-                  strokeWidth={3}
-                  dot={{ r: 6, fill: '#BEBEBE', strokeWidth: 0 }}
-                  activeDot={{ r: 8, fill: '#BEBEBE' }}
-                  isAnimationActive={false}
+                  onMouseMove={handleMouseHover}
                 >
-                  <LabelList
+                  <XAxis
+                    dataKey="date"
+                    tick={{
+                      fontSize: '12px',
+                      fontFamily: 'Inter',
+                      fill: '#2D3648',
+                    }}
+                    padding={{ left: 10, right: 0 }}
+                    tickLine={false}
+                    interval={'preserveStartEnd'}
+                    tickFormatter={(date: string) => {
+                      const [year, month] = date.split('-');
+                      return `${month}/${year.slice(-2)}`;
+                    }}
+                  />
+                  <Line
+                    type="monotone"
                     dataKey="primaryValue"
-                    position="top"
-                    fill="#BEBEBE"
-                    style={{ fontSize: '12px', fontWeight: 'bold' }}
-                    content={<CustomizedLabel />}
-                  />
-                </Line>
-
-                <Line
-                  type="monotone"
-                  dataKey="secondaryValue"
-                  stroke="#00A39C"
-                  strokeWidth={3}
-                  dot={{ r: 6, fill: '#00A39C', strokeWidth: 0 }}
-                  activeDot={{ r: 8, fill: '#00A39C' }}
-                  isAnimationActive={false}
-                >
-                  <LabelList
+                    stroke="#BEBEBE"
+                    strokeWidth={3}
+                    dot={{ r: 6, fill: '#BEBEBE', strokeWidth: 0 }}
+                    activeDot={{ r: 8, fill: '#BEBEBE' }}
+                    isAnimationActive={false}
+                  >
+                    <LabelList
+                      dataKey="primaryValue"
+                      position="top"
+                      fill="#BEBEBE"
+                      style={{ fontSize: '12px', fontWeight: 'bold' }}
+                      content={<CustomizedLabel />}
+                    />
+                  </Line>
+                  <Line
+                    type="monotone"
                     dataKey="secondaryValue"
-                    position="top"
-                    fill="#00A39C"
-                    style={{ fontSize: '12px', fontWeight: 'bold' }}
-                    content={<CustomizedLabel />}
-                  />
-                </Line>
-              </LineChart>
-            </ResponsiveContainer>
+                    stroke="#00A39C"
+                    strokeWidth={3}
+                    dot={{ r: 6, fill: '#00A39C', strokeWidth: 0 }}
+                    activeDot={{ r: 8, fill: '#00A39C' }}
+                    isAnimationActive={false}
+                  >
+                    <LabelList
+                      dataKey="secondaryValue"
+                      position="top"
+                      fill="#00A39C"
+                      style={{ fontSize: '12px', fontWeight: 'bold' }}
+                      content={<CustomizedLabel />}
+                    />
+                  </Line>
+                </LineChart>
+              </ResponsiveContainer>
+            </Flex>
           </Flex>
         </Flex>
       </Flex>
