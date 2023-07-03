@@ -24,6 +24,7 @@ import {
 import { ReactNode, useEffect, useState } from 'react';
 import { IconType } from 'react-icons';
 import { BiArrowBack, BiTask } from 'react-icons/bi';
+import { HiChartBarSquare } from 'react-icons/hi2';
 import { BsListTask } from 'react-icons/bs';
 import { FiHome, FiMenu } from 'react-icons/fi';
 import { IoAlbumsOutline } from 'react-icons/io5';
@@ -70,6 +71,12 @@ const LinkItems: Array<LinkItemProps> = [
     route: '/tarefa',
     icon: BiTask,
     permissionName: 'tarefas_page',
+  },
+  {
+    name: 'Currículo',
+    route: '/curriculum',
+    icon: HiChartBarSquare,
+    permissionName: 'curriculum_page',
   },
   // {
   //   name: "Solicitações",
