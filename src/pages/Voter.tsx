@@ -147,7 +147,7 @@ export default function Voter() {
       return toast({
         title:
           err?.response?.data?.message ||
-          'Ocorreu um erro ao excluir o eleitor, tente novamente',
+          'Ocorreu um erro ao excluir o apoiador, tente novamente',
         status: 'error',
         position: 'top-right',
 
@@ -387,12 +387,12 @@ export default function Voter() {
                 </View>
 
                 <TextPDF style={styles.tableSubTitle}>
-                  Lista de Eleitores
+                  Lista de Apoiadores
                 </TextPDF>
 
                 <View style={styles.tableContainer}>
                   <View style={styles.rowTitle}>
-                    <TextPDF style={styles.voter}>Eleitor</TextPDF>
+                    <TextPDF style={styles.voter}>Apoiador</TextPDF>
                     <TextPDF style={styles.reference}>Referência</TextPDF>
                     <TextPDF style={styles.cellphone}>Telefone</TextPDF>
                   </View>
@@ -438,7 +438,7 @@ export default function Voter() {
         <AlertDialogOverlay>
           <AlertDialogContent mx="12px">
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Deseja excluir este eleitor?
+              Deseja excluir este apoiador?
             </AlertDialogHeader>
 
             <AlertDialogBody>
@@ -522,7 +522,7 @@ export default function Voter() {
           fontSize="20px"
           ml={[0, '28px']}
         >
-          Eleitor
+          Apoiador
           {loading && (
             <Spinner color={office?.primary_color} ml="4" size="sm" />
           )}
@@ -532,7 +532,7 @@ export default function Voter() {
             onClick={() => navigate('/eleitor/registrar-eleitor')}
             w={['160px', '280px']}
           >
-            Cadastrar eleitor
+            Cadastrar apoiador
           </Button>
         )}
       </Flex>

@@ -253,7 +253,7 @@ export default function Home() {
               top="20px"
               left={{ base: '10px', md: '16px' }}
             >
-              Eleitores
+              Apoiadores
             </Text>
             <Text
               color="#48BB78"
@@ -504,7 +504,7 @@ export default function Home() {
                       lineHeight="30px"
                       color="#2D3648"
                     >
-                      - {hoverData.primaryValue} eleitores
+                      - {hoverData.primaryValue} apoiadores
                     </Text>
                     <Text
                       fontFamily="Inter"
