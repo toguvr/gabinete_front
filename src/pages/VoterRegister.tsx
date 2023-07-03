@@ -92,8 +92,8 @@ export default function VoterRegister() {
         await api.post('/voter', body);
 
         toast({
-          title: 'Eleitor cadastrado com sucesso',
-          description: 'Você cadastrou um eleitor.',
+          title: 'Apoiador cadastrado com sucesso',
+          description: 'Você cadastrou um apoiador.',
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -111,7 +111,7 @@ export default function VoterRegister() {
           return toast({
             title:
               err.response.data.message ||
-              'Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais',
+              'Ocorreu um erro ao cadastrar o apoiador, cheque as credenciais',
 
             status: 'error',
             position: 'top-right',
@@ -121,7 +121,7 @@ export default function VoterRegister() {
         }
         return toast({
           title:
-            'Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais',
+            'Ocorreu um erro ao cadastrar o apoiador, cheque as credenciais',
 
           status: 'error',
           position: 'top-right',
@@ -216,7 +216,7 @@ export default function VoterRegister() {
       }
       return toast({
         title:
-          err?.response?.data?.message || 'Eleitor registrado no gabinete.',
+          err?.response?.data?.message || 'Apoiador registrado no gabinete.',
         status: 'warning',
         position: 'top-right',
         duration: 3000,
@@ -273,11 +273,11 @@ export default function VoterRegister() {
         <AlertDialogOverlay>
           <AlertDialogContent mx="12px">
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Eleitor criado com sucesso!
+              Apoiador criado com sucesso!
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Deseja adicionar uma demanda para este eleitor?
+              Deseja adicionar uma demanda para este apoiador?
             </AlertDialogBody>
 
             <AlertDialogFooter>
@@ -301,7 +301,7 @@ export default function VoterRegister() {
         </AlertDialogOverlay>
       </AlertDialog>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
-        Cadastrar Eleitor
+        Cadastrar Apoiador
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
         <Stack spacing={[5, 8]} mt={['24px', '40px']} w="852px">
@@ -386,7 +386,7 @@ export default function VoterRegister() {
           <Input
             labelColor={!verify ? 'gray.300' : 'gray.500'}
             label="Referência:"
-            placeholder="Referência do eleitor"
+            placeholder="Referência do apoiador"
             name="reference"
             type="text"
             error={errors?.reference}

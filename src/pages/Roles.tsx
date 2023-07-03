@@ -319,7 +319,7 @@ export default function Roles() {
               <Th color="gray.600">Home</Th>
               <Th color="gray.600">Cargo</Th>
               <Th color="gray.600">Equipe</Th>
-              <Th color="gray.600">Eleitor</Th>
+              <Th color="gray.600">Apoiador</Th>
               <Th color="gray.600">Demanda</Th>
               <Th color="gray.600">Tarefa</Th>
               {role?.cargo_page > 1 && (

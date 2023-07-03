@@ -442,7 +442,7 @@ export default function Demand() {
 
                 <View style={styles.tableContainer}>
                   <View style={styles.rowTitle}>
-                    <TextPDF style={styles.voter}>Eleitor</TextPDF>
+                    <TextPDF style={styles.voter}>Apoiador</TextPDF>
                     <TextPDF style={styles.status}>Status</TextPDF>
                     <TextPDF style={styles.title}>Título</TextPDF>
                     <TextPDF style={styles.description}>Descrição</TextPDF>
@@ -767,7 +767,7 @@ export default function Demand() {
           >
             <Tr>
               <Th color="gray.600">Título</Th>
-              <Th color="gray.600">Eleitor</Th>
+              <Th color="gray.600">Apoiador</Th>
               <Th color="gray.600">Prazo</Th>
               <Th color="gray.600">Criador</Th>
               <Th color="gray.600">Responsável</Th>

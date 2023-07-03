@@ -129,8 +129,8 @@ export default function DemandRegister() {
         await api.post('/voter', body);
 
         toast({
-          title: 'Eleitor cadastrado com sucesso',
-          description: 'Você cadastrou um eleitor.',
+          title: 'Apoiador cadastrado com sucesso',
+          description: 'Você cadastrou um apoiador.',
           status: 'success',
           duration: 3000,
           isClosable: true,
@@ -149,7 +149,7 @@ export default function DemandRegister() {
           return toast({
             title:
               err.response.data.message ||
-              'Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais',
+              'Ocorreu um erro ao cadastrar o apoiador, cheque as credenciais',
 
             status: 'error',
             position: 'top-right',
@@ -159,7 +159,7 @@ export default function DemandRegister() {
         }
         return toast({
           title:
-            'Ocorreu um erro ao cadastrar o eleitor, cheque as credenciais',
+            'Ocorreu um erro ao cadastrar o apoiador, cheque as credenciais',
 
           status: 'error',
           position: 'top-right',
@@ -253,14 +253,14 @@ export default function DemandRegister() {
     try {
       if (values?.cellphone?.length === 0 || values?.cellphone === undefined) {
         setErrors({
-          cellphone: 'Telefone do eleitor obrigatório.',
+          cellphone: 'Telefone do apoiador obrigatório.',
         });
         return;
       }
 
       if (values?.cellphone?.length < 10) {
         setErrors({
-          cellphone: 'Telefone do eleitor deve ter mais de 10 caracteres.',
+          cellphone: 'Telefone do apoiador deve ter mais de 10 caracteres.',
         });
         return;
       }
@@ -416,7 +416,7 @@ export default function DemandRegister() {
             justifyContent="center"
           >
             <Text fontSize="20px" color="gray.500" fontWeight="semibold">
-              Cadastrar Eleitor
+              Cadastrar Apoiador
             </Text>
           </ModalHeader>
 
@@ -477,7 +477,7 @@ export default function DemandRegister() {
               />
               <Input
                 label="Pessoa referência:"
-                placeholder="Referência do eleitor"
+                placeholder="Referência do apoiador"
                 name="reference"
                 type="text"
                 error={errors?.reference}
@@ -683,7 +683,7 @@ export default function DemandRegister() {
 
           <ModalFooter w="100%" alignItems="center" justifyContent="center">
             <Button onClick={handleRegisterVoter} width="280px">
-              {loading ? <Spinner color="white" /> : 'Cadastrar Eleitor'}
+              {loading ? <Spinner color="white" /> : 'Cadastrar Apoiador'}
             </Button>
           </ModalFooter>
         </ModalContent>
@@ -779,7 +779,7 @@ export default function DemandRegister() {
                 borderRadius="4px"
                 cursor="pointer"
               >
-                <Text color="gray.400">Eleitor não encontrado</Text>
+                <Text color="gray.400">Apoiador não encontrado</Text>
                 {role?.eleitor_page > 1 && (
                   <ChakraButton
                     w="220px"
@@ -789,7 +789,7 @@ export default function DemandRegister() {
                     _hover={{ bg: office?.primary_color }}
                     onClick={() => onOpenModal()}
                   >
-                    Cadastrar eleitor
+                    Cadastrar apoiador
                   </ChakraButton>
                 )}
               </Flex>

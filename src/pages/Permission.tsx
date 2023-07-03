@@ -221,7 +221,7 @@ export default function Permission() {
         <AlertDialogOverlay>
           <AlertDialogContent mx="12px">
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Deseja excluir este eleitor?
+              Deseja excluir este apoiador?
             </AlertDialogHeader>
 
             <AlertDialogBody>

@@ -96,9 +96,9 @@ export default function RoleEdit() {
         onOpen();
         break;
       case 'eleitor_page':
-        setDialogTitle('Eleitor');
+        setDialogTitle('Apoiador');
         setDialogText(
-          "Para que o usuário não tenha acesso aos eleitores, utilize o 'Desativado', para ter acesso apenas a leitura, utilizar 'Leitor' e para ele ter acesso a edição, utilizar 'Editor.'"
+          "Para que o usuário não tenha acesso aos apoiadores, utilize o 'Desativado', para ter acesso apenas a leitura, utilizar 'Leitor' e para ele ter acesso a edição, utilizar 'Editor.'"
         );
         onOpen();
         break;
@@ -138,7 +138,7 @@ export default function RoleEdit() {
       values: values?.equipe_page,
     },
     {
-      name: 'Eleitor',
+      name: 'Apoiador',
       fix: 'eleitor_page',
       values: values?.eleitor_page,
     },
