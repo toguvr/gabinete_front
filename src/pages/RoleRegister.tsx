@@ -85,7 +85,7 @@ export default function RoleRegister() {
         onOpen();
         break;
       case 'eleitor_page':
-        setDialogTitle('Eleitor');
+        setDialogTitle('Apoiador');
         setDialogText(
           `Para que o usuário possa editar, excluir e criar, selecione 'Editor'.
           Para que o usuário tenha acesso a leitura da página, selecione 'Leitor'.
@@ -133,7 +133,7 @@ export default function RoleRegister() {
       values: values?.equipe_page,
     },
     {
-      name: 'Eleitor',
+      name: 'Apoiador',
       fix: 'eleitor_page',
       values: values?.eleitor_page,
     },

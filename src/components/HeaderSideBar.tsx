@@ -54,7 +54,7 @@ const LinkItems: Array<LinkItemProps> = [
     permissionName: 'equipe_page',
   },
   {
-    name: 'Eleitor',
+    name: 'Apoiador',
     route: '/eleitor',
     icon: SiMicrosoftteams,
     permissionName: 'eleitor_page',

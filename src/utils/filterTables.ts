@@ -3,7 +3,7 @@ export const rolePage = [
   { key: 1, value: 'name', label: 'Nome' },
   { key: 2, value: 'cargo_page', label: 'Cargo' },
   { key: 3, value: 'equipe_page', label: 'Equipe' },
-  { key: 4, value: 'eleitor_page', label: 'Eleitor' },
+  { key: 4, value: 'eleitor_page', label: 'Apoiador' },
   { key: 5, value: 'demandas_page', label: 'Demanda' },
   { key: 6, value: 'tarefas_page', label: 'Tarefa' },
 ];
@@ -33,7 +33,7 @@ export const voterPage = [
 export const demandPage = [
   { key: 0, value: 'all', label: 'Todos' },
   { key: 1, value: 'title', label: 'Título' },
-  { key: 2, value: 'voter', label: 'Eleitor' },
+  { key: 2, value: 'voter', label: 'Apoiador' },
   { key: 3, value: 'deadline', label: 'Prazo' },
   { key: 4, value: 'city', label: 'Cidade' },
   { key: 5, value: 'neighborhood', label: 'Bairro' },
@@ -47,5 +47,5 @@ export const taskPage = [
   { key: 2, value: 'title', label: 'Título' },
   { key: 3, value: 'status', label: 'Status' },
   { key: 4, value: 'priority', label: 'Prioridade' },
-  { key: 5, value: 'voter', label: 'Eleitor' },
+  { key: 5, value: 'voter', label: 'Apoiador' },
 ];

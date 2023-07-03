@@ -86,8 +86,8 @@ export default function VoterEdit() {
       await api.put('/voter', body);
 
       toast({
-        title: 'Eleitor atualizado com sucesso',
-        description: 'Você atualizou o eleitor.',
+        title: 'Apoiador atualizado com sucesso',
+        description: 'Você atualizou o apoiador.',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -104,7 +104,7 @@ export default function VoterEdit() {
         return toast({
           title:
             err.response.data.message ||
-            'Ocorreu um erro ao atualizar o eleitor, cheque as credenciais',
+            'Ocorreu um erro ao atualizar o apoiador, cheque as credenciais',
 
           status: 'error',
           position: 'top-right',
@@ -113,7 +113,7 @@ export default function VoterEdit() {
         });
       }
       return toast({
-        title: 'Ocorreu um erro ao atualizar o eleitor, cheque as credenciais',
+        title: 'Ocorreu um erro ao atualizar o apoiador, cheque as credenciais',
 
         status: 'error',
         position: 'top-right',
@@ -195,7 +195,7 @@ export default function VoterEdit() {
   return (
     <HeaderSideBar backRoute={true}>
       <Text color="gray.500" fontWeight="semibold" fontSize="20px">
-        Editar Eleitor
+        Editar Apoiador
         {voterLoading && <Spinner color={office?.primary_color} />}
       </Text>
       <Flex alignItems="center" justifyContent="center" as="form">
@@ -265,7 +265,7 @@ export default function VoterEdit() {
           />
           <Input
             label="Referência:"
-            placeholder="Referência do eleitor"
+            placeholder="Referência do apoiador"
             name="reference"
             type="text"
             error={errors?.reference}
