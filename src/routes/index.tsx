@@ -29,8 +29,8 @@ import SignUpOwner from '../pages/SignUpOwner';
 import SignUpOffice from '../pages/SignUpOffice';
 import NotOffice from '../pages/NotOffice';
 import nossogabinete from '../assets/nossogabinete.png';
-import Curriculum from '../pages/Curriculum';
-import CurriculumRegister from '../pages/CurriculumRegister';
+import Resume from '../pages/Resume';
+import ResumeRegister from '../pages/ResumeRegister';
 import PaymentMethodRegister from '../pages/PaymentMethodRegister';
 
 interface PrivateRoutesProps {
@@ -120,10 +120,10 @@ export default function AppRoutes() {
           {/* <Route path="/solicitacoes" element={<Solicitations />} /> */}
 
           <Route path="/equipe" element={<Permission />} />
-          <Route path="/curriculo" element={<Curriculum />} />
+          <Route path="/curriculo" element={<Resume />} />
           <Route
             path="/curriculo/registrar-curriculo"
-            element={<CurriculumRegister />}
+            element={<ResumeRegister />}
           />
           <Route path="/equipe/:id" element={<PermissionEdit />} />
           <Route

@@ -59,7 +59,7 @@ import { getFormatDate } from '../utils/date';
 import { voterPage } from '../utils/filterTables';
 import { paginationArray } from '../utils/pdfPagination';
 
-export default function Curriculum() {
+export default function Resume() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [filterFieldDateMask, setFilterFieldDateMask] = useState('');
@@ -81,7 +81,6 @@ export default function Curriculum() {
   const auth = useAuth();
   const [selectFilter, setSelectFilter] = useState('name');
   const [filterField, setFilterField] = useState('');
-  const [numberOfLines, setNumberOfLines] = useState(20);
   const [errors, setErrors] = useState({} as StateProps);
 
   const openDialog = (voter_id: string) => {
@@ -89,19 +88,6 @@ export default function Curriculum() {
     onOpenAlert();
   };
 
-  const getVoterList = async () => {
-    setData([] as VoterDTO[]);
-
-    setLoading(true);
-    try {
-      const response = await api.get(`/voter/office/${auth.office.id}`);
-
-      setData(response.data);
-    } catch (err) {
-    } finally {
-      setLoading(false);
-    }
-  };
   const handleDateOfBirthChange = (input: any) => {
     const dateRegEx = /^(\d{1,2})(\/)?(\d{1,2})?(\d{0,4})?$/;
     const match = input.match(dateRegEx);
@@ -125,9 +111,19 @@ export default function Curriculum() {
     setFilterField(input);
   };
 
-  useEffect(() => {
-    getVoterList();
-  }, []);
+  const getVoterList = async () => {
+    setData([] as VoterDTO[]);
+
+    setLoading(true);
+    try {
+      const response = await api.get(`/voter/office/${auth.office.id}`);
+      console.log('response.data', response.data);
+      setData(response.data);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const deleteVoter = async () => {
     setLoading(true);
@@ -272,160 +268,8 @@ export default function Curriculum() {
 
   useEffect(() => {
     setFilterField('');
+    getVoterList();
   }, [selectFilter]);
-
-  const MyDocument = () => {
-    return (
-      <Document>
-        {paginationArray(
-          data.filter((currentValue: any) => {
-            switch (selectFilter) {
-              case 'all':
-                return currentValue;
-              case 'name':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.name &&
-                    currentValue?.name
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'reference':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.reference &&
-                    currentValue?.reference
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'creator':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.creator?.name &&
-                    currentValue?.creator?.name
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'email':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.email &&
-                    currentValue?.email
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'birthdate':
-                if (filterField?.length >= 3) {
-                  return (
-                    getFormatDate(
-                      new Date(currentValue?.birthdate),
-                      'dd/MM/yyyy'
-                    ).indexOf(filterField) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'cellphone':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.cellphone &&
-                    currentValue?.cellphone
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'city':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.city &&
-                    currentValue?.city
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'neighborhood':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.neighborhood &&
-                    currentValue?.neighborhood
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              default:
-                return currentValue;
-            }
-          }),
-          numberOfLines
-        ).map((pageItems, index) => {
-          return (
-            <Page key={index} size="A4" style={styles.page}>
-              <View style={styles.table}>
-                <View style={styles.flexBetween}>
-                  {office?.logo_url && (
-                    <Image style={styles.image} src={office?.logo_url} />
-                  )}
-                  <TextPDF style={styles.tableTitle}>{office?.name}</TextPDF>
-                </View>
-
-                <TextPDF style={styles.tableSubTitle}>
-                  Lista de Apoiadores
-                </TextPDF>
-
-                <View style={styles.tableContainer}>
-                  <View style={styles.rowTitle}>
-                    <TextPDF style={styles.voter}>Apoiador</TextPDF>
-                    <TextPDF style={styles.reference}>Referência</TextPDF>
-                    <TextPDF style={styles.cellphone}>Telefone</TextPDF>
-                  </View>
-
-                  {pageItems.map((item: VoterDTO) => {
-                    return (
-                      <View
-                        style={
-                          item?.id === pageItems[pageItems.length - 1]?.id
-                            ? styles.finalRow
-                            : styles.row
-                        }
-                        key={item.id}
-                      >
-                        <TextPDF style={styles.voter}>{item?.name}</TextPDF>
-                        <TextPDF style={styles.reference}>
-                          {item?.reference}
-                        </TextPDF>
-                        <TextPDF style={styles.cellphone}>
-                          {item?.cellphone}
-                        </TextPDF>
-                      </View>
-                    );
-                  })}
-                  {/*<TableFooter items={data.items} />*/}
-                </View>
-              </View>
-            </Page>
-          );
-        })}
-      </Document>
-    );
-  };
 
   return (
     <HeaderSideBar>
@@ -462,54 +306,6 @@ export default function Curriculum() {
       </AlertDialog>
       <Modal isOpen={isOpenModal} onClose={onCloseModal} size="lg" isCentered>
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader
-            alignItems="center"
-            display="flex"
-            justifyContent="space-between"
-          >
-            <Text fontSize="20px" fontWeight="700" color="green.1000">
-              Impressão de documento
-            </Text>
-          </ModalHeader>
-
-          <ModalBody>
-            <span>Atenção, digite o número de linhas desejados na página.</span>
-            <NumericFormat
-              required
-              customInput={Input}
-              decimalScale={2}
-              label=""
-              name="numberOfLines"
-              suffix=" linhas"
-              type="text"
-              value={numberOfLines}
-              onValueChange={(value) => {
-                setNumberOfLines(Number(value.value));
-              }}
-            />
-          </ModalBody>
-
-          <ModalFooter>
-            <ChakraButton variant="outline" mr={3} onClick={onCloseModal}>
-              Cancelar
-            </ChakraButton>
-
-            {data.length > 0 && (
-              <PDFDownloadLink
-                document={<MyDocument />}
-                fileName={`eleitores-${office?.name}.pdf`}
-              >
-                <Button
-                  colorScheme="teal"
-                  leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
-                >
-                  Imprimir
-                </Button>
-              </PDFDownloadLink>
-            )}
-          </ModalFooter>
-        </ModalContent>
       </Modal>
       <Flex
         justifyContent={'space-between'}
@@ -605,14 +401,6 @@ export default function Curriculum() {
             />
           )}
         </Flex>
-
-        <Button
-          onClick={() => onOpenModal()}
-          leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
-          w={['160px', '280px']}
-        >
-          Imprimir
-        </Button>
       </Flex>
       <Box
         maxH="calc(100vh - 340px)"
@@ -651,9 +439,9 @@ export default function Curriculum() {
               <Th color="gray.600">Telefone</Th>
               <Th color="gray.600">Nascimento</Th>
               <Th color="gray.600">E-mail</Th>
-              <Th color="gray.600">Criador</Th>
-              <Th color="gray.600">Demandas</Th>
-              <Th color="gray.600">Endereço</Th>
+              <Th color="gray.600">Experiência</Th>
+              <Th color="gray.600">Educação</Th>
+              <Th color="gray.600">asd</Th>
               {role?.eleitor_page > 1 && (
                 <Th textAlign="center" color="gray.600" w="8">
                   Ações
@@ -774,25 +562,7 @@ export default function Curriculum() {
                           borderBottomStyle="solid"
                           borderBottomColor="gray.300"
                           py="4px"
-                        >
-                          <Link
-                            target="_blank"
-                            to={`/demanda/registrar-demanda/${voter?.cellphone}`}
-                          >
-                            <IconButton
-                              aria-label="Open alert"
-                              variant="unstyled"
-                              icon={
-                                <Icon
-                                  cursor="pointer"
-                                  fontSize="24px"
-                                  as={IoAddCircleSharp}
-                                  color={office?.primary_color}
-                                />
-                              }
-                            />
-                          </Link>
-                        </Td>
+                        ></Td>
                       )}
 
                       <Td

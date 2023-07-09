@@ -30,6 +30,15 @@ export const voterPage = [
   { key: 8, value: 'creator', label: 'Criador' },
 ];
 
+export const voterResumes = [
+  { key: 0, value: 'all', label: 'Todos' },
+  { key: 1, value: 'name', label: 'Nome' },
+  { key: 2, value: 'age', label: 'Idade' },
+  { key: 3, value: 'degree', label: 'Formação' },
+  { key: 4, value: 'area', label: 'Área' },
+  { key: 5, value: 'totalExperience', label: 'Anos de Experiência' },
+];
+
 export const demandPage = [
   { key: 0, value: 'all', label: 'Todos' },
   { key: 1, value: 'title', label: 'Título' },
