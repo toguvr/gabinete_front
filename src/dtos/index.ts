@@ -30,7 +30,7 @@ export interface UserDTO {
 }
 
 export interface OfficeDTO {
-  active: string;
+  active: boolean;
   city: string;
   id: string;
   logo: string;
