@@ -231,6 +231,7 @@ export default function SignUpOwner() {
             </Text>
             <PatternFormat
               name="cellphone"
+              placeholder="Contato"
               customInput={Input}
               error={errors?.cellphone}
               value={values?.cellphoneMask}
