@@ -45,6 +45,7 @@ import {
   IoPencilOutline,
   IoPrintOutline,
   IoSearchSharp,
+  IoNewspaperOutline,
   IoTrashOutline,
 } from 'react-icons/io5';
 import { NumericFormat } from 'react-number-format';
@@ -533,12 +534,23 @@ export default function Voter() {
           )}
         </Text>
         {role?.eleitor_page > 1 && (
-          <Button
-            onClick={() => navigate('/eleitor/registrar-eleitor')}
-            w={['160px', '280px']}
-          >
-            Cadastrar apoiador
-          </Button>
+          <>
+            {pageContent === 'apoiador' ? (
+              <Button
+                onClick={() => navigate('/eleitor/registrar-eleitor')}
+                w={['160px', '280px']}
+              >
+                Cadastrar apoiador
+              </Button>
+            ) : (
+              <Button
+                onClick={() => navigate('/curriculo/registrar-curriculo')}
+                w={['160px', '280px']}
+              >
+                Cadastrar currículo
+              </Button>
+            )}
+          </>
         )}
       </Flex>
       <Text mt="36px" color="gray.500">
@@ -998,6 +1010,23 @@ export default function Voter() {
                                   }
                                 />
 
+                                <IconButton
+                                  onClick={() =>
+                                    navigate(
+                                      `/curriculo/registrar-curriculo/${voter?.cellphone}`
+                                    )
+                                  }
+                                  aria-label="Open alert"
+                                  variant="unstyled"
+                                  icon={
+                                    <Icon
+                                      cursor="pointer"
+                                      fontSize="24"
+                                      as={IoNewspaperOutline}
+                                      color="gray.600"
+                                    />
+                                  }
+                                />
                                 <IconButton
                                   onClick={() => openDialog(voter?.id)}
                                   aria-label="Open alert"

@@ -17,12 +17,13 @@ import {
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { PatternFormat } from 'react-number-format';
 import { useNavigate, useParams } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import * as Yup from 'yup';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
 import HeaderSideBar from '../components/HeaderSideBar';
 import { useAuth } from '../contexts/AuthContext';
-import { StateProps } from '../dtos';
+import { StateProps, UserDTO } from '../dtos';
 import api from '../services/api';
 import { arrayOfProfessions } from '../utils/arrayOfProfessions';
 
@@ -49,6 +50,7 @@ interface Experience {
 interface FormValues {
   education: Education[];
   experiences: Experience[];
+  voter: UserDTO;
 }
 
 export default function ResumeRegister() {
@@ -66,6 +68,10 @@ export default function ResumeRegister() {
   const [isRoleCustom, setIsRoleCustom] = useState(false);
   const [roleCustom, setRoleCustom] = useState('');
   const [selectedArea, setSelectedArea] = useState('');
+  const [voterData, setVoterData] = useState({} as UserDTO);
+  const location = useLocation();
+  const path = location.pathname;
+  const userPhone = path.substring('/curriculo/registrar-curriculo/'.length);
 
   const [curriculum, setCurriculum] = useState<FormValues>({
     education: [
@@ -82,13 +88,17 @@ export default function ResumeRegister() {
         area: '',
         company: '',
         role: '',
+        customRole: '',
         isCurrentJob: false,
+        isRoleCustom: false,
         description: '',
         start: '',
         end: '',
       },
     ],
+    voter: {} as UserDTO,
   });
+
   const uniqueAreas = Array.from(
     new Set(arrayOfProfessions.map((profession) => profession.Área))
   );
@@ -128,6 +138,31 @@ export default function ResumeRegister() {
   const handleClick = () => {
     fileInputRef.current?.click();
   };
+
+  async function postResume() {
+    setLoading(true);
+
+    try {
+      await api.post('/voter/resume', curriculum);
+      toast({
+        title: 'Currículo cadastrado com sucesso',
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      });
+      navigate('/home');
+    } catch (err: any) {
+      toast({
+        title: 'Erro ao cadastrar currículo',
+        description: err.message,
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const verifyVoter = async () => {
     setErrors({});
@@ -207,10 +242,12 @@ export default function ResumeRegister() {
           area: '',
           company: '',
           role: '',
+          customRole: '',
           description: '',
           start: '',
           isCurrentJob: false,
           end: '',
+          isRoleCustom: false,
         },
       ],
     });
@@ -230,10 +267,14 @@ export default function ResumeRegister() {
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) {
     const valuesCopy = { ...curriculum };
-    valuesCopy.experiences[i][event.target.name] = event.target.value;
 
-    if (event.target.name === 'role' && isRoleCustom) {
-      setRoleCustom(event.target.value);
+    if (
+      valuesCopy.experiences[i].isRoleCustom &&
+      event.target.name === 'role'
+    ) {
+      valuesCopy.experiences[i].customRole = event.target.value;
+    } else {
+      valuesCopy.experiences[i][event.target.name] = event.target.value;
     }
 
     setCurriculum(valuesCopy);
@@ -241,21 +282,44 @@ export default function ResumeRegister() {
 
   useEffect(() => {
     if (id) {
+      const ddd = id.substring(0, 2);
+      const cellphone = id.substring(2, id.length);
+
       setValues({
         ...values,
-        ddd: id.substring(0, 2),
-        dddMask: id.substring(0, 2),
-        cellphone: id.substring(2, id.length),
-        cellphoneMask: id.substring(2, id.length),
+        ddd: ddd,
+        dddMask: ddd,
+        cellphone: cellphone,
+        cellphoneMask: cellphone,
       });
-    }
-  }, [id]);
 
-  useEffect(() => {
-    if (id && values.ddd && values.cellphone) {
+      const verifyVoterParam = async () => {
+        setErrors({});
+
+        setLoading(true);
+
+        try {
+          const response = await api.get(
+            `/voter/confirm/office/${office.id}/cellphone/${ddd}${cellphone}`
+          );
+
+          if (response.data.isVoterExist === true) {
+            setVoterData(response.data.voter);
+            setCurriculum((prevState) => ({
+              ...prevState,
+              voter: response.data.voter,
+            }));
+            setVerify(false);
+          }
+        } catch (err: any) {
+        } finally {
+          setLoading(false);
+        }
+      };
+
       verifyVoterParam();
     }
-  }, [values.ddd, values.cellphone]);
+  }, [id, office.id]);
 
   return (
     <HeaderSideBar backRoute={true}>
@@ -468,14 +532,18 @@ export default function ResumeRegister() {
                             ))}
                           </Select>
 
-                          {isRoleCustom ? (
+                          {curriculum.experiences[i].isRoleCustom ? (
                             <Input
                               labelColor={'gray.500'}
                               label="Cargo*:"
                               placeholder="Nome do cargo"
-                              name="role"
+                              name="customRole"
                               type="text"
-                              value={roleCustom}
+                              value={
+                                typeof experience.customRole === 'string'
+                                  ? experience.customRole
+                                  : ''
+                              }
                               onChange={(event) =>
                                 handleChangeExperience(i, event)
                               }
@@ -507,8 +575,13 @@ export default function ResumeRegister() {
                           )}
                         </Flex>
                         <Checkbox
-                          isChecked={isRoleCustom}
-                          onChange={(e) => setIsRoleCustom(e.target.checked)}
+                          isChecked={!!experience.isRoleCustom}
+                          onChange={(e) => {
+                            const valuesCopy = { ...curriculum };
+                            valuesCopy.experiences[i].isRoleCustom =
+                              e.target.checked;
+                            setCurriculum(valuesCopy);
+                          }}
                         >
                           Escrever Profissão
                         </Checkbox>
@@ -570,7 +643,7 @@ export default function ResumeRegister() {
                 <Button w={['100%', '220px']} onClick={handleAddExperience}>
                   Adicionar Experiência
                 </Button>
-                <FormControl>
+                {/* <FormControl>
                   <FormLabel
                     fontFamily="Inter"
                     color="#718096"
@@ -601,8 +674,13 @@ export default function ResumeRegister() {
                     onChange={handleFileUpload}
                     style={{ display: 'none' }}
                   />
-                </FormControl>
+                </FormControl> */}
               </Stack>
+              <Flex mt="20px" w="100%" justifyContent="center">
+                <Button w={['100%', '220px']} onClick={postResume}>
+                  Enviar Curriculo
+                </Button>
+              </Flex>
             </form>
           )}
         </Stack>

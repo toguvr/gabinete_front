@@ -46,6 +46,7 @@ export const privateRoute = [
   { pathname: '/eleitor', permissionName: 'eleitor_page' },
   { pathname: '/demanda', permissionName: 'demandas_page' },
   { pathname: '/tarefa', permissionName: 'tarefas_page' },
+  { pathname: '/curriculo/registrar-curriculo', permissionName: 'resume_page' },
   // { pathname: "/solicitacoes", permissionName: "tarefas_page" },
 ];
 
@@ -122,7 +123,7 @@ export default function AppRoutes() {
           <Route path="/equipe" element={<Permission />} />
           <Route path="/curriculo" element={<Resume />} />
           <Route
-            path="/curriculo/registrar-curriculo"
+            path="/curriculo/registrar-curriculo/:id"
             element={<ResumeRegister />}
           />
           <Route path="/equipe/:id" element={<PermissionEdit />} />
