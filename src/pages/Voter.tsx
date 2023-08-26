@@ -84,7 +84,7 @@ export default function Voter() {
   const [totalPages, setTotalPages] = useState(0);
   const debouncedValue = useDebounce(filterFieldDateMask || filterField, 500);
 
-  const perPage = 7;
+  const perPage = 20;
 
   function convertDateFormat(dateStr: string): string {
     const parts = dateStr.split('/');
