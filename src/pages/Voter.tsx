@@ -12,7 +12,6 @@ import {
   Icon,
   IconButton,
   Modal,
-  ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -47,17 +46,17 @@ import {
   IoSearchSharp,
   IoTrashOutline,
 } from 'react-icons/io5';
-import { NumericFormat } from 'react-number-format';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
 import HeaderSideBar from '../components/HeaderSideBar';
+import Pagination from '../components/Pagination';
 import { useAuth } from '../contexts/AuthContext';
-import { StateProps, VoterDTO } from '../dtos';
+import { VoterDTO } from '../dtos';
+import { useDebounce } from '../hooks/useDebounce';
 import api from '../services/api';
 import { getFormatDate } from '../utils/date';
 import { voterPage } from '../utils/filterTables';
-import { paginationArray } from '../utils/pdfPagination';
 
 export default function Voter() {
   const navigate = useNavigate();
@@ -81,22 +80,47 @@ export default function Voter() {
   const auth = useAuth();
   const [selectFilter, setSelectFilter] = useState('name');
   const [filterField, setFilterField] = useState('');
-  const [numberOfLines, setNumberOfLines] = useState(20);
-  const [errors, setErrors] = useState({} as StateProps);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const debouncedValue = useDebounce(filterFieldDateMask || filterField, 500);
 
+  const perPage = 7;
+
+  function convertDateFormat(dateStr: string): string {
+    const parts = dateStr.split('/');
+    const newDate = new Date(
+      parseInt(parts[2]),
+      parseInt(parts[1]) - 1,
+      parseInt(parts[0]),
+      13,
+      0,
+      0
+    );
+    return newDate.toISOString();
+  }
   const openDialog = (voter_id: string) => {
     setVoterToDeleteId(voter_id);
     onOpenAlert();
   };
 
-  const getVoterList = async () => {
+  const getVoterList = async (currentPage = 1) => {
     setData([] as VoterDTO[]);
 
     setLoading(true);
     try {
-      const response = await api.get(`/voter/office/${auth.office.id}`);
+      const response = await api.get(`/voter/office/${auth.office.id}`, {
+        params: {
+          page: currentPage,
+          quantity: perPage,
+          field: selectFilter,
+          value: filterFieldDateMask
+            ? convertDateFormat(filterFieldDateMask)
+            : filterField,
+        },
+      });
 
-      setData(response.data);
+      setData(response.data.items);
+      setTotalPages(response.data.total);
     } catch (err) {
     } finally {
       setLoading(false);
@@ -126,8 +150,12 @@ export default function Voter() {
   };
 
   useEffect(() => {
-    getVoterList();
-  }, []);
+    getVoterList(page);
+  }, [page, debouncedValue]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedValue]);
 
   const deleteVoter = async () => {
     setLoading(true);
@@ -141,7 +169,7 @@ export default function Voter() {
         duration: 3000,
         isClosable: true,
       });
-      getVoterList();
+      getVoterList(page);
       setVoterToDeleteId('');
     } catch (err: any) {
       return toast({
@@ -272,157 +300,53 @@ export default function Voter() {
 
   useEffect(() => {
     setFilterField('');
+    setFilterFieldDateMask('');
   }, [selectFilter]);
 
   const MyDocument = () => {
     return (
       <Document>
-        {paginationArray(
-          data.filter((currentValue: any) => {
-            switch (selectFilter) {
-              case 'all':
-                return currentValue;
-              case 'name':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.name &&
-                    currentValue?.name
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'reference':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.reference &&
-                    currentValue?.reference
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'creator':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.creator?.name &&
-                    currentValue?.creator?.name
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'email':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.email &&
-                    currentValue?.email
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'birthdate':
-                if (filterField?.length >= 3) {
-                  return (
-                    getFormatDate(
-                      new Date(currentValue?.birthdate),
-                      'dd/MM/yyyy'
-                    ).indexOf(filterField) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'cellphone':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.cellphone &&
-                    currentValue?.cellphone
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'city':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.city &&
-                    currentValue?.city
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'neighborhood':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.neighborhood &&
-                    currentValue?.neighborhood
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              default:
-                return currentValue;
-            }
-          }),
-          numberOfLines
-        ).map((pageItems, index) => {
-          return (
-            <Page key={index} size="A4" style={styles.page}>
-              <View style={styles.table}>
-                <View style={styles.flexBetween}>
-                  {office?.logo_url && (
-                    <Image style={styles.image} src={office?.logo_url} />
-                  )}
-                  <TextPDF style={styles.tableTitle}>{office?.name}</TextPDF>
-                </View>
+        <Page size="A4" style={styles.page}>
+          <View style={styles.table}>
+            <View style={styles.flexBetween}>
+              {office?.logo_url && (
+                <Image style={styles.image} src={office?.logo_url} />
+              )}
+              <TextPDF style={styles.tableTitle}>{office?.name}</TextPDF>
+            </View>
 
-                <TextPDF style={styles.tableSubTitle}>
-                  Lista de Apoiadores
-                </TextPDF>
+            <TextPDF style={styles.tableSubTitle}>Lista de Apoiadores</TextPDF>
 
-                <View style={styles.tableContainer}>
-                  <View style={styles.rowTitle}>
-                    <TextPDF style={styles.voter}>Apoiador</TextPDF>
-                    <TextPDF style={styles.reference}>Referência</TextPDF>
-                    <TextPDF style={styles.cellphone}>Telefone</TextPDF>
-                  </View>
-
-                  {pageItems.map((item: VoterDTO) => {
-                    return (
-                      <View
-                        style={
-                          item?.id === pageItems[pageItems.length - 1]?.id
-                            ? styles.finalRow
-                            : styles.row
-                        }
-                        key={item.id}
-                      >
-                        <TextPDF style={styles.voter}>{item?.name}</TextPDF>
-                        <TextPDF style={styles.reference}>
-                          {item?.reference}
-                        </TextPDF>
-                        <TextPDF style={styles.cellphone}>
-                          {item?.cellphone}
-                        </TextPDF>
-                      </View>
-                    );
-                  })}
-                  {/*<TableFooter items={data.items} />*/}
-                </View>
+            <View style={styles.tableContainer}>
+              <View style={styles.rowTitle}>
+                <TextPDF style={styles.voter}>Apoiador</TextPDF>
+                <TextPDF style={styles.reference}>Referência</TextPDF>
+                <TextPDF style={styles.cellphone}>Telefone</TextPDF>
               </View>
-            </Page>
-          );
-        })}
+
+              {data.map((pageItem) => {
+                return (
+                  <View
+                    style={
+                      pageItem?.id === data[data.length - 1]?.id
+                        ? styles.finalRow
+                        : styles.row
+                    }
+                    key={pageItem.id}
+                  >
+                    <TextPDF style={styles.voter}>{pageItem?.name}</TextPDF>
+                    <TextPDF style={styles.reference}>
+                      {pageItem?.reference}
+                    </TextPDF>
+                    <TextPDF style={styles.cellphone}>
+                      {pageItem?.cellphone}
+                    </TextPDF>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        </Page>
       </Document>
     );
   };
@@ -473,22 +397,22 @@ export default function Voter() {
             </Text>
           </ModalHeader>
 
-          <ModalBody>
-            <span>Atenção, digite o número de linhas desejados na página.</span>
-            <NumericFormat
-              required
-              customInput={Input}
-              decimalScale={2}
-              label=""
-              name="numberOfLines"
-              suffix=" linhas"
-              type="text"
-              value={numberOfLines}
-              onValueChange={(value) => {
-                setNumberOfLines(Number(value.value));
-              }}
-            />
-          </ModalBody>
+          {/* <ModalBody>
+						<span>Atenção, digite o número de linhas desejados na página.</span>
+						<NumericFormat
+							required
+							customInput={Input}
+							decimalScale={2}
+							label=""
+							name="numberOfLines"
+							suffix=" linhas"
+							type="text"
+							value={numberOfLines}
+							onValueChange={(value) => {
+								setNumberOfLines(Number(value.value));
+							}}
+						/>
+					</ModalBody> */}
 
           <ModalFooter>
             <ChakraButton variant="outline" mr={3} onClick={onCloseModal}>
@@ -537,7 +461,7 @@ export default function Voter() {
         )}
       </Flex>
       <Text mt="36px" color="gray.500">
-        Filtar por:
+        Filtrar por:
       </Text>
       <Flex justifyContent="space-between" flexDir={['column', 'row']}>
         <Flex gap={['12px', '24px']}>
@@ -571,10 +495,7 @@ export default function Voter() {
                 }
               }}
               placeholder="Buscar"
-              error={errors?.filterField}
-              value={
-                selectFilter === 'birthdate' ? filterFieldDateMask : filterField
-              }
+              value={filterFieldDateMask}
               mb="24px"
               onChange={(e) => {
                 const inputValue = e.target.value;
@@ -592,7 +513,6 @@ export default function Voter() {
               type="text"
               name="filterField"
               placeholder="Buscar"
-              error={errors?.filterField}
               value={filterField}
               mb="24px"
               onChange={(e) => {
@@ -662,250 +582,150 @@ export default function Voter() {
             </Tr>
           </Thead>
           <Tbody>
-            {Array.isArray(data) && data.length > 0 ? (
-              data
-                .filter((currentValue: any) => {
-                  switch (selectFilter) {
-                    case 'all':
-                      return currentValue;
-                    case 'name':
-                      if (filterField?.length >= 3) {
-                        return (
-                          currentValue &&
-                          currentValue.name &&
-                          currentValue.name
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-                    case 'reference':
-                      if (filterField?.length >= 3) {
-                        return (
-                          currentValue?.reference &&
-                          currentValue?.reference
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-
-                    case 'creator':
-                      if (filterField?.length >= 3) {
-                        return (
-                          currentValue?.creator?.name &&
-                          currentValue?.creator?.name
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-                    case 'email':
-                      if (filterField?.length >= 3) {
-                        return (
-                          currentValue?.email &&
-                          currentValue?.email
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-                    case 'birthdate':
-                      if (filterField?.length >= 3) {
-                        return (
-                          getFormatDate(
-                            new Date(currentValue?.birthdate),
-                            'dd/MM/yyyy'
-                          ).indexOf(filterField) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-                    case 'cellphone':
-                      if (filterField?.length >= 3) {
-                        return (
-                          currentValue?.cellphone &&
-                          currentValue?.cellphone
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-                    case 'city':
-                      if (filterField?.length >= 3) {
-                        return (
-                          currentValue?.city &&
-                          currentValue?.city
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-                    case 'neighborhood':
-                      if (filterField?.length >= 3) {
-                        return (
-                          currentValue?.neighborhood &&
-                          currentValue?.neighborhood
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-
-                    default:
-                      break;
-                  }
-                })
-                .map((voter) => {
-                  return (
-                    <Tr key={voter.id} whiteSpace="nowrap">
-                      {role?.demandas_page > 1 && (
-                        <Td
-                          color="gray.600"
-                          fontSize="14px"
-                          borderBottomWidth="1px"
-                          borderBottomStyle="solid"
-                          borderBottomColor="gray.300"
-                          py="4px"
+            {data.length > 0 ? (
+              data.map((voter) => {
+                return (
+                  <Tr key={voter.id} whiteSpace="nowrap">
+                    {role?.demandas_page > 1 && (
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        <Link
+                          target="_blank"
+                          to={`/demanda/registrar-demanda/${voter?.cellphone}`}
                         >
-                          <Link
-                            target="_blank"
-                            to={`/demanda/registrar-demanda/${voter?.cellphone}`}
-                          >
-                            <IconButton
-                              aria-label="Open alert"
-                              variant="unstyled"
-                              icon={
-                                <Icon
-                                  cursor="pointer"
-                                  fontSize="24px"
-                                  as={IoAddCircleSharp}
-                                  color={office?.primary_color}
-                                />
-                              }
-                            />
-                          </Link>
-                        </Td>
+                          <IconButton
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24px"
+                                as={IoAddCircleSharp}
+                                color={office?.primary_color}
+                              />
+                            }
+                          />
+                        </Link>
+                      </Td>
+                    )}
+
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                    >
+                      {voter?.name}
+                    </Td>
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                    >
+                      {voter?.reference}
+                    </Td>
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                    >
+                      {voter?.cellphone ? (
+                        <Link
+                          target="_blank"
+                          to={`https://wa.me/55${voter?.cellphone}`}
+                          rel="noopener noreferrer"
+                        >
+                          <IconButton
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24px"
+                                as={IoLogoWhatsapp}
+                                color={office?.primary_color}
+                              />
+                            }
+                          />
+                          {voter?.cellphone}
+                        </Link>
+                      ) : (
+                        '-'
                       )}
+                    </Td>
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                    >
+                      {voter?.birthdate
+                        ? getFormatDate(
+                            new Date(voter?.birthdate),
+                            'dd/MM/yyyy'
+                          )
+                        : '-'}
+                    </Td>
 
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                    >
+                      {voter?.email ? voter?.email : '-'}
+                    </Td>
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                    >
+                      {voter?.creator?.name}
+                    </Td>
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                      textAlign="center"
+                    >
+                      {voter?.tasks?.length}
+                    </Td>
+                    {voter?.street ? (
                       <Td
                         color="gray.600"
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
                         borderBottomColor="gray.300"
+                        w="120px"
                         py="4px"
                       >
-                        {voter?.name}
-                      </Td>
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        {voter?.reference}
-                      </Td>
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        {voter?.cellphone ? (
-                          <Link
-                            target="_blank"
-                            to={`https://wa.me/55${voter?.cellphone}`}
-                            rel="noopener noreferrer"
-                          >
-                            <IconButton
-                              aria-label="Open alert"
-                              variant="unstyled"
-                              icon={
-                                <Icon
-                                  cursor="pointer"
-                                  fontSize="24px"
-                                  as={IoLogoWhatsapp}
-                                  color={office?.primary_color}
-                                />
-                              }
-                            />
-                            {voter?.cellphone}
-                          </Link>
-                        ) : (
-                          '-'
-                        )}
-                      </Td>
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        {voter?.birthdate
-                          ? getFormatDate(
-                              new Date(voter?.birthdate),
-                              'dd/MM/yyyy'
-                            )
-                          : '-'}
-                      </Td>
-
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        {voter?.email ? voter?.email : '-'}
-                      </Td>
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        {voter?.creator?.name}
-                      </Td>
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                        textAlign="center"
-                      >
-                        {voter?.tasks?.length}
-                      </Td>
-                      {voter?.street ? (
-                        <Td
-                          color="gray.600"
-                          fontSize="14px"
-                          borderBottomWidth="1px"
-                          borderBottomStyle="solid"
-                          borderBottomColor="gray.300"
-                          w="120px"
-                          py="4px"
-                        >
-                          {voter?.zip
-                            ? `${voter?.street ? voter?.street + ',' : ''}
+                        {voter?.zip
+                          ? `${voter?.street ? voter?.street + ',' : ''}
                               ${
                                 voter?.address_number
                                   ? voter?.address_number + ','
@@ -921,61 +741,61 @@ export default function Voter() {
                               }
                               ${voter?.city ? voter?.city + ',' : ''}
                               ${voter?.state ? voter?.state + ',' : ''}`
-                            : '-'}
-                        </Td>
-                      ) : (
-                        <Td
-                          color="gray.600"
-                          fontSize="14px"
-                          borderBottomWidth="1px"
-                          borderBottomStyle="solid"
-                          borderBottomColor="gray.300"
-                          py="4px"
-                        >
-                          -
-                        </Td>
-                      )}
-                      {role?.eleitor_page > 1 && (
-                        <Td
-                          py="4px"
-                          borderBottomWidth="1px"
-                          borderBottomStyle="solid"
-                          borderBottomColor="gray.300"
-                        >
-                          <HStack spacing="4px">
-                            <IconButton
-                              onClick={() => handleEditVoter(voter)}
-                              aria-label="Open navigation"
-                              variant="unstyled"
-                              icon={
-                                <Icon
-                                  cursor="pointer"
-                                  fontSize="24"
-                                  as={IoPencilOutline}
-                                  color="gray.600"
-                                />
-                              }
-                            />
+                          : '-'}
+                      </Td>
+                    ) : (
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        -
+                      </Td>
+                    )}
+                    {role?.eleitor_page > 1 && (
+                      <Td
+                        py="4px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                      >
+                        <HStack spacing="4px">
+                          <IconButton
+                            onClick={() => handleEditVoter(voter)}
+                            aria-label="Open navigation"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24"
+                                as={IoPencilOutline}
+                                color="gray.600"
+                              />
+                            }
+                          />
 
-                            <IconButton
-                              onClick={() => openDialog(voter?.id)}
-                              aria-label="Open alert"
-                              variant="unstyled"
-                              icon={
-                                <Icon
-                                  cursor="pointer"
-                                  fontSize="24"
-                                  as={IoTrashOutline}
-                                  color="gray.600"
-                                />
-                              }
-                            />
-                          </HStack>
-                        </Td>
-                      )}
-                    </Tr>
-                  );
-                })
+                          <IconButton
+                            onClick={() => openDialog(voter?.id)}
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24"
+                                as={IoTrashOutline}
+                                color="gray.600"
+                              />
+                            }
+                          />
+                        </HStack>
+                      </Td>
+                    )}
+                  </Tr>
+                );
+              })
             ) : (
               <Tr>
                 <Td fontSize={'14px'} w="100%">
@@ -991,6 +811,15 @@ export default function Voter() {
           </Tbody>
         </Table>
       </Box>
+
+      <Flex alignItems="center" justifyContent="center">
+        <Pagination
+          currentPage={page}
+          perPage={perPage}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </Flex>
     </HeaderSideBar>
   );
 }
