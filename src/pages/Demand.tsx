@@ -18,6 +18,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
+  Spinner,
   Table,
   Tbody,
   Td,
@@ -615,6 +616,9 @@ export default function Demand() {
           ml={[0, '28px']}
         >
           Demanda
+          {loading && (
+            <Spinner color={office?.primary_color} ml="4" size="sm" />
+          )}
         </Text>
         {role?.demandas_page > 1 && (
           <Button
