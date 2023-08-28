@@ -51,6 +51,11 @@ import { convertDateFormat } from '../utils/convertDateFormat';
 import { getFormatDate } from '../utils/date';
 import { demandPage } from '../utils/filterTables';
 
+type SelectProps = {
+  label: string;
+  value: string;
+};
+
 export default function Demand() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -78,15 +83,12 @@ export default function Demand() {
     setDemandToDeleteId(task_id);
     onOpen();
   };
-  type SelectProps = {
-    label: string;
-    value: string;
-  };
 
   const getPermissions = async () => {
     setResponsibles([] as SelectProps[]);
 
     setLoading(true);
+
     try {
       const response = await api.get(
         `/permission/office/${role?.office_id}/responsible`
@@ -200,18 +202,11 @@ export default function Demand() {
     setFilterField(input);
   };
 
-  // const mounted = useRef(false);
-
-  // useEffect(() => {
-  //   if (!mounted.current) {
-  //     mounted.current = true;
-  //     return;
-  //   }
-
-  //   if (office.id) {
-  //     getPermissions();
-  //   }
-  // }, [office.id]);
+  useEffect(() => {
+    if (office.id) {
+      getPermissions();
+    }
+  }, [office.id]);
 
   useEffect(() => {
     getTasks(page);
@@ -220,12 +215,6 @@ export default function Demand() {
   useEffect(() => {
     getTasks(1);
   }, [debouncedValue]);
-
-  useEffect(() => {
-    if (responsibles.length > 0) {
-      setResponsibleFilterField(responsibles[0].label);
-    }
-  }, [responsibles]);
 
   const handleEditTask = (task_id: string) => {
     navigate(`/demanda/${task_id}`);
@@ -460,6 +449,7 @@ export default function Demand() {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
+
       <Flex
         justifyContent={'space-between'}
         gap={['20px', '0']}
@@ -482,6 +472,7 @@ export default function Demand() {
           </Button>
         )}
       </Flex>
+
       <Text mt="36px" color="gray.500">
         Filtrar por:
       </Text>
@@ -530,6 +521,9 @@ export default function Demand() {
                 }
               }}
             >
+              <option value="0" selected>
+                Escolher responsável
+              </option>
               {responsibles.map((responsible, index) => {
                 return (
                   <option value={responsible?.value} key={index}>

@@ -38,7 +38,7 @@ export const demandPage = [
   // { key: 4, value: 'city', label: 'Cidade' },
   // { key: 4, value: 'neighborhood', label: 'Bairro' },
   { key: 4, value: 'creator', label: 'Criador' },
-  // { key: 7, value: 'responsible', label: 'Responsável' },
+  { key: 5, value: 'responsible', label: 'Responsável' },
 ];
 
 export const taskPage = [
