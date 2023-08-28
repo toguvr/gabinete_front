@@ -71,7 +71,6 @@ export default function Demand() {
     responsibleFilterField || filterFieldDateMask || filterField,
     500
   );
-  console.log('selectFilter', selectFilter);
 
   const perPage = 7;
 
