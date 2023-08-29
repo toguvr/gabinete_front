@@ -35,10 +35,10 @@ export const demandPage = [
   { key: 1, value: 'title', label: 'Título' },
   { key: 2, value: 'voter', label: 'Apoiador' },
   { key: 3, value: 'deadline', label: 'Prazo' },
-  // { key: 4, value: 'city', label: 'Cidade' },
-  // { key: 4, value: 'neighborhood', label: 'Bairro' },
-  { key: 4, value: 'creator', label: 'Criador' },
-  { key: 5, value: 'responsible', label: 'Responsável' },
+  { key: 4, value: 'city', label: 'Cidade' },
+  { key: 5, value: 'neighborhood', label: 'Bairro' },
+  { key: 6, value: 'creator', label: 'Criador' },
+  { key: 7, value: 'responsible', label: 'Responsável' },
 ];
 
 export const taskPage = [

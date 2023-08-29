@@ -87,8 +87,16 @@ export default function Voter() {
 
     setLoading(true);
     try {
-      const currentFilter =
-        selectFilter === 'creator' ? 'creator.name' : selectFilter;
+			const filterMapping = {
+				voter: 'voter.name',
+				creator: 'creator.name',
+				city: 'voter.city',
+				neighborhood: 'voter.neighborhood',
+			};
+
+			const currentFilter =
+				filterMapping[selectFilter as keyof typeof filterMapping] || selectFilter;
+
 
       const response = await api.get(`/voter/office/${auth.office.id}`, {
         params: {
