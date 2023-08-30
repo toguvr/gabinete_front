@@ -460,302 +460,310 @@ export default function Demand() {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-
-      <Flex
-        justifyContent={'space-between'}
-        gap={['20px', '0']}
-        alignItems={['center', 'flex-start']}
-      >
-        <Text
-          color="gray.500"
-          fontWeight="semibold"
-          fontSize="20px"
-          ml={[0, '28px']}
+      <Flex direction="column" h="100%">
+        <Flex
+          justifyContent={'space-between'}
+          gap={['20px', '0']}
+          alignItems={['center', 'flex-start']}
         >
-          Demanda
+          <Text
+            color="gray.500"
+            fontWeight="semibold"
+            fontSize="20px"
+            ml={[0, '28px']}
+          >
+            Demanda
+          </Text>
+          {role?.demandas_page > 1 && (
+            <Button
+              onClick={() => navigate('/demanda/registrar-demanda')}
+              w={['160px', '280px']}
+            >
+              Cadastrar Demanda
+            </Button>
+          )}
+        </Flex>
+
+        <Text mt="36px" color="gray.500">
+          Filtrar por:
         </Text>
-        {role?.demandas_page > 1 && (
-          <Button
-            onClick={() => navigate('/demanda/registrar-demanda')}
-            w={['160px', '280px']}
-          >
-            Cadastrar Demanda
-          </Button>
-        )}
-      </Flex>
-
-      <Text mt="36px" color="gray.500">
-        Filtrar por:
-      </Text>
-      <Flex justifyContent="space-between" flexDir={['column', 'row']}>
-        <Flex gap={['12px', '24px']}>
-          <Select
-            w="220px"
-            borderColor="gray.500"
-            name="filterType"
-            value={selectFilter}
-            onChange={(e) => {
-              setSelectFilter(e.target.value);
-            }}
-          >
-            {demandPage.map((task) => {
-              return (
-                <option key={task?.key} value={task?.value}>
-                  {task?.label}
-                </option>
-              );
-            })}
-          </Select>
-
-          {isResponsible ? (
+        <Flex justifyContent="space-between" flexDir={['column', 'row']}>
+          <Flex gap={['12px', '24px']}>
             <Select
+              w="220px"
               borderColor="gray.500"
-              bg="gray.50"
-              _placeholder={{ color: 'gray.500' }}
-              color="gray.600"
-              maxW="600px"
-              name="selectResponsibleFilter"
-              value={
-                responsibles.find(
-                  (responsible) => responsible.label === responsibleFilterField
-                )?.value || ''
-              }
+              name="filterType"
+              value={selectFilter}
               onChange={(e) => {
-                const selectedValue = e.target.value;
-                const selectedResponsible = responsibles.find(
-                  (responsible) => responsible.value === selectedValue
-                );
-                if (selectedResponsible) {
-                  setResponsibleFilterField(selectedResponsible.label);
-                } else {
-                  setResponsibleFilterField('');
-                }
+                setSelectFilter(e.target.value);
               }}
             >
-              <option value="0" selected>
-                Escolher responsável
-              </option>
-              {responsibles.map((responsible, index) => {
+              {demandPage.map((task) => {
                 return (
-                  <option value={responsible?.value} key={index}>
-                    {responsible?.label}
+                  <option key={task?.key} value={task?.value}>
+                    {task?.label}
                   </option>
                 );
               })}
             </Select>
-          ) : selectFilter === 'deadline' ? (
-            <Input
-              maxW="600px"
-              type="tel"
-              inputMode="numeric"
-              onKeyPress={(e) => {
-                if (!/\d/.test(e.key)) {
-                  e.preventDefault();
+
+            {isResponsible ? (
+              <Select
+                borderColor="gray.500"
+                bg="gray.50"
+                _placeholder={{ color: 'gray.500' }}
+                color="gray.600"
+                maxW="600px"
+                name="selectResponsibleFilter"
+                value={
+                  responsibles.find(
+                    (responsible) =>
+                      responsible.label === responsibleFilterField
+                  )?.value || ''
                 }
-              }}
-              name="filterField"
-              placeholder="Buscar"
-              value={
-                selectFilter === 'deadline' ? filterFieldDateMask : filterField
-              }
-              mb="24px"
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                handleDateOfBirthChange(inputValue);
-              }}
-              pattern="\d*"
-              borderColor="gray.500"
-              rightIcon={
-                <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-              }
-            />
-          ) : (
-            <Input
-              maxW="600px"
-              type="text"
-              name="filterField"
-              placeholder="Buscar"
-              value={filterField}
-              mb="24px"
-              onChange={(e) => {
-                setFilterField(e.target.value);
-              }}
-              borderColor="gray.500"
-              rightIcon={
-                <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-              }
-            />
-          )}
+                onChange={(e) => {
+                  const selectedValue = e.target.value;
+                  const selectedResponsible = responsibles.find(
+                    (responsible) => responsible.value === selectedValue
+                  );
+                  if (selectedResponsible) {
+                    setResponsibleFilterField(selectedResponsible.label);
+                  } else {
+                    setResponsibleFilterField('');
+                  }
+                }}
+              >
+                <option value="0" selected>
+                  Escolher responsável
+                </option>
+                {responsibles.map((responsible, index) => {
+                  return (
+                    <option value={responsible?.value} key={index}>
+                      {responsible?.label}
+                    </option>
+                  );
+                })}
+              </Select>
+            ) : selectFilter === 'deadline' ? (
+              <Input
+                maxW="600px"
+                type="tel"
+                inputMode="numeric"
+                onKeyPress={(e) => {
+                  if (!/\d/.test(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                name="filterField"
+                placeholder="Buscar"
+                value={
+                  selectFilter === 'deadline'
+                    ? filterFieldDateMask
+                    : filterField
+                }
+                mb="24px"
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  handleDateOfBirthChange(inputValue);
+                }}
+                pattern="\d*"
+                borderColor="gray.500"
+                rightIcon={
+                  <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+                }
+              />
+            ) : (
+              <Input
+                maxW="600px"
+                type="text"
+                name="filterField"
+                placeholder="Buscar"
+                value={filterField}
+                mb="24px"
+                onChange={(e) => {
+                  setFilterField(e.target.value);
+                }}
+                borderColor="gray.500"
+                rightIcon={
+                  <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+                }
+              />
+            )}
+          </Flex>
+
+          <PDFDownloadLink
+            document={<MyDocument />}
+            fileName={`demandas-${office?.name}.pdf`}
+          >
+            <Button
+              w={['160px', '280px']}
+              leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
+            >
+              Imprimir
+            </Button>
+          </PDFDownloadLink>
         </Flex>
 
-        <PDFDownloadLink
-          document={<MyDocument />}
-          fileName={`demandas-${office?.name}.pdf`}
+        <Box
+          w={'100%'}
+          overflow="auto"
+          mt="16px"
+          sx={{
+            '::-webkit-scrollbar': {
+              bg: 'gray.50',
+              width: '8px',
+              height: '8px',
+            },
+            '&::-webkit-scrollbar-track': {
+              width: '2px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: 'gray.600',
+              borderRadius: '8px',
+            },
+          }}
+          h={'100%'}
         >
-          <Button
-            w={['160px', '280px']}
-            leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
-          >
-            Imprimir
-          </Button>
-        </PDFDownloadLink>
-      </Flex>
-      <Box
-        h="25rem"
-        overflow="auto"
-        mt="16px"
-        sx={{
-          '::-webkit-scrollbar': {
-            bg: 'gray.50',
-            width: '8px',
-            height: '8px',
-          },
-          '&::-webkit-scrollbar-track': {
-            width: '2px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'gray.600',
-            borderRadius: '8px',
-          },
-        }}
-      >
-        <Table>
-          <Thead
-            position="sticky"
-            top="0px"
-            background="white"
-            borderBottomWidth={'4px'}
-            borderBottomStyle="solid"
-            borderBottomColor={'gray.300'}
-            backgroundColor="white"
-            zIndex="1"
-          >
-            <Tr>
-              <Th color="gray.600">Título</Th>
-              <Th color="gray.600">Apoiador</Th>
-              <Th color="gray.600">Prazo</Th>
-              <Th color="gray.600">Criador</Th>
-              <Th color="gray.600">Responsável</Th>
+          <Table>
+            <Thead
+              position="sticky"
+              top="0px"
+              background="white"
+              borderBottomWidth={'4px'}
+              borderBottomStyle="solid"
+              borderBottomColor={'gray.300'}
+              backgroundColor="white"
+              zIndex="1"
+            >
+              <Tr>
+                <Th color="gray.600">Título</Th>
+                <Th color="gray.600">Apoiador</Th>
+                <Th color="gray.600">Prazo</Th>
+                <Th color="gray.600">Criador</Th>
+                <Th color="gray.600">Responsável</Th>
 
-              {role?.demandas_page > 1 && (
-                <Th color="gray.600" w="8">
-                  Ações
-                </Th>
-              )}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {data.length > 0 ? (
-              data.map((task) => {
-                return (
-                  <Tr key={task.id} whiteSpace="nowrap">
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {task?.title}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {task?.voter?.name}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {task?.deadline
-                        ? getFormatDate(new Date(task?.deadline), 'dd/MM/yyyy')
-                        : '-'}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {task?.creator?.name}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {task?.responsible?.name}
-                    </Td>
-                    {role?.demandas_page > 1 && (
+                {role?.demandas_page > 1 && (
+                  <Th color="gray.600" w="8">
+                    Ações
+                  </Th>
+                )}
+              </Tr>
+            </Thead>
+            <Tbody>
+              {data.length > 0 ? (
+                data.map((task) => {
+                  return (
+                    <Tr key={task.id} whiteSpace="nowrap">
                       <Td
-                        py="4px"
+                        color="gray.600"
+                        fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
                         borderBottomColor="gray.300"
+                        py="4px"
                       >
-                        <HStack spacing="4px">
-                          <IconButton
-                            onClick={() => handleEditTask(task?.id)}
-                            aria-label="Open navigation"
-                            variant="unstyled"
-                            icon={
-                              <Icon
-                                cursor="pointer"
-                                fontSize="24"
-                                as={IoPencilOutline}
-                                color="gray.600"
-                              />
-                            }
-                          />
-
-                          <IconButton
-                            onClick={() => openDialog(task?.id)}
-                            aria-label="Open alert"
-                            variant="unstyled"
-                            icon={
-                              <Icon
-                                cursor="pointer"
-                                fontSize="24"
-                                as={IoTrashOutline}
-                                color="gray.600"
-                              />
-                            }
-                          />
-                        </HStack>
+                        {task?.title}
                       </Td>
-                    )}
-                  </Tr>
-                );
-              })
-            ) : (
-              <Tr>Nenhum dado cadastrado</Tr>
-            )}
-          </Tbody>
-        </Table>
-      </Box>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {task?.voter?.name}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {task?.deadline
+                          ? getFormatDate(
+                              new Date(task?.deadline),
+                              'dd/MM/yyyy'
+                            )
+                          : '-'}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {task?.creator?.name}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {task?.responsible?.name}
+                      </Td>
+                      {role?.demandas_page > 1 && (
+                        <Td
+                          py="4px"
+                          borderBottomWidth="1px"
+                          borderBottomStyle="solid"
+                          borderBottomColor="gray.300"
+                        >
+                          <HStack spacing="4px">
+                            <IconButton
+                              onClick={() => handleEditTask(task?.id)}
+                              aria-label="Open navigation"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24"
+                                  as={IoPencilOutline}
+                                  color="gray.600"
+                                />
+                              }
+                            />
 
-      <Flex alignItems="center" justifyContent="center">
-        <Pagination
-          currentPage={page}
-          perPage={perPage}
-          totalPages={isResponsible ? 1 : totalPages}
-          onPageChange={setPage}
-        />
+                            <IconButton
+                              onClick={() => openDialog(task?.id)}
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24"
+                                  as={IoTrashOutline}
+                                  color="gray.600"
+                                />
+                              }
+                            />
+                          </HStack>
+                        </Td>
+                      )}
+                    </Tr>
+                  );
+                })
+              ) : (
+                <Tr>Nenhum dado cadastrado</Tr>
+              )}
+            </Tbody>
+          </Table>
+        </Box>
+        <Flex alignItems="center" justifyContent="center">
+          <Pagination
+            currentPage={page}
+            perPage={perPage}
+            totalPages={isResponsible ? 1 : totalPages}
+            onPageChange={setPage}
+          />
+        </Flex>
       </Flex>
     </HeaderSideBar>
   );

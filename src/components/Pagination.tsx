@@ -43,7 +43,7 @@ export default function Pagination({
       : [];
 
   return (
-    <HStack spacing={4} mt={8}>
+    <HStack spacing={4} mt={4}>
       <Button
         bg={office.secondary_color}
         textColor={office.primary_color}

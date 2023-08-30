@@ -375,301 +375,302 @@ export default function Voter() {
         </AlertDialogOverlay>
       </AlertDialog>
 
-      <Flex
-        justifyContent={'space-between'}
-        gap={['20px', '0']}
-        alignItems={['center', 'flex-start']}
-      >
-        <Text
-          color="gray.500"
-          fontWeight="semibold"
-          fontSize="20px"
-          ml={[0, '28px']}
+      <Flex direction="column" h="100%">
+        <Flex
+          justifyContent={'space-between'}
+          gap={['20px', '0']}
+          alignItems={['center', 'flex-start']}
         >
-          Apoiador
-          {loading && (
-            <Spinner color={office?.primary_color} ml="4" size="sm" />
-          )}
-        </Text>
-        {role?.eleitor_page > 1 && (
-          <Button
-            onClick={() => navigate('/eleitor/registrar-eleitor')}
-            w={['160px', '280px']}
+          <Text
+            color="gray.500"
+            fontWeight="semibold"
+            fontSize="20px"
+            ml={[0, '28px']}
           >
-            Cadastrar apoiador
-          </Button>
-        )}
-      </Flex>
-      <Text mt="36px" color="gray.500">
-        Filtrar por:
-      </Text>
-      <Flex justifyContent="space-between" flexDir={['column', 'row']}>
-        <Flex gap={['12px', '24px']}>
-          <Select
-            w="220px"
-            borderColor="gray.500"
-            name="filterType"
-            value={selectFilter}
-            onChange={(e) => {
-              setSelectFilter(e.target.value);
-            }}
-          >
-            {voterPage.map((voter) => {
-              return (
-                <option key={voter?.key} value={voter?.value}>
-                  {voter?.label}
-                </option>
-              );
-            })}
-          </Select>
-
-          {selectFilter === 'birthdate' ? (
-            <Input
-              maxW="600px"
-              name="filterField"
-              type="tel"
-              inputMode="numeric"
-              onKeyPress={(e) => {
-                if (!/\d/.test(e.key)) {
-                  e.preventDefault();
-                }
-              }}
-              placeholder="Buscar"
-              value={filterFieldDateMask}
-              mb="24px"
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                handleDateOfBirthChange(inputValue);
-              }}
-              pattern="\d*"
-              borderColor="gray.500"
-              rightIcon={
-                <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-              }
-            />
-          ) : (
-            <Input
-              maxW="600px"
-              type="text"
-              name="filterField"
-              placeholder="Buscar"
-              value={filterField}
-              mb="24px"
-              onChange={(e) => {
-                setFilterField(e.target.value);
-              }}
-              borderColor="gray.500"
-              rightIcon={
-                <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-              }
-            />
+            Apoiador
+            {loading && (
+              <Spinner color={office?.primary_color} ml="4" size="sm" />
+            )}
+          </Text>
+          {role?.eleitor_page > 1 && (
+            <Button
+              onClick={() => navigate('/eleitor/registrar-eleitor')}
+              w={['160px', '280px']}
+            >
+              Cadastrar apoiador
+            </Button>
           )}
         </Flex>
-
-        <PDFDownloadLink
-          document={<MyDocument />}
-          fileName={`eleitores-${office?.name}.pdf`}
-        >
-          <Button
-            w={['160px', '280px']}
-            leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
-          >
-            Imprimir
-          </Button>
-        </PDFDownloadLink>
-      </Flex>
-      <Box
-        h="25rem"
-        overflow="auto"
-        mt="16px"
-        sx={{
-          '::-webkit-scrollbar': {
-            bg: 'gray.50',
-            width: '8px',
-            height: '8px',
-          },
-          '&::-webkit-scrollbar-track': {
-            width: '2px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'gray.600',
-            borderRadius: '8px',
-          },
-        }}
-      >
-        <Table>
-          <Thead
-            position="sticky"
-            top="0px"
-            background="white"
-            borderBottomWidth={'4px'}
-            borderBottomStyle="solid"
-            borderBottomColor={'gray.300'}
-            backgroundColor="white"
-            zIndex="1"
-          >
-            <Tr>
-              {role?.demandas_page > 1 && <Th color="gray.600"></Th>}
-              <Th color="gray.600">Nome</Th>
-              <Th color="gray.600">Referência</Th>
-              <Th color="gray.600">Telefone</Th>
-              <Th color="gray.600">Nascimento</Th>
-              <Th color="gray.600">E-mail</Th>
-              <Th color="gray.600">Criador</Th>
-              <Th color="gray.600">Demandas</Th>
-              <Th color="gray.600">Endereço</Th>
-              {role?.eleitor_page > 1 && (
-                <Th textAlign="center" color="gray.600" w="8">
-                  Ações
-                </Th>
-              )}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {data.length > 0 ? (
-              data.map((voter) => {
+        <Text mt="36px" color="gray.500">
+          Filtrar por:
+        </Text>
+        <Flex justifyContent="space-between" flexDir={['column', 'row']}>
+          <Flex gap={['12px', '24px']}>
+            <Select
+              w="220px"
+              borderColor="gray.500"
+              name="filterType"
+              value={selectFilter}
+              onChange={(e) => {
+                setSelectFilter(e.target.value);
+              }}
+            >
+              {voterPage.map((voter) => {
                 return (
-                  <Tr key={voter.id} whiteSpace="nowrap">
-                    {role?.demandas_page > 1 && (
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        <Link
-                          target="_blank"
-                          to={`/demanda/registrar-demanda/${voter?.cellphone}`}
-                        >
-                          <IconButton
-                            aria-label="Open alert"
-                            variant="unstyled"
-                            icon={
-                              <Icon
-                                cursor="pointer"
-                                fontSize="24px"
-                                as={IoAddCircleSharp}
-                                color={office?.primary_color}
-                              />
-                            }
-                          />
-                        </Link>
-                      </Td>
-                    )}
+                  <option key={voter?.key} value={voter?.value}>
+                    {voter?.label}
+                  </option>
+                );
+              })}
+            </Select>
 
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {voter?.name}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {voter?.reference}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {voter?.cellphone ? (
-                        <Link
-                          target="_blank"
-                          to={`https://wa.me/55${voter?.cellphone}`}
-                          rel="noopener noreferrer"
+            {selectFilter === 'birthdate' ? (
+              <Input
+                maxW="600px"
+                name="filterField"
+                type="tel"
+                inputMode="numeric"
+                onKeyPress={(e) => {
+                  if (!/\d/.test(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                placeholder="Buscar"
+                value={filterFieldDateMask}
+                mb="24px"
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  handleDateOfBirthChange(inputValue);
+                }}
+                pattern="\d*"
+                borderColor="gray.500"
+                rightIcon={
+                  <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+                }
+              />
+            ) : (
+              <Input
+                maxW="600px"
+                type="text"
+                name="filterField"
+                placeholder="Buscar"
+                value={filterField}
+                mb="24px"
+                onChange={(e) => {
+                  setFilterField(e.target.value);
+                }}
+                borderColor="gray.500"
+                rightIcon={
+                  <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
+                }
+              />
+            )}
+          </Flex>
+
+          <PDFDownloadLink
+            document={<MyDocument />}
+            fileName={`eleitores-${office?.name}.pdf`}
+          >
+            <Button
+              w={['160px', '280px']}
+              leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
+            >
+              Imprimir
+            </Button>
+          </PDFDownloadLink>
+        </Flex>
+        <Box
+          overflow="auto"
+          mt="16px"
+          sx={{
+            '::-webkit-scrollbar': {
+              bg: 'gray.50',
+              width: '8px',
+              height: '8px',
+            },
+            '&::-webkit-scrollbar-track': {
+              width: '2px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: 'gray.600',
+              borderRadius: '8px',
+            },
+          }}
+          h={'100%'}
+        >
+          <Table>
+            <Thead
+              position="sticky"
+              top="0px"
+              background="white"
+              borderBottomWidth={'4px'}
+              borderBottomStyle="solid"
+              borderBottomColor={'gray.300'}
+              backgroundColor="white"
+              zIndex="1"
+            >
+              <Tr>
+                {role?.demandas_page > 1 && <Th color="gray.600"></Th>}
+                <Th color="gray.600">Nome</Th>
+                <Th color="gray.600">Referência</Th>
+                <Th color="gray.600">Telefone</Th>
+                <Th color="gray.600">Nascimento</Th>
+                <Th color="gray.600">E-mail</Th>
+                <Th color="gray.600">Criador</Th>
+                <Th color="gray.600">Demandas</Th>
+                <Th color="gray.600">Endereço</Th>
+                {role?.eleitor_page > 1 && (
+                  <Th textAlign="center" color="gray.600" w="8">
+                    Ações
+                  </Th>
+                )}
+              </Tr>
+            </Thead>
+            <Tbody>
+              {data.length > 0 ? (
+                data.map((voter) => {
+                  return (
+                    <Tr key={voter.id} whiteSpace="nowrap">
+                      {role?.demandas_page > 1 && (
+                        <Td
+                          color="gray.600"
+                          fontSize="14px"
+                          borderBottomWidth="1px"
+                          borderBottomStyle="solid"
+                          borderBottomColor="gray.300"
+                          py="4px"
                         >
-                          <IconButton
-                            aria-label="Open alert"
-                            variant="unstyled"
-                            icon={
-                              <Icon
-                                cursor="pointer"
-                                fontSize="24px"
-                                as={IoLogoWhatsapp}
-                                color={office?.primary_color}
-                              />
-                            }
-                          />
-                          {voter?.cellphone}
-                        </Link>
-                      ) : (
-                        '-'
+                          <Link
+                            target="_blank"
+                            to={`/demanda/registrar-demanda/${voter?.cellphone}`}
+                          >
+                            <IconButton
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24px"
+                                  as={IoAddCircleSharp}
+                                  color={office?.primary_color}
+                                />
+                              }
+                            />
+                          </Link>
+                        </Td>
                       )}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {voter?.birthdate
-                        ? getFormatDate(
-                            new Date(voter?.birthdate),
-                            'dd/MM/yyyy'
-                          )
-                        : '-'}
-                    </Td>
 
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {voter?.email ? voter?.email : '-'}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                    >
-                      {voter?.creator?.name}
-                    </Td>
-                    <Td
-                      color="gray.600"
-                      fontSize="14px"
-                      borderBottomWidth="1px"
-                      borderBottomStyle="solid"
-                      borderBottomColor="gray.300"
-                      py="4px"
-                      textAlign="center"
-                    >
-                      {voter?.tasks?.length}
-                    </Td>
-                    {voter?.street ? (
                       <Td
                         color="gray.600"
                         fontSize="14px"
                         borderBottomWidth="1px"
                         borderBottomStyle="solid"
                         borderBottomColor="gray.300"
-                        w="120px"
                         py="4px"
                       >
-                        {voter?.zip
-                          ? `${voter?.street ? voter?.street + ',' : ''}
+                        {voter?.name}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {voter?.reference}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {voter?.cellphone ? (
+                          <Link
+                            target="_blank"
+                            to={`https://wa.me/55${voter?.cellphone}`}
+                            rel="noopener noreferrer"
+                          >
+                            <IconButton
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24px"
+                                  as={IoLogoWhatsapp}
+                                  color={office?.primary_color}
+                                />
+                              }
+                            />
+                            {voter?.cellphone}
+                          </Link>
+                        ) : (
+                          '-'
+                        )}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {voter?.birthdate
+                          ? getFormatDate(
+                              new Date(voter?.birthdate),
+                              'dd/MM/yyyy'
+                            )
+                          : '-'}
+                      </Td>
+
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {voter?.email ? voter?.email : '-'}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                      >
+                        {voter?.creator?.name}
+                      </Td>
+                      <Td
+                        color="gray.600"
+                        fontSize="14px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                        py="4px"
+                        textAlign="center"
+                      >
+                        {voter?.tasks?.length}
+                      </Td>
+                      {voter?.street ? (
+                        <Td
+                          color="gray.600"
+                          fontSize="14px"
+                          borderBottomWidth="1px"
+                          borderBottomStyle="solid"
+                          borderBottomColor="gray.300"
+                          w="120px"
+                          py="4px"
+                        >
+                          {voter?.zip
+                            ? `${voter?.street ? voter?.street + ',' : ''}
                               ${
                                 voter?.address_number
                                   ? voter?.address_number + ','
@@ -685,84 +686,85 @@ export default function Voter() {
                               }
                               ${voter?.city ? voter?.city + ',' : ''}
                               ${voter?.state ? voter?.state + ',' : ''}`
-                          : '-'}
-                      </Td>
-                    ) : (
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        -
-                      </Td>
-                    )}
-                    {role?.eleitor_page > 1 && (
-                      <Td
-                        py="4px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                      >
-                        <HStack spacing="4px">
-                          <IconButton
-                            onClick={() => handleEditVoter(voter)}
-                            aria-label="Open navigation"
-                            variant="unstyled"
-                            icon={
-                              <Icon
-                                cursor="pointer"
-                                fontSize="24"
-                                as={IoPencilOutline}
-                                color="gray.600"
-                              />
-                            }
-                          />
+                            : '-'}
+                        </Td>
+                      ) : (
+                        <Td
+                          color="gray.600"
+                          fontSize="14px"
+                          borderBottomWidth="1px"
+                          borderBottomStyle="solid"
+                          borderBottomColor="gray.300"
+                          py="4px"
+                        >
+                          -
+                        </Td>
+                      )}
+                      {role?.eleitor_page > 1 && (
+                        <Td
+                          py="4px"
+                          borderBottomWidth="1px"
+                          borderBottomStyle="solid"
+                          borderBottomColor="gray.300"
+                        >
+                          <HStack spacing="4px">
+                            <IconButton
+                              onClick={() => handleEditVoter(voter)}
+                              aria-label="Open navigation"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24"
+                                  as={IoPencilOutline}
+                                  color="gray.600"
+                                />
+                              }
+                            />
 
-                          <IconButton
-                            onClick={() => openDialog(voter?.id)}
-                            aria-label="Open alert"
-                            variant="unstyled"
-                            icon={
-                              <Icon
-                                cursor="pointer"
-                                fontSize="24"
-                                as={IoTrashOutline}
-                                color="gray.600"
-                              />
-                            }
-                          />
-                        </HStack>
-                      </Td>
-                    )}
-                  </Tr>
-                );
-              })
-            ) : (
-              <Tr>
-                <Td fontSize={'14px'} w="100%">
-                  Nenhum dado cadastrado
-                </Td>
-                <Td></Td>
-                <Td></Td>
-                <Td></Td>
-                <Td></Td>
-                <Td></Td>
-              </Tr>
-            )}
-          </Tbody>
-        </Table>
-      </Box>
+                            <IconButton
+                              onClick={() => openDialog(voter?.id)}
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24"
+                                  as={IoTrashOutline}
+                                  color="gray.600"
+                                />
+                              }
+                            />
+                          </HStack>
+                        </Td>
+                      )}
+                    </Tr>
+                  );
+                })
+              ) : (
+                <Tr>
+                  <Td fontSize={'14px'} w="100%">
+                    Nenhum dado cadastrado
+                  </Td>
+                  <Td></Td>
+                  <Td></Td>
+                  <Td></Td>
+                  <Td></Td>
+                  <Td></Td>
+                </Tr>
+              )}
+            </Tbody>
+          </Table>
+        </Box>
 
-      <Flex alignItems="center" justifyContent="center">
-        <Pagination
-          currentPage={page}
-          perPage={perPage}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
+        <Flex alignItems="center" justifyContent="center">
+          <Pagination
+            currentPage={page}
+            perPage={perPage}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
+        </Flex>
       </Flex>
     </HeaderSideBar>
   );
