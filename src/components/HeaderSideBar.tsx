@@ -123,11 +123,10 @@ export default function SidebarWithHeader({
       <Box ml={{ base: 0, md: 60 }} p="26px" bg="gray.100" h={screenHeight}>
         <Box
           bgColor="white"
-          h={['100%', `calc(100vh - 112px)`]}
           borderRadius="8px"
           px="24px"
           py="40px"
-          overflow={'auto'}
+					h={['100%', `calc(100vh - 112px)`]}
         >
           {children}
         </Box>

@@ -479,7 +479,7 @@ export default function Voter() {
         </PDFDownloadLink>
       </Flex>
       <Box
-        maxH="calc(100vh - 340px)"
+        h="29rem"
         overflow="auto"
         mt="16px"
         sx={{
