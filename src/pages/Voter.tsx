@@ -11,11 +11,6 @@ import {
   HStack,
   Icon,
   IconButton,
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Select,
   Spinner,
   Table,
@@ -55,6 +50,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { VoterDTO } from '../dtos';
 import { useDebounce } from '../hooks/useDebounce';
 import api from '../services/api';
+import { convertDateFormat } from '../utils/convertDateFormat';
 import { getFormatDate } from '../utils/date';
 import { voterPage } from '../utils/filterTables';
 
@@ -71,11 +67,6 @@ export default function Voter() {
     onOpen: onOpenAlert,
     onClose: onCloseAlert,
   } = useDisclosure();
-  const {
-    isOpen: isOpenModal,
-    onOpen: onOpenModal,
-    onClose: onCloseModal,
-  } = useDisclosure();
   const { role, office } = useAuth();
   const auth = useAuth();
   const [selectFilter, setSelectFilter] = useState('name');
@@ -86,18 +77,6 @@ export default function Voter() {
 
   const perPage = 20;
 
-  function convertDateFormat(dateStr: string): string {
-    const parts = dateStr.split('/');
-    const newDate = new Date(
-      parseInt(parts[2]),
-      parseInt(parts[1]) - 1,
-      parseInt(parts[0]),
-      13,
-      0,
-      0
-    );
-    return newDate.toISOString();
-  }
   const openDialog = (voter_id: string) => {
     setVoterToDeleteId(voter_id);
     onOpenAlert();
@@ -108,11 +87,22 @@ export default function Voter() {
 
     setLoading(true);
     try {
+			const filterMapping = {
+				voter: 'voter.name',
+				creator: 'creator.name',
+				city: 'voter.city',
+				neighborhood: 'voter.neighborhood',
+			};
+
+			const currentFilter =
+				filterMapping[selectFilter as keyof typeof filterMapping] || selectFilter;
+
+
       const response = await api.get(`/voter/office/${auth.office.id}`, {
         params: {
           page: currentPage,
           quantity: perPage,
-          field: selectFilter,
+          field: currentFilter,
           value: filterFieldDateMask
             ? convertDateFormat(filterFieldDateMask)
             : filterField,
@@ -384,57 +374,7 @@ export default function Voter() {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-      <Modal isOpen={isOpenModal} onClose={onCloseModal} size="lg" isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader
-            alignItems="center"
-            display="flex"
-            justifyContent="space-between"
-          >
-            <Text fontSize="20px" fontWeight="700" color="green.1000">
-              Impressão de documento
-            </Text>
-          </ModalHeader>
 
-          {/* <ModalBody>
-						<span>Atenção, digite o número de linhas desejados na página.</span>
-						<NumericFormat
-							required
-							customInput={Input}
-							decimalScale={2}
-							label=""
-							name="numberOfLines"
-							suffix=" linhas"
-							type="text"
-							value={numberOfLines}
-							onValueChange={(value) => {
-								setNumberOfLines(Number(value.value));
-							}}
-						/>
-					</ModalBody> */}
-
-          <ModalFooter>
-            <ChakraButton variant="outline" mr={3} onClick={onCloseModal}>
-              Cancelar
-            </ChakraButton>
-
-            {data.length > 0 && (
-              <PDFDownloadLink
-                document={<MyDocument />}
-                fileName={`eleitores-${office?.name}.pdf`}
-              >
-                <Button
-                  colorScheme="teal"
-                  leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
-                >
-                  Imprimir
-                </Button>
-              </PDFDownloadLink>
-            )}
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
       <Flex
         justifyContent={'space-between'}
         gap={['20px', '0']}
@@ -526,16 +466,20 @@ export default function Voter() {
           )}
         </Flex>
 
-        <Button
-          onClick={() => onOpenModal()}
-          leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
-          w={['160px', '280px']}
+        <PDFDownloadLink
+          document={<MyDocument />}
+          fileName={`eleitores-${office?.name}.pdf`}
         >
-          Imprimir
-        </Button>
+          <Button
+            w={['160px', '280px']}
+            leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
+          >
+            Imprimir
+          </Button>
+        </PDFDownloadLink>
       </Flex>
       <Box
-        maxH="calc(100vh - 340px)"
+        h="29rem"
         overflow="auto"
         mt="16px"
         sx={{

@@ -20,8 +20,10 @@ import {
   Text,
   useColorModeValue,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { ReactNode, useEffect, useState } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
 import { IconType } from 'react-icons';
 import { BiArrowBack, BiTask } from 'react-icons/bi';
 import { BsListTask } from 'react-icons/bs';
@@ -31,7 +33,11 @@ import { RiTeamLine } from 'react-icons/ri';
 import { SiMicrosoftteams } from 'react-icons/si';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
 
+const stripePromise = loadStripe(
+  process.env.REACT_APP_PUBLIC_STRIPE_KEY as string
+);
 interface LinkItemProps {
   name: string;
   route: string;
@@ -117,11 +123,10 @@ export default function SidebarWithHeader({
       <Box ml={{ base: 0, md: 60 }} p="26px" bg="gray.100" h={screenHeight}>
         <Box
           bgColor="white"
-          h={['100%', `calc(100vh - 112px)`]}
           borderRadius="8px"
           px="24px"
           py="40px"
-          overflow={'auto'}
+					h={['100%', `calc(100vh - 112px)`]}
         >
           {children}
         </Box>
@@ -267,7 +272,9 @@ interface MobileProps extends FlexProps {
 }
 const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
   const navigate = useNavigate();
-  const { signOut, user, office } = useAuth();
+  const { signOut, user, office, updateOffice } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const toast = useToast();
 
   const handleNavigatePerfil = () => {
     navigate(`/perfil`);
@@ -275,6 +282,51 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
 
   const handleNavigateGabinete = () => {
     navigate(`/gabinete`);
+  };
+
+  const handleCheckout = async () => {
+    setLoading(true);
+    try {
+      // Call your backend to create the Checkout session.
+      const response = await api.get(
+        `/office/sessionPayment/${office.id}
+        `
+        // ?${
+        //   couponChecked?.id ? '/' + couponChecked?.id : ''
+        // }
+      );
+
+      localStorage.setItem('session_id', response.data.id);
+      // When the customer clicks on the button, redirect them to Checkout.
+
+      if (response.data.url) {
+        updateOffice({ ...office, active: true });
+        return (window.location.href = response.data.url);
+      }
+      const stripe: any = await stripePromise;
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: response.data.id,
+      });
+      toast({
+        title: error,
+
+        status: 'error',
+        position: 'top-right',
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch {
+      toast({
+        title: 'Algo de errado ocorreu, tente novamente.',
+
+        status: 'error',
+        position: 'top-right',
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -354,6 +406,9 @@ const MobileNav = ({ onOpen, backRoute, ...rest }: MobileProps) => {
               <MenuItem onClick={handleNavigatePerfil}>Perfil</MenuItem>
               {user?.id === office?.owner_id && (
                 <MenuItem onClick={handleNavigateGabinete}>Gabinete</MenuItem>
+              )}
+              {user?.id === office?.owner_id && (
+                <MenuItem onClick={handleCheckout}>Assinatura</MenuItem>
               )}
               <MenuDivider />
               <MenuItem onClick={signOut}>Sair</MenuItem>

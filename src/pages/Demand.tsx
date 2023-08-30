@@ -11,12 +11,6 @@ import {
   HStack,
   Icon,
   IconButton,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Select,
   Table,
   Tbody,
@@ -44,30 +38,30 @@ import {
   IoSearchSharp,
   IoTrashOutline,
 } from 'react-icons/io5';
-import { NumericFormat } from 'react-number-format';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
 import HeaderSideBar from '../components/HeaderSideBar';
+import Pagination from '../components/Pagination';
 import { useAuth } from '../contexts/AuthContext';
-import { PermissionByIdDTO, StateProps, TaskPropsDTO } from '../dtos';
+import { PermissionByIdDTO, TaskPropsDTO } from '../dtos';
+import { useDebounce } from '../hooks/useDebounce';
 import api from '../services/api';
+import { convertDateFormat } from '../utils/convertDateFormat';
 import { getFormatDate } from '../utils/date';
 import { demandPage } from '../utils/filterTables';
 import { paginationArray } from '../utils/pdfPagination';
 
+type SelectProps = {
+  label: string;
+  value: string;
+};
+
 export default function Demand() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [numberOfLines, setNumberOfLines] = useState(5);
   const toast = useToast();
-  const [filteredData, setFilteredData] = useState([] as TaskPropsDTO[]);
   const [data, setData] = useState([] as TaskPropsDTO[]);
-  const {
-    isOpen: isOpenModal,
-    onOpen: onOpenModal,
-    onClose: onCloseModal,
-  } = useDisclosure();
   const { office, role } = useAuth();
   const [demandToDeleteId, setDemandToDeleteId] = useState('');
   const [responsibles, setResponsibles] = useState([] as SelectProps[]);
@@ -77,23 +71,27 @@ export default function Demand() {
   const [selectFilter, setSelectFilter] = useState('title');
   const [filterField, setFilterField] = useState('');
   const [filterFieldDateMask, setFilterFieldDateMask] = useState('');
-  const [errors, setErrors] = useState({} as StateProps);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const debouncedValue = useDebounce(
+    responsibleFilterField || filterFieldDateMask || filterField,
+    500
+  );
 
-  console.log('filteredData', filteredData);
+  const perPage = 7;
+
+  const isResponsible = selectFilter === 'responsible';
 
   const openDialog = (task_id: string) => {
     setDemandToDeleteId(task_id);
     onOpen();
-  };
-  type SelectProps = {
-    label: string;
-    value: string;
   };
 
   const getPermissions = async () => {
     setResponsibles([] as SelectProps[]);
 
     setLoading(true);
+
     try {
       const response = await api.get(
         `/permission/office/${role?.office_id}/responsible`
@@ -111,6 +109,43 @@ export default function Demand() {
       setLoading(false);
     }
   };
+
+  async function getTasks(currentPage = 1) {
+    setData([] as TaskPropsDTO[]);
+
+    setLoading(true);
+
+    try {
+      const filterMapping = {
+        voter: 'voter.name',
+        creator: 'creator.name',
+        responsible: 'responsible.name',
+        city: 'voter.city',
+        neighborhood: 'voter.neighborhood',
+      };
+
+      const currentFilter =
+        filterMapping[selectFilter as keyof typeof filterMapping] ||
+        selectFilter;
+
+      const response = await api.get(`/task/office/${office?.id}`, {
+        params: {
+          page: currentPage,
+          quantity: isResponsible ? 10000 : perPage,
+          field: currentFilter,
+          value: filterFieldDateMask
+            ? convertDateFormat(filterFieldDateMask)
+            : responsibleFilterField || filterField,
+        },
+      });
+
+      setData(response.data.items);
+      setTotalPages(response.data.total);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
+  }
 
   function parseHTMLToText(htmlString: any) {
     const parser = new DOMParser();
@@ -171,56 +206,27 @@ export default function Demand() {
     setFilterField(input);
   };
 
-  async function getTasks() {
-    setData([] as TaskPropsDTO[]);
-
-    setLoading(true);
-    try {
-      const response = await api.get(`/task/office/${office?.id}`);
-
-      setData(response.data);
-    } catch (err) {
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    if (office?.id) {
-      getTasks();
+    if (office.id) {
       getPermissions();
     }
-  }, [office?.id]);
+  }, [office.id]);
 
   useEffect(() => {
-    getTasks();
-  }, []);
+    getTasks(page);
+  }, [page, debouncedValue]);
 
   useEffect(() => {
-    if (responsibles.length > 0) {
-      setResponsibleFilterField(responsibles[0].label);
-    }
-  }, [responsibles]);
-
-  useEffect(() => {
-    if (filterField === 'reponsible') {
-      if (responsibleFilterField) {
-        setFilteredData(
-          data.filter(
-            (task) => task.responsible.name === responsibleFilterField
-          )
-        );
-      } else {
-        setFilteredData(data);
-      }
-    }
-  }, [data, responsibleFilterField, filterField]);
+    getTasks(1);
+  }, [debouncedValue]);
 
   const handleEditTask = (task_id: string) => {
     navigate(`/demanda/${task_id}`);
   };
   useEffect(() => {
     setFilterField('');
+    setFilterFieldDateMask('');
+    setResponsibleFilterField('');
   }, [selectFilter]);
 
   const styles = StyleSheet.create({
@@ -324,161 +330,68 @@ export default function Demand() {
   const MyDocument = () => {
     return (
       <Document>
-        {paginationArray(
-          data.filter((currentValue: any) => {
-            switch (selectFilter) {
-              case 'all':
-                return currentValue;
-              case 'title':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.title &&
-                    currentValue?.title
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'voter':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.voter?.name &&
-                    currentValue?.voter?.name
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'creator':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.creator?.name &&
-                    currentValue?.creator?.name
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'responsible':
-                if (responsibleFilterField?.length >= 3) {
-                  return (
-                    currentValue?.responsible?.name &&
-                    currentValue?.responsible?.name
-                      .toLowerCase()
-                      .indexOf(responsibleFilterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'deadline':
-                if (filterField?.length >= 3) {
-                  return (
-                    getFormatDate(
-                      new Date(currentValue?.deadline),
-                      'dd/MM/yyyy'
-                    ).indexOf(filterField) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'city':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.voter?.city &&
-                    currentValue?.voter?.city
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              case 'neighborhood':
-                if (filterField?.length >= 3) {
-                  return (
-                    currentValue?.voter?.neighborhood &&
-                    currentValue?.voter?.neighborhood
-                      .toLowerCase()
-                      .indexOf(filterField?.toLowerCase()) > -1
-                  );
-                } else {
-                  return currentValue;
-                }
-              default:
-                return currentValue;
-            }
-          }),
-          numberOfLines
-        ).map((pageItems, index) => {
-          return (
-            <Page
-              key={index}
-              size="A4"
-              style={styles.page}
-              orientation="landscape"
-            >
-              <View style={styles.table}>
-                <View style={styles.flexBetween}>
-                  {office?.logo_url && (
-                    <Image style={styles.image} src={office?.logo_url} />
-                  )}
-                  <TextPDF style={styles.tableTitle}>{office?.name}</TextPDF>
-                </View>
-                {selectFilter === 'responsible' ? (
-                  <TextPDF style={styles.tableSubTitle}>
-                    Lista de Demandas -{' '}
-                    {responsibles.find(
-                      (responsible) =>
-                        responsible.label === responsibleFilterField
-                    )?.label || ''}
-                  </TextPDF>
-                ) : (
-                  <TextPDF style={styles.tableSubTitle}>
-                    Lista de Demandas
-                  </TextPDF>
+        {paginationArray(data, 5).map((pageItems, index) => (
+          <Page
+            key={index}
+            size="A4"
+            style={styles.page}
+            orientation="landscape"
+          >
+            <View style={styles.table}>
+              <View style={styles.flexBetween}>
+                {office?.logo_url && (
+                  <Image style={styles.image} src={office?.logo_url} />
                 )}
+                <TextPDF style={styles.tableTitle}>{office?.name}</TextPDF>
+              </View>
+              {isResponsible ? (
+                <TextPDF style={styles.tableSubTitle}>
+                  Lista de Demandas -{' '}
+                  {responsibles.find(
+                    (responsible) =>
+                      responsible.label === responsibleFilterField
+                  )?.label || ''}
+                </TextPDF>
+              ) : (
+                <TextPDF style={styles.tableSubTitle}>
+                  Lista de Demandas
+                </TextPDF>
+              )}
 
-                <View style={styles.tableContainer}>
-                  <View style={styles.rowTitle}>
-                    <TextPDF style={styles.voter}>Apoiador</TextPDF>
-                    <TextPDF style={styles.status}>Status</TextPDF>
-                    <TextPDF style={styles.title}>Título</TextPDF>
-                    <TextPDF style={styles.description}>Descrição</TextPDF>
-                    <TextPDF style={styles.cell}>Telefone</TextPDF>
-                    <TextPDF style={styles.address}>Endereço</TextPDF>
-                  </View>
+              <View style={styles.tableContainer}>
+                <View style={styles.rowTitle}>
+                  <TextPDF style={styles.voter}>Apoiador</TextPDF>
+                  <TextPDF style={styles.status}>Status</TextPDF>
+                  <TextPDF style={styles.title}>Título</TextPDF>
+                  <TextPDF style={styles.description}>Descrição</TextPDF>
+                  <TextPDF style={styles.cell}>Telefone</TextPDF>
+                  <TextPDF style={styles.address}>Endereço</TextPDF>
+                </View>
 
-                  {pageItems.map((item: TaskPropsDTO) => {
-                    return (
-                      <View
-                        style={
-                          item?.id === pageItems[pageItems.length - 1]?.id
-                            ? styles.finalRow
-                            : styles.row
-                        }
-                        key={item.id}
-                      >
-                        <TextPDF style={styles.voter}>
-                          {item?.voter.name}
-                        </TextPDF>
-                        <TextPDF style={styles.status}>{item?.status}</TextPDF>
-                        <TextPDF style={styles.title}>{item?.title}</TextPDF>
+                {pageItems.map((item: TaskPropsDTO) => (
+                  <View
+                    style={
+                      item?.id === pageItems[pageItems.length - 1]?.id
+                        ? styles.finalRow
+                        : styles.row
+                    }
+                    key={item.id}
+                  >
+                    <TextPDF style={styles.voter}>{item?.voter.name}</TextPDF>
+                    <TextPDF style={styles.status}>{item?.status}</TextPDF>
+                    <TextPDF style={styles.title}>{item?.title}</TextPDF>
 
-                        <TextPDF style={styles.description}>
-                          {parseHTMLToText(item?.description)}
-                        </TextPDF>
-                        <TextPDF style={styles.cell}>
-                          {item?.voter.cellphone}
-                        </TextPDF>
-                        <TextPDF style={styles.address}>
-                          {item?.voter?.zip
-                            ? `${
-                                item?.voter?.street
-                                  ? item?.voter?.street + ','
-                                  : ''
-                              }
+                    <TextPDF style={styles.description}>
+                      {parseHTMLToText(item?.description)}
+                    </TextPDF>
+                    <TextPDF style={styles.cell}>
+                      {item?.voter.cellphone}
+                    </TextPDF>
+                    <TextPDF style={styles.address}>
+                      {item?.voter?.zip
+                        ? `${
+                            item?.voter?.street ? item?.voter?.street + ',' : ''
+                          }
                               ${
                                 item?.voter?.address_number
                                   ? item?.voter?.address_number + ','
@@ -502,16 +415,14 @@ export default function Demand() {
                                   ? item?.voter?.state + ','
                                   : ''
                               }`
-                            : '-'}
-                        </TextPDF>
-                      </View>
-                    );
-                  })}
-                </View>
+                        : '-'}
+                    </TextPDF>
+                  </View>
+                ))}
               </View>
-            </Page>
-          );
-        })}
+            </View>
+          </Page>
+        ))}
       </Document>
     );
   };
@@ -549,60 +460,7 @@ export default function Demand() {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-      <Modal isOpen={isOpenModal} onClose={onCloseModal} size="lg" isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader
-            alignItems="center"
-            display="flex"
-            justifyContent="space-between"
-          >
-            <Text fontSize="20px" fontWeight="700" color="green.1000">
-              Impressão de documento
-            </Text>
-          </ModalHeader>
 
-          <ModalBody>
-            <span>Atenção, digite o número de linhas desejados na página.</span>
-            <NumericFormat
-              required
-              customInput={Input}
-              decimalScale={2}
-              label=""
-              name="numberOfLines"
-              suffix=" linhas"
-              type="text"
-              value={numberOfLines}
-              onValueChange={(value) => {
-                setNumberOfLines(Number(value.value));
-              }}
-            />
-          </ModalBody>
-
-          <ModalFooter>
-            <ChakraButton variant="outline" mr={3} onClick={onCloseModal}>
-              Cancelar
-            </ChakraButton>
-
-            {data.length > 0 && (
-              <PDFDownloadLink
-                document={<MyDocument />}
-                fileName={`demandas-${office?.name}.pdf`}
-                onClick={() => {
-                  onCloseModal();
-                }}
-              >
-                <Button
-                  colorScheme="teal"
-                  leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
-                >
-                  Imprimir
-                </Button>
-              </PDFDownloadLink>
-            )}
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
       <Flex
         justifyContent={'space-between'}
         gap={['20px', '0']}
@@ -625,6 +483,7 @@ export default function Demand() {
           </Button>
         )}
       </Flex>
+
       <Text mt="36px" color="gray.500">
         Filtrar por:
       </Text>
@@ -648,7 +507,7 @@ export default function Demand() {
             })}
           </Select>
 
-          {selectFilter === 'responsible' ? (
+          {isResponsible ? (
             <Select
               borderColor="gray.500"
               bg="gray.50"
@@ -673,6 +532,9 @@ export default function Demand() {
                 }
               }}
             >
+              <option value="0" selected>
+                Escolher responsável
+              </option>
               {responsibles.map((responsible, index) => {
                 return (
                   <option value={responsible?.value} key={index}>
@@ -693,7 +555,6 @@ export default function Demand() {
               }}
               name="filterField"
               placeholder="Buscar"
-              error={errors?.filterField}
               value={
                 selectFilter === 'deadline' ? filterFieldDateMask : filterField
               }
@@ -714,7 +575,6 @@ export default function Demand() {
               type="text"
               name="filterField"
               placeholder="Buscar"
-              error={errors?.filterField}
               value={filterField}
               mb="24px"
               onChange={(e) => {
@@ -727,16 +587,21 @@ export default function Demand() {
             />
           )}
         </Flex>
-        <Button
-          onClick={() => onOpenModal()}
-          leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
-          w={['160px', '280px']}
+
+        <PDFDownloadLink
+          document={<MyDocument />}
+          fileName={`demandas-${office?.name}.pdf`}
         >
-          Imprimir
-        </Button>
+          <Button
+            w={['160px', '280px']}
+            leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
+          >
+            Imprimir
+          </Button>
+        </PDFDownloadLink>
       </Flex>
       <Box
-        maxH="calc(100vh - 340px)"
+        h="29rem"
         overflow="auto"
         mt="16px"
         sx={{
@@ -780,199 +645,118 @@ export default function Demand() {
             </Tr>
           </Thead>
           <Tbody>
-            {Array.isArray(data) && data.length > 0 ? (
-              data
-                .filter((currentValue: any) => {
-                  switch (selectFilter) {
-                    case 'all':
-                      return currentValue;
-                    case 'title':
-                      if (filterField?.length >= 3) {
-                        return (
-                          currentValue?.title &&
-                          currentValue?.title
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-                    case 'voter':
-                      if (filterField?.length >= 3) {
-                        return (
-                          currentValue?.voter?.name &&
-                          currentValue?.voter?.name
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-                    case 'creator':
-                      if (filterField?.length >= 3) {
-                        return (
-                          currentValue?.creator?.name &&
-                          currentValue?.creator?.name
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-                    case 'responsible':
-                      if (responsibleFilterField?.length >= 3) {
-                        return (
-                          currentValue?.responsible?.name &&
-                          currentValue?.responsible?.name
-                            .toLowerCase()
-                            .indexOf(responsibleFilterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
+            {data.length > 0 ? (
+              data.map((task) => {
+                return (
+                  <Tr key={task.id} whiteSpace="nowrap">
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                    >
+                      {task?.title}
+                    </Td>
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                    >
+                      {task?.voter?.name}
+                    </Td>
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                    >
+                      {task?.deadline
+                        ? getFormatDate(new Date(task?.deadline), 'dd/MM/yyyy')
+                        : '-'}
+                    </Td>
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                    >
+                      {task?.creator?.name}
+                    </Td>
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                    >
+                      {task?.responsible?.name}
+                    </Td>
+                    {role?.demandas_page > 1 && (
+                      <Td
+                        py="4px"
+                        borderBottomWidth="1px"
+                        borderBottomStyle="solid"
+                        borderBottomColor="gray.300"
+                      >
+                        <HStack spacing="4px">
+                          <IconButton
+                            onClick={() => handleEditTask(task?.id)}
+                            aria-label="Open navigation"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24"
+                                as={IoPencilOutline}
+                                color="gray.600"
+                              />
+                            }
+                          />
 
-                    case 'deadline':
-                      if (filterField?.length >= 3) {
-                        return (
-                          getFormatDate(
-                            new Date(currentValue?.deadline),
-                            'dd/MM/yyyy'
-                          ).indexOf(filterField) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-                    case 'city':
-                      if (filterField?.length >= 3) {
-                        return (
-                          currentValue?.voter?.city &&
-                          currentValue?.voter?.city
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-                    case 'neighborhood':
-                      if (filterField?.length >= 3) {
-                        return (
-                          currentValue?.voter?.neighborhood &&
-                          currentValue?.voter?.neighborhood
-                            .toLowerCase()
-                            .indexOf(filterField?.toLowerCase()) > -1
-                        );
-                      } else {
-                        return currentValue;
-                      }
-                    default:
-                      break;
-                  }
-                })
-                .map((task) => {
-                  return (
-                    <Tr key={task.id} whiteSpace="nowrap">
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        {task?.title}
+                          <IconButton
+                            onClick={() => openDialog(task?.id)}
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24"
+                                as={IoTrashOutline}
+                                color="gray.600"
+                              />
+                            }
+                          />
+                        </HStack>
                       </Td>
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        {task?.voter?.name}
-                      </Td>
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        {task?.deadline
-                          ? getFormatDate(
-                              new Date(task?.deadline),
-                              'dd/MM/yyyy'
-                            )
-                          : '-'}
-                      </Td>
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        {task?.creator?.name}
-                      </Td>
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                      >
-                        {task?.responsible?.name}
-                      </Td>
-                      {role?.demandas_page > 1 && (
-                        <Td
-                          py="4px"
-                          borderBottomWidth="1px"
-                          borderBottomStyle="solid"
-                          borderBottomColor="gray.300"
-                        >
-                          <HStack spacing="4px">
-                            <IconButton
-                              onClick={() => handleEditTask(task?.id)}
-                              aria-label="Open navigation"
-                              variant="unstyled"
-                              icon={
-                                <Icon
-                                  cursor="pointer"
-                                  fontSize="24"
-                                  as={IoPencilOutline}
-                                  color="gray.600"
-                                />
-                              }
-                            />
-
-                            <IconButton
-                              onClick={() => openDialog(task?.id)}
-                              aria-label="Open alert"
-                              variant="unstyled"
-                              icon={
-                                <Icon
-                                  cursor="pointer"
-                                  fontSize="24"
-                                  as={IoTrashOutline}
-                                  color="gray.600"
-                                />
-                              }
-                            />
-                          </HStack>
-                        </Td>
-                      )}
-                    </Tr>
-                  );
-                })
+                    )}
+                  </Tr>
+                );
+              })
             ) : (
               <Tr>Nenhum dado cadastrado</Tr>
             )}
           </Tbody>
         </Table>
       </Box>
+
+      <Flex alignItems="center" justifyContent="center">
+        <Pagination
+          currentPage={page}
+          perPage={perPage}
+          totalPages={isResponsible ? 1 : totalPages}
+          onPageChange={setPage}
+        />
+      </Flex>
     </HeaderSideBar>
   );
 }
