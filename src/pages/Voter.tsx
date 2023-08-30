@@ -87,16 +87,16 @@ export default function Voter() {
 
     setLoading(true);
     try {
-			const filterMapping = {
-				voter: 'voter.name',
-				creator: 'creator.name',
-				city: 'voter.city',
-				neighborhood: 'voter.neighborhood',
-			};
+      const filterMapping = {
+        voter: 'voter.name',
+        creator: 'creator.name',
+        city: 'voter.city',
+        neighborhood: 'voter.neighborhood',
+      };
 
-			const currentFilter =
-				filterMapping[selectFilter as keyof typeof filterMapping] || selectFilter;
-
+      const currentFilter =
+        filterMapping[selectFilter as keyof typeof filterMapping] ||
+        selectFilter;
 
       const response = await api.get(`/voter/office/${auth.office.id}`, {
         params: {
@@ -479,7 +479,7 @@ export default function Voter() {
         </PDFDownloadLink>
       </Flex>
       <Box
-        h="29rem"
+        h="25rem"
         overflow="auto"
         mt="16px"
         sx={{
