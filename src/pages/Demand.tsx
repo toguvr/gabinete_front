@@ -601,7 +601,7 @@ export default function Demand() {
         </PDFDownloadLink>
       </Flex>
       <Box
-        h="29rem"
+        h="25rem"
         overflow="auto"
         mt="16px"
         sx={{
