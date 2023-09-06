@@ -27,7 +27,7 @@ export const voterPage = [
   { key: 5, value: 'cellphone', label: 'Telefone' },
   { key: 6, value: 'city', label: 'Cidade' },
   { key: 7, value: 'neighborhood', label: 'Bairro' },
-  // { key: 8, value: 'creator', label: 'Criador' },
+  { key: 8, value: 'creator', label: 'Criador' },
 ];
 
 export const demandPage = [
