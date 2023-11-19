@@ -90,8 +90,8 @@ export default function Voter() {
       const filterMapping = {
         voter: 'voter.name',
         creator: 'creator.name',
-        city: 'voter.city',
-        neighborhood: 'voter.neighborhood',
+        city: 'city',
+        neighborhood: 'neighborhood',
       };
 
       const currentFilter =

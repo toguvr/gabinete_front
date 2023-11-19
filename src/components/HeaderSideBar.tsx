@@ -25,7 +25,7 @@ import {
 import { ReactNode, useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { IconType } from 'react-icons';
-import { BiArrowBack, BiTask } from 'react-icons/bi';
+import { BiArrowBack, BiMailSend, BiTask } from 'react-icons/bi';
 import { BsListTask } from 'react-icons/bs';
 import { FiHome, FiMenu } from 'react-icons/fi';
 import { IoAlbumsOutline } from 'react-icons/io5';
@@ -77,6 +77,12 @@ const LinkItems: Array<LinkItemProps> = [
     icon: BiTask,
     permissionName: 'tarefas_page',
   },
+  {
+    name: 'Mensageria',
+    route: '/mensageria',
+    icon: BiMailSend,
+    permissionName: 'tarefas_page',
+  },
   // {
   //   name: "Solicitações",
   //   route: "/solicitacoes",
@@ -93,7 +99,7 @@ export default function SidebarWithHeader({
   backRoute?: boolean;
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const { office } = useAuth();
   const [screenHeight, setScreenHeight] = useState(`calc(100vh - 60px)`);
 
   useEffect(() => {
@@ -128,7 +134,6 @@ export default function SidebarWithHeader({
     </Box>
   );
 }
-
 interface SidebarProps extends BoxProps {
   onClose: () => void;
   active?: boolean;
@@ -139,8 +144,6 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
   const navigate = useNavigate();
   const { office, role, updateUser, user } = useAuth();
   const { pathname } = useLocation();
-
-  const teste = role as any;
 
   return (
     <Box
@@ -184,77 +187,55 @@ const SidebarContent = ({ onClose, icon, active, ...rest }: SidebarProps) => {
           color={office?.primary_color}
         />
       </Flex>
-
       {LinkItems.map((link) => {
-        if (teste[link?.permissionName] > 0) {
-          return pathname.includes(link.route) ? (
-            <Link
-              style={{ textDecoration: 'none' }}
-              _focus={{ boxShadow: 'none' }}
-              onClick={() => {
-                updateUser(user);
-                navigate(link?.route);
+        if (
+          link.name === 'Mensageria' &&
+          office.id !== '3bcc2bae-15ec-438f-a710-c9a60cc58e0d'
+        ) {
+          return null;
+        }
+
+        const isActive = pathname.includes(link.route);
+        const linkColor = isActive ? office?.secondary_color : 'gray.500';
+        const bgColor = isActive ? office?.primary_color : 'transparent';
+
+        return (
+          <Link
+            style={{ textDecoration: 'none' }}
+            _focus={{ boxShadow: 'none' }}
+            onClick={() => {
+              navigate(link.route);
+              onClose();
+            }}
+            key={link.name}
+          >
+            <Flex
+              align="center"
+              p="4"
+              mx="4"
+              borderRadius="lg"
+              role="group"
+              cursor="pointer"
+              color={linkColor}
+              bg={bgColor}
+              _hover={{
+                bg: office?.primary_color,
+                color: office?.secondary_color,
               }}
-              key={link?.name}
             >
-              <Flex
-                align="center"
-                p="4"
-                mx="4"
-                borderRadius="lg"
-                role="group"
-                cursor="pointer"
-                color={office?.secondary_color}
-                bg={office?.primary_color}
-                {...rest}
-              >
-                <Icon
-                  mr="4"
-                  color={office?.secondary_color}
-                  fontSize="16"
-                  _groupHover={{
-                    color: office?.secondary_color,
-                  }}
-                  as={link?.icon}
-                />
-                {link?.name}
-              </Flex>
-            </Link>
-          ) : (
-            <Link
-              style={{ textDecoration: 'none' }}
-              _focus={{ boxShadow: 'none' }}
-              onClick={() => navigate(link?.route)}
-              key={link?.name}
-            >
-              <Flex
-                align="center"
-                p="4"
-                mx="4"
-                borderRadius="lg"
-                role="group"
-                cursor="pointer"
-                color="gray.500"
-                _hover={{
-                  bg: office?.primary_color,
+              <Icon
+                mr="4"
+                color={linkColor}
+                fontSize="16"
+                _groupHover={{
                   color: office?.secondary_color,
                 }}
-                {...rest}
-              >
-                <Icon
-                  mr="4"
-                  color="gray.500"
-                  fontSize="16"
-                  _groupHover={{
-                    color: office?.secondary_color,
-                  }}
-                  as={link?.icon}
-                />
-                {link?.name}
-              </Flex>
-            </Link>
-          );
-        }
+                as={link.icon}
+              />
+              {link.name}
+            </Flex>
+          </Link>
+        );
       })}
     </Box>
   );
