@@ -135,7 +135,9 @@ export default function PermissionRegister() {
 
       if (response.data.isUserOnThisOffice === false) {
         setVerify(true);
-      } else if (response.data.user) {
+      }
+
+      if (response.data.user) {
         setValues({
           name: response.data.user.name,
           ddd: response?.data?.user?.cellphone.slice(0, 2),
