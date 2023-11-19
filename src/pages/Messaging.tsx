@@ -100,7 +100,10 @@ export default function Messaging() {
         phone,
       }));
 
-      // await api.post(`/whatsapp/message/${office.id}/bulk`, body);
+      await api.post(`/whatsapp/message/${office.id}/bulk`, body);
+      setValues({ ...values, message: '', voterMessages: [] });
+      setPhonesToSendMessage([]);
+      setIsAllChecked(false);
 
       toast({
         title: 'Mensagem enviada',
