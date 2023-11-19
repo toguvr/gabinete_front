@@ -6,6 +6,7 @@ export const rolePage = [
   { key: 4, value: 'eleitor_page', label: 'Apoiador' },
   { key: 5, value: 'demandas_page', label: 'Demanda' },
   { key: 6, value: 'tarefas_page', label: 'Tarefa' },
+  { key: 6, value: 'mensageria_page', label: 'Mensageria' },
 ];
 
 export const permissionPage = [
@@ -49,3 +50,12 @@ export const taskPage = [
   { key: 4, value: 'priority', label: 'Prioridade' },
   { key: 5, value: 'voter', label: 'Apoiador' },
 ];
+
+export const messagingPage = [
+	{ key: 0, value: 'all', label: 'Todos' },
+  { key: 1, value: 'name', label: 'Nome' },
+  { key: 2, value: 'cellphone', label: 'Telefone' },
+  { key: 3, value: 'city', label: 'Cidade' },
+  { key: 4, value: 'neighborhood', label: 'Bairro' },
+];
+

@@ -53,6 +53,7 @@ export interface RoleDTO {
   name: string;
   office_id: string;
   tarefas_page: number;
+	mensageria_page: number;
 }
 
 export interface PermissionByIdDTO {

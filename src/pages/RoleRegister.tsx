@@ -39,6 +39,7 @@ type RegisterFormData = {
   eleitor_page: string;
   demandas_page: string;
   tarefas_page: string;
+  mensageria_page: string;
 };
 
 export default function RoleRegister() {
@@ -111,6 +112,15 @@ export default function RoleRegister() {
         );
         onOpen();
         break;
+				case 'mensageria_page':
+        setDialogTitle('Mensageria');
+        setDialogText(
+          `Para que o usuário possa editar, excluir e criar, selecione 'Editor'.
+          Para que o usuário tenha acesso a leitura da página, selecione 'Leitor'.
+          Para que o usuário NÃO tenha acesso a página, selecione 'Desativado'.`
+        );
+        onOpen();
+        break;
       default:
         break;
     }
@@ -147,6 +157,11 @@ export default function RoleRegister() {
       fix: 'tarefas_page',
       values: values?.tarefas_page,
     },
+		{
+      name: 'Mensageria',
+      fix: 'mensageria_page',
+      values: values?.mensageria_page,
+    },
   ];
 
   const handleRegister = useCallback(
@@ -174,6 +189,7 @@ export default function RoleRegister() {
           eleitor_page: values?.eleitor_page,
           demandas_page: values?.demandas_page,
           tarefas_page: values?.tarefas_page,
+          mensageria_page: values?.mensageria_page,
         };
 
         await api.post('/role', body);

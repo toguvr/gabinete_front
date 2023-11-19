@@ -29,6 +29,7 @@ import SignUpOwner from '../pages/SignUpOwner';
 import SignUpOffice from '../pages/SignUpOffice';
 import NotOffice from '../pages/NotOffice';
 import nossogabinete from '../assets/nossogabinete.png';
+import Messaging from '../pages/Messaging';
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -43,6 +44,7 @@ export const privateRoute = [
   { pathname: '/eleitor', permissionName: 'eleitor_page' },
   { pathname: '/demanda', permissionName: 'demandas_page' },
   { pathname: '/tarefa', permissionName: 'tarefas_page' },
+  { pathname: '/mensageria', permissionName: 'mensageria_page' },
   // { pathname: "/solicitacoes", permissionName: "tarefas_page" },
 ];
 
@@ -150,6 +152,7 @@ export default function AppRoutes() {
           <Route path="/cargo/:id" element={<RoleEdit />} />
 
           <Route path="/tarefa" element={<Tarefa />} />
+          <Route path="/mensageria" element={<Messaging />} />
 
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/gabinete" element={<Gabinete />} />
