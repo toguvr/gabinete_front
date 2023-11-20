@@ -40,7 +40,7 @@ type RegisterFormData = {
   eleitor_page: string;
   demandas_page: string;
   tarefas_page: string;
-	mensageria_page: string;
+  mensageria_page: string;
 };
 
 export default function RoleEdit() {
@@ -117,13 +117,13 @@ export default function RoleEdit() {
         );
         onOpen();
         break;
-				case 'mensageria_page':
-					setDialogTitle('Mensageria');
-					setDialogText(
-						"Para que o usuário não tenha acesso a mensageria, utilize o 'Desativado', para ter acesso apenas a leitura, utilizar 'Leitor' e para ele ter acesso a edição, utilizar 'Editor.'"
-					);
-					onOpen();
-					break;
+      case 'mensageria_page':
+        setDialogTitle('Mensageria');
+        setDialogText(
+          "Para que o usuário não tenha acesso a mensageria, utilize o 'Desativado', para ter acesso apenas a leitura, utilizar 'Leitor' e para ele ter acesso a edição, utilizar 'Editor.'"
+        );
+        onOpen();
+        break;
       default:
         break;
     }
@@ -160,7 +160,7 @@ export default function RoleEdit() {
       fix: 'tarefas_page',
       values: values?.tarefas_page,
     },
-		{
+    {
       name: 'Mensageria',
       fix: 'mensageria_page',
       values: values?.mensageria_page,
