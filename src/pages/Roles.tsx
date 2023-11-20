@@ -426,7 +426,7 @@ export default function Roles() {
                       >
                         {getRoleStatus(roleData?.tarefas_page)}
                       </Td>
-											<Td
+                      <Td
                         color="gray.600"
                         fontSize="14px"
                         borderBottomWidth="1px"
@@ -434,7 +434,7 @@ export default function Roles() {
                         borderBottomColor="gray.300"
                         py="0px"
                       >
-                        {getRoleStatus(roleData?.mensageria_page)}
+                        {getRoleStatus(roleData?.cargo_page)}
                       </Td>
                       {role?.cargo_page > 1 && (
                         <Td
