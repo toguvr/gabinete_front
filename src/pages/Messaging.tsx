@@ -51,6 +51,7 @@ export default function Messaging() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const debouncedValue = useDebounce(filterFieldDateMask || filterField, 500);
+  console.log('phonesToSendMessage', phonesToSendMessage);
 
   const perPage = 20;
 
@@ -127,20 +128,45 @@ export default function Messaging() {
     }
   };
 
-  const handleCheckAllChange = (isChecked: boolean) => {
+  const fetchAllVoterPhones = async (): Promise<string[]> => {
+    console.log('Starting to fetch all voter phones...');
+    let allPhones: string[] = [];
+
+    try {
+      const response = await api.get<{ items: VoterDTO[]; totalPages: number }>(
+        `/voter/office/${office.id}`,
+        {
+          params: {
+            page: 1, // Fetch all at once if possible
+            quantity: 2000, // Adjust based on maximum expected voters
+            field: selectFilter,
+            value: filterFieldDateMask
+              ? convertDateFormat(filterFieldDateMask)
+              : filterField,
+          },
+        }
+      );
+
+      allPhones = response.data.items.map((voter: VoterDTO) => voter.cellphone);
+      console.log('Fetched phones:', allPhones);
+    } catch (error) {
+      console.error('Error fetching voter phones:', error);
+    }
+
+    return allPhones;
+  };
+
+  const handleCheckAllChange = async (isChecked: boolean) => {
+    console.log('Handling check all change:', isChecked);
     setIsAllChecked(isChecked);
 
     if (isChecked) {
-      const allPhones = data.map((voter) => voter.cellphone);
-      const newPhones = allPhones.filter(
-        (phone) => !phonesToSendMessage.includes(phone)
-      );
-      setPhonesToSendMessage([...phonesToSendMessage, ...newPhones]);
+      setLoading(true);
+      const allPhones = await fetchAllVoterPhones();
+      setPhonesToSendMessage(allPhones);
+      setLoading(false);
     } else {
-      const filteredPhones = phonesToSendMessage.filter(
-        (phone) => !data.some((voter) => voter.cellphone === phone)
-      );
-      setPhonesToSendMessage(filteredPhones);
+      setPhonesToSendMessage([]);
     }
   };
 
