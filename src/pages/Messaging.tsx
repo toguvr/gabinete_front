@@ -16,7 +16,7 @@ import {
   Tr,
   useToast,
 } from '@chakra-ui/react';
-import { FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { IoLogoWhatsapp, IoSearchSharp } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import Input from '../components/Form/Input';
@@ -40,7 +40,7 @@ export default function Messaging() {
     voterMessages: string[];
   });
   const [imageFiles, setImageFiles] = useState<FileList | null>(null);
-  const [base64Images, setBase64Images] = useState<string[]>([]);
+  const [base64Images, setBase64Images] = useState<string>();
   const [phonesToSendMessage, setPhonesToSendMessage] = useState<string[]>([]);
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -91,13 +91,15 @@ export default function Messaging() {
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = () => setBase64Images([reader.result as string]);
-      reader.onerror = (error) => console.error('Error reading file:', error);
-      reader.readAsDataURL(file);
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const file = e.target.files;
+
+      if (file.length === 0) {
+        return; // se não selecionar nenhum file
+      }
+
+      setBase64Images(file[0] as any);
     }
   };
 
@@ -113,8 +115,8 @@ export default function Messaging() {
         formData.append('message', values.message);
       }
 
-      if (imageFiles && imageFiles.length > 0) {
-        formData.append('image', imageFiles[0]);
+      if (base64Images) {
+        formData.append('image', base64Images);
       }
 
       await api.post(`/whatsapp/redirect/${office.id}/bulk`, formData, {
