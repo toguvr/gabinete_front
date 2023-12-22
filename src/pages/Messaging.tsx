@@ -366,9 +366,18 @@ export default function Messaging() {
           />
         </Box>
         <Box mb={4}>
-          <Box mb={4}>
-            <input type="file" accept="image/*" onChange={handleImageChange} />
-          </Box>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            id="file-upload"
+            style={{ display: 'none' }}
+          />
+          <label htmlFor="file-upload">
+            <Button as="span" colorScheme="blue">
+              Carregar Arquivo
+            </Button>
+          </label>
         </Box>
 
         <Box
