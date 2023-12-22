@@ -53,7 +53,7 @@ export default function Messaging() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const debouncedValue = useDebounce(filterFieldDateMask || filterField, 500);
-  const [fileName, setFileName] = useState('');
+  const [selectedFile, setSelectedFile] = useState('');
 
   const perPage = 20;
 
@@ -92,16 +92,16 @@ export default function Messaging() {
     }
   };
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const file = e.target.files;
+      setSelectedFile(String(file[0].name));
 
-      setFileName(file.name);
+      if (file.length === 0) {
+        return;
+      }
 
-      setImageFiles(e.target.files);
-    } else {
-      setFileName('');
-      setImageFiles(null);
+      setBase64Images(file[0] as any);
     }
   };
 
@@ -382,10 +382,13 @@ export default function Messaging() {
               Carregar Arquivo
             </Button>
           </label>
-          <Text fontSize="sm" mt={2} pl={2}>
-            {fileName}
-          </Text>{' '}
+          {selectedFile && (
+            <Text fontSize="sm" mt={2}>
+              {selectedFile}
+            </Text>
+          )}{' '}
         </Box>
+
         <Box
           overflow="auto"
           mt="16px"
