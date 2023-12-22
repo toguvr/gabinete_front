@@ -53,6 +53,7 @@ export default function Messaging() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const debouncedValue = useDebounce(filterFieldDateMask || filterField, 500);
+  const [fileName, setFileName] = useState('');
 
   const perPage = 20;
 
@@ -91,15 +92,16 @@ export default function Messaging() {
     }
   };
 
-  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files;
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
 
-      if (file.length === 0) {
-        return; // se não selecionar nenhum file
-      }
+      setFileName(file.name);
 
-      setBase64Images(file[0] as any);
+      setImageFiles(e.target.files);
+    } else {
+      setFileName('');
+      setImageFiles(null);
     }
   };
 
@@ -367,7 +369,7 @@ export default function Messaging() {
             size="sm"
           />
         </Box>
-        <Box mb={4}>
+        <Box mb={4} textAlign="left">
           <input
             type="file"
             accept="image/*"
@@ -376,12 +378,14 @@ export default function Messaging() {
             style={{ display: 'none' }}
           />
           <label htmlFor="file-upload">
-            <Button as="span" colorScheme="blue">
+            <Button as="span" colorScheme="blue" size="sm">
               Carregar Arquivo
             </Button>
           </label>
+          <Text fontSize="sm" mt={2} pl={2}>
+            {fileName}
+          </Text>{' '}
         </Box>
-
         <Box
           overflow="auto"
           mt="16px"
