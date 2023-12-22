@@ -93,25 +93,12 @@ export default function Messaging() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setImageFiles(e.target.files);
-      convertFilesToBase64(e.target.files);
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = () => setBase64Images([reader.result as string]);
+      reader.onerror = (error) => console.error('Error reading file:', error);
+      reader.readAsDataURL(file);
     }
-  };
-
-  const convertFilesToBase64 = (files: FileList) => {
-    const fileArray = Array.from(files);
-    Promise.all(
-      fileArray.map((file) => {
-        return new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      })
-    )
-      .then((base64Strings) => setBase64Images(base64Strings))
-      .catch((error) => console.error('Error converting files:', error));
   };
 
   const handleSendMessage = async (e: FormEvent) => {
@@ -119,16 +106,26 @@ export default function Messaging() {
     setIsSubmitting(true);
 
     try {
-      const payload = {
-        phones: phonesToSendMessage,
-        message: values.message || undefined,
-        images: base64Images.length > 0 ? base64Images : undefined,
-      };
+      const formData = new FormData();
+      formData.append('phones', JSON.stringify(phonesToSendMessage));
 
-      await api.post(`/whatsapp/message/${office.id}/bulk`, payload);
+      if (values.message) {
+        formData.append('message', values.message);
+      }
+
+      if (imageFiles && imageFiles.length > 0) {
+        formData.append('image', imageFiles[0]);
+      }
+
+      await api.post(`/whatsapp/redirect/${office.id}/bulk`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       setValues({ ...values, message: '', voterMessages: [] });
       setPhonesToSendMessage([]);
-      setBase64Images([]);
+      setImageFiles(null);
       setIsAllChecked(false);
 
       toast({
@@ -369,12 +366,9 @@ export default function Messaging() {
           />
         </Box>
         <Box mb={4}>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleImageChange}
-          />
+          <Box mb={4}>
+            <input type="file" accept="image/*" onChange={handleImageChange} />
+          </Box>
         </Box>
 
         <Box
