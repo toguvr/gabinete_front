@@ -124,9 +124,8 @@ export default function Messaging() {
         message: values.message || undefined,
         images: base64Images.length > 0 ? base64Images : undefined,
       };
-      console.log('Sending message payload:', payload);
 
-      // await api.post(`/whatsapp/message/${office.id}/bulk`, payload);
+      await api.post(`/whatsapp/message/${office.id}/bulk`, payload);
       setValues({ ...values, message: '', voterMessages: [] });
       setPhonesToSendMessage([]);
       setBase64Images([]);
