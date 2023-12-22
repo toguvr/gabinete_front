@@ -16,7 +16,7 @@ import {
   Tr,
   useToast,
 } from '@chakra-ui/react';
-import { FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { IoLogoWhatsapp, IoSearchSharp } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import Input from '../components/Form/Input';
@@ -39,6 +39,8 @@ export default function Messaging() {
     message: string;
     voterMessages: string[];
   });
+  const [imageFiles, setImageFiles] = useState<FileList | null>(null);
+  const [base64Images, setBase64Images] = useState<string>();
   const [phonesToSendMessage, setPhonesToSendMessage] = useState<string[]>([]);
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -51,6 +53,7 @@ export default function Messaging() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const debouncedValue = useDebounce(filterFieldDateMask || filterField, 500);
+  const [fileName, setFileName] = useState('');
 
   const perPage = 20;
 
@@ -89,20 +92,44 @@ export default function Messaging() {
     }
   };
 
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+
+      setFileName(file.name);
+
+      setImageFiles(e.target.files);
+    } else {
+      setFileName('');
+      setImageFiles(null);
+    }
+  };
+
   const handleSendMessage = async (e: FormEvent) => {
     e.preventDefault();
-
     setIsSubmitting(true);
 
     try {
-      const body = phonesToSendMessage.map((phone) => ({
-        message: values.message,
-        phone,
-      }));
+      const formData = new FormData();
+      formData.append('phones', JSON.stringify(phonesToSendMessage));
 
-      await api.post(`/whatsapp/message/${office.id}/bulk`, body);
+      if (values.message) {
+        formData.append('message', values.message);
+      }
+
+      if (base64Images) {
+        formData.append('image', base64Images);
+      }
+
+      await api.post(`/whatsapp/redirect/${office.id}/bulk`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       setValues({ ...values, message: '', voterMessages: [] });
       setPhonesToSendMessage([]);
+      setImageFiles(null);
       setIsAllChecked(false);
 
       toast({
@@ -127,20 +154,42 @@ export default function Messaging() {
     }
   };
 
-  const handleCheckAllChange = (isChecked: boolean) => {
+  const fetchAllVoterPhones = async (): Promise<string[]> => {
+    let allPhones: string[] = [];
+
+    try {
+      const response = await api.get<{ items: VoterDTO[]; totalPages: number }>(
+        `/voter/office/${office.id}`,
+        {
+          params: {
+            page: 1,
+            quantity: 10000,
+            field: selectFilter,
+            value: filterFieldDateMask
+              ? convertDateFormat(filterFieldDateMask)
+              : filterField,
+          },
+        }
+      );
+
+      allPhones = response.data.items.map((voter: VoterDTO) => voter.cellphone);
+    } catch (error) {
+      console.error('Error fetching voter phones:', error);
+    }
+
+    return allPhones;
+  };
+
+  const handleCheckAllChange = async (isChecked: boolean) => {
     setIsAllChecked(isChecked);
 
     if (isChecked) {
-      const allPhones = data.map((voter) => voter.cellphone);
-      const newPhones = allPhones.filter(
-        (phone) => !phonesToSendMessage.includes(phone)
-      );
-      setPhonesToSendMessage([...phonesToSendMessage, ...newPhones]);
+      setLoading(true);
+      const allPhones = await fetchAllVoterPhones();
+      setPhonesToSendMessage(allPhones);
+      setLoading(false);
     } else {
-      const filteredPhones = phonesToSendMessage.filter(
-        (phone) => !data.some((voter) => voter.cellphone === phone)
-      );
-      setPhonesToSendMessage(filteredPhones);
+      setPhonesToSendMessage([]);
     }
   };
 
@@ -319,6 +368,23 @@ export default function Messaging() {
             borderRadius={6}
             size="sm"
           />
+        </Box>
+        <Box mb={4} textAlign="left">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            id="file-upload"
+            style={{ display: 'none' }}
+          />
+          <label htmlFor="file-upload">
+            <Button as="span" colorScheme="blue" size="sm">
+              Carregar Arquivo
+            </Button>
+          </label>
+          <Text fontSize="sm" mt={2} pl={2}>
+            {fileName}
+          </Text>{' '}
         </Box>
         <Box
           overflow="auto"
