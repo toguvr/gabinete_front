@@ -39,6 +39,8 @@ export default function Messaging() {
     message: string;
     voterMessages: string[];
   });
+  const [imageFiles, setImageFiles] = useState<FileList | null>(null);
+  const [base64Images, setBase64Images] = useState<string[]>([]);
   const [phonesToSendMessage, setPhonesToSendMessage] = useState<string[]>([]);
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -51,7 +53,6 @@ export default function Messaging() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const debouncedValue = useDebounce(filterFieldDateMask || filterField, 500);
-  console.log('phonesToSendMessage', phonesToSendMessage);
 
   const perPage = 20;
 
@@ -90,20 +91,45 @@ export default function Messaging() {
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setImageFiles(e.target.files);
+      convertFilesToBase64(e.target.files);
+    }
+  };
+
+  const convertFilesToBase64 = (files: FileList) => {
+    const fileArray = Array.from(files);
+    Promise.all(
+      fileArray.map((file) => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      })
+    )
+      .then((base64Strings) => setBase64Images(base64Strings))
+      .catch((error) => console.error('Error converting files:', error));
+  };
+
   const handleSendMessage = async (e: FormEvent) => {
     e.preventDefault();
-
     setIsSubmitting(true);
 
     try {
-      const body = phonesToSendMessage.map((phone) => ({
-        message: values.message,
-        phone,
-      }));
+      const payload = {
+        phones: phonesToSendMessage,
+        message: values.message || undefined,
+        images: base64Images.length > 0 ? base64Images : undefined,
+      };
+      console.log('Sending message payload:', payload);
 
-      await api.post(`/whatsapp/message/${office.id}/bulk`, body);
+      // await api.post(`/whatsapp/message/${office.id}/bulk`, payload);
       setValues({ ...values, message: '', voterMessages: [] });
       setPhonesToSendMessage([]);
+      setBase64Images([]);
       setIsAllChecked(false);
 
       toast({
@@ -129,7 +155,6 @@ export default function Messaging() {
   };
 
   const fetchAllVoterPhones = async (): Promise<string[]> => {
-    console.log('Starting to fetch all voter phones...');
     let allPhones: string[] = [];
 
     try {
@@ -137,8 +162,8 @@ export default function Messaging() {
         `/voter/office/${office.id}`,
         {
           params: {
-            page: 1, // Fetch all at once if possible
-            quantity: 2000, // Adjust based on maximum expected voters
+            page: 1,
+            quantity: 10000,
             field: selectFilter,
             value: filterFieldDateMask
               ? convertDateFormat(filterFieldDateMask)
@@ -148,7 +173,6 @@ export default function Messaging() {
       );
 
       allPhones = response.data.items.map((voter: VoterDTO) => voter.cellphone);
-      console.log('Fetched phones:', allPhones);
     } catch (error) {
       console.error('Error fetching voter phones:', error);
     }
@@ -157,7 +181,6 @@ export default function Messaging() {
   };
 
   const handleCheckAllChange = async (isChecked: boolean) => {
-    console.log('Handling check all change:', isChecked);
     setIsAllChecked(isChecked);
 
     if (isChecked) {
@@ -346,6 +369,15 @@ export default function Messaging() {
             size="sm"
           />
         </Box>
+        <Box mb={4}>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+        </Box>
+
         <Box
           overflow="auto"
           mt="16px"
