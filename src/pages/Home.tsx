@@ -108,6 +108,7 @@ export default function Home() {
         api.get(`/permission/by-birthdate/${office?.id}`),
         api.get(`/voter/by-birthdate/${office?.id}`),
       ]);
+      console.log('voters.data', voters.data);
       setPermissionBirthDates(permissions.data);
       setVoterBirthDates(voters.data);
     } catch (error) {}
@@ -334,6 +335,7 @@ export default function Home() {
               width="100%"
               display="flex"
               flexDirection="column"
+              overflowY="auto"
             >
               <Flex
                 margin="20px 0px"
@@ -346,6 +348,7 @@ export default function Home() {
                   Aniversariantes
                 </Text>
               </Flex>
+
               {permissionBirthDates.length === 0 &&
                 voterBirthDates.length === 0 && (
                   <Flex
@@ -366,6 +369,8 @@ export default function Home() {
                     </Text>
                   </Flex>
                 )}
+
+              {/* Map over permissionBirthDates */}
               {permissionBirthDates &&
                 permissionBirthDates.map((permission) => (
                   <Flex
@@ -377,7 +382,6 @@ export default function Home() {
                     width="100%"
                   >
                     <Icon color="#718096" fontSize="24" as={RiTeamLine} />
-
                     <Text
                       textAlign="center"
                       lineHeight="20px"
@@ -406,7 +410,8 @@ export default function Home() {
                       />
                     </Link>
                   </Flex>
-                ))}{' '}
+                ))}
+
               {voterBirthDates &&
                 voterBirthDates.map((voter) => (
                   <Flex
@@ -418,7 +423,6 @@ export default function Home() {
                     width="100%"
                   >
                     <Icon color="#718096" fontSize="24" as={SiMicrosoftteams} />
-
                     <Text
                       textAlign="center"
                       lineHeight="20px"
@@ -450,6 +454,7 @@ export default function Home() {
                 ))}
             </Flex>
           </Flex>
+
           <Flex
             borderRadius="8px"
             boxShadow="1px 2px 17px rgba(0, 0, 0, 0.2), 14px 1px 250px rgba(0, 0, 0, 0.06)"
