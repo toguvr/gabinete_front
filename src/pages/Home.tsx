@@ -1,7 +1,7 @@
 import { Flex, Grid, Icon, IconButton, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { AiOutlineUsergroupAdd } from 'react-icons/ai';
-import { IoLogoWhatsapp } from 'react-icons/io5';
+import { IoLogoWhatsapp, IoWarningOutline } from 'react-icons/io5';
 import { MdHowToReg, MdOutlineChecklist } from 'react-icons/md';
 import { RiSuitcaseLine, RiTeamLine } from 'react-icons/ri';
 import { SiMicrosoftteams } from 'react-icons/si';
@@ -50,13 +50,29 @@ export default function Home() {
     } catch (error) {}
   }
 
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      year: '2-digit',
-      month: 'short',
-      day: 'numeric',
-    };
-    return new Date(dateString).toLocaleDateString('pt-BR', options);
+  function formatWeekdayToBrazilian(dateString: string) {
+    const birthDate = new Date(dateString);
+    const currentYear = new Date().getFullYear();
+
+    const thisYearBirthDate = new Date(
+      currentYear,
+      birthDate.getMonth(),
+      birthDate.getDate()
+    );
+
+    return thisYearBirthDate.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+    });
+  }
+
+  const isSameDayAsToday = (dateString: string) => {
+    const birthDate = new Date(dateString);
+    const today = new Date();
+
+    return (
+      birthDate.getDate() === today.getDate() &&
+      birthDate.getMonth() === today.getMonth()
+    );
   };
 
   const handleMouseHover = (data: any) => {
@@ -413,45 +429,87 @@ export default function Home() {
                 ))}
 
               {voterBirthDates &&
-                voterBirthDates.map((voter) => (
-                  <Flex
-                    key={voter.id}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    padding={{ base: '0 16px', md: '0 24px' }}
-                    width="100%"
-                  >
-                    <Icon color="#718096" fontSize="24" as={SiMicrosoftteams} />
-                    <Text
-                      textAlign="center"
-                      lineHeight="20px"
-                      fontWeight="400"
-                      fontSize="16px"
-                      color="#718096"
+                voterBirthDates
+                  .sort((a, b) => {
+                    const dateA = new Date(a.birthdate);
+                    const dateB = new Date(b.birthdate);
+
+                    if (dateA.getMonth() !== dateB.getMonth()) {
+                      return dateA.getMonth() - dateB.getMonth();
+                    }
+                    return dateA.getDate() - dateB.getDate();
+                  })
+                  .map((voter) => (
+                    <Flex
+                      key={voter.id}
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      padding={{ base: '0 16px', md: '0 24px' }}
+                      width="100%"
                     >
-                      {voter?.name}{' '}
-                    </Text>
-                    <Link
-                      target="_blank"
-                      to={`https://wa.me/55${voter?.cellphone}/?text=Olá, ${voter?.name}! Aqui é do Gabinete do ${office.owner_position} ${office?.name}. Gostaria de desejar um feliz aniversário!`}
-                      rel="noopener noreferrer"
-                    >
-                      <IconButton
-                        aria-label="Open alert"
-                        variant="unstyled"
-                        icon={
-                          <Icon
-                            cursor="pointer"
-                            fontSize="24px"
-                            as={IoLogoWhatsapp}
-                            color="#718096"
-                          />
-                        }
+                      <Icon
+                        color="#718096"
+                        fontSize="24"
+                        as={SiMicrosoftteams}
                       />
-                    </Link>
-                  </Flex>
-                ))}
+
+                      <Flex direction="column" alignItems="center">
+                        <Text
+                          textAlign="center"
+                          lineHeight="20px"
+                          fontWeight="400"
+                          fontSize="16px"
+                          color="#718096"
+                        >
+                          {voter?.name}
+                        </Text>
+
+                        <Flex alignItems="center">
+                          <Text
+                            textAlign="center"
+                            lineHeight="12px"
+                            fontWeight="400"
+                            fontSize="12px"
+                            color={
+                              !isSameDayAsToday(voter?.birthdate)
+                                ? 'yellow.400'
+                                : '#718096'
+                            }
+                          >
+                            {formatWeekdayToBrazilian(voter?.birthdate)}
+                          </Text>
+
+                          {!isSameDayAsToday(voter?.birthdate) && (
+                            <Icon
+                              as={IoWarningOutline}
+                              color="orange.400"
+                              marginLeft="8px"
+                            />
+                          )}
+                        </Flex>
+                      </Flex>
+
+                      <Link
+                        target="_blank"
+                        to={`https://wa.me/55${voter?.cellphone}/?text=Olá, ${voter?.name}! Aqui é do Gabinete do ${office.owner_position} ${office?.name}. Gostaria de desejar um feliz aniversário!`}
+                        rel="noopener noreferrer"
+                      >
+                        <IconButton
+                          aria-label="Open alert"
+                          variant="unstyled"
+                          icon={
+                            <Icon
+                              cursor="pointer"
+                              fontSize="24px"
+                              as={IoLogoWhatsapp}
+                              color="#718096"
+                            />
+                          }
+                        />
+                      </Link>
+                    </Flex>
+                  ))}
             </Flex>
           </Flex>
 
