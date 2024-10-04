@@ -77,6 +77,28 @@ export default function Demand() {
     responsibleFilterField || filterFieldDateMask || filterField,
     500
   );
+  const [filters, setFilters] = useState([
+    { filterType: 'title', filterValue: '' },
+  ]);
+
+  // Add a new filter
+  const addFilter = () => {
+    setFilters([...filters, { filterType: 'title', filterValue: '' }]);
+  };
+
+  // Handle filter type or value change
+  const handleFilterChange = (
+    index: number,
+    field: 'filterType' | 'filterValue',
+    value: string
+  ) => {
+    const newFilters = [...filters];
+    newFilters[index][field] = value;
+    setFilters(newFilters);
+  };
+  useEffect(() => {
+    getTasks(1);
+  }, [filters]);
 
   const perPage = 7;
 
@@ -112,36 +134,43 @@ export default function Demand() {
 
   async function getTasks(currentPage = 1) {
     setData([] as TaskPropsDTO[]);
-
     setLoading(true);
 
     try {
-      const filterMapping = {
-        voter: 'voter.name',
-        creator: 'creator.name',
-        responsible: 'responsible.name',
-        city: 'voter.city',
-        neighborhood: 'voter.neighborhood',
-      };
+      // Convert filters into query parameters as a key-value object
+      const filterParams = filters.reduce((acc: any, filter) => {
+        if (filter.filterValue) {
+          const filterMapping = {
+            voter: 'voter.name',
+            creator: 'creator.name',
+            responsible: 'responsible.name',
+            city: 'voter.city',
+            neighborhood: 'voter.neighborhood',
+          };
 
-      const currentFilter =
-        filterMapping[selectFilter as keyof typeof filterMapping] ||
-        selectFilter;
+          // Map the filterType to the correct field name
+          const field =
+            filterMapping[filter.filterType as keyof typeof filterMapping] ||
+            filter.filterType;
+
+          // Accumulate filters into the query parameter object
+          acc[field] = filter.filterValue;
+        }
+        return acc;
+      }, {});
 
       const response = await api.get(`/task/office/${office?.id}`, {
         params: {
           page: currentPage,
-          quantity: isResponsible ? 10000 : perPage,
-          field: currentFilter,
-          value: filterFieldDateMask
-            ? convertDateFormat(filterFieldDateMask)
-            : responsibleFilterField || filterField,
+          quantity: perPage,
+          ...filterParams, // Spread the filterParams object into the query params
         },
       });
 
       setData(response.data.items);
       setTotalPages(response.data.total);
     } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -488,107 +517,110 @@ export default function Demand() {
           Filtrar por:
         </Text>
         <Flex justifyContent="space-between" flexDir={['column', 'row']}>
-          <Flex gap={['12px', '24px']}>
-            <Select
-              w="220px"
-              borderColor="gray.500"
-              name="filterType"
-              value={selectFilter}
-              onChange={(e) => {
-                setSelectFilter(e.target.value);
-              }}
-            >
-              {demandPage.map((task) => {
-                return (
-                  <option key={task?.key} value={task?.value}>
-                    {task?.label}
-                  </option>
-                );
-              })}
-            </Select>
-
-            {isResponsible ? (
-              <Select
-                borderColor="gray.500"
-                bg="gray.50"
-                _placeholder={{ color: 'gray.500' }}
-                color="gray.600"
-                maxW="600px"
-                name="selectResponsibleFilter"
-                value={
-                  responsibles.find(
-                    (responsible) =>
-                      responsible.label === responsibleFilterField
-                  )?.value || ''
-                }
-                onChange={(e) => {
-                  const selectedValue = e.target.value;
-                  const selectedResponsible = responsibles.find(
-                    (responsible) => responsible.value === selectedValue
-                  );
-                  if (selectedResponsible) {
-                    setResponsibleFilterField(selectedResponsible.label);
-                  } else {
-                    setResponsibleFilterField('');
+          <Flex gap={['12px', '24px']} direction="column" w="100%">
+            {filters.map((filter, index) => (
+              <Flex key={index} gap={['12px', '24px']} alignItems="center">
+                <Select
+                  w="220px"
+                  borderColor="gray.500"
+                  name={`filterType-${index}`}
+                  value={filter.filterType}
+                  onChange={(e) =>
+                    handleFilterChange(index, 'filterType', e.target.value)
                   }
-                }}
-              >
-                <option value="0" selected>
-                  Escolher responsável
-                </option>
-                {responsibles.map((responsible, index) => {
-                  return (
-                    <option value={responsible?.value} key={index}>
-                      {responsible?.label}
+                >
+                  {demandPage.map((task) => (
+                    <option key={task?.key} value={task?.value}>
+                      {task?.label}
                     </option>
-                  );
-                })}
-              </Select>
-            ) : selectFilter === 'deadline' ? (
-              <Input
-                maxW="600px"
-                type="tel"
-                inputMode="numeric"
-                onKeyPress={(e) => {
-                  if (!/\d/.test(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                name="filterField"
-                placeholder="Buscar"
-                value={
-                  selectFilter === 'deadline'
-                    ? filterFieldDateMask
-                    : filterField
-                }
-                mb="24px"
-                onChange={(e) => {
-                  const inputValue = e.target.value;
-                  handleDateOfBirthChange(inputValue);
-                }}
-                pattern="\d*"
-                borderColor="gray.500"
-                rightIcon={
-                  <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-                }
-              />
-            ) : (
-              <Input
-                maxW="600px"
-                type="text"
-                name="filterField"
-                placeholder="Buscar"
-                value={filterField}
-                mb="24px"
-                onChange={(e) => {
-                  setFilterField(e.target.value);
-                }}
-                borderColor="gray.500"
-                rightIcon={
-                  <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-                }
-              />
-            )}
+                  ))}
+                </Select>
+
+                {filter.filterType === 'responsible' ? (
+                  <Select
+                    borderColor="gray.500"
+                    bg="gray.50"
+                    _placeholder={{ color: 'gray.500' }}
+                    color="gray.600"
+                    maxW="400px"
+                    name={`filterValue-${index}`}
+                    value={
+                      responsibles.find(
+                        (responsible) =>
+                          responsible.label === filter.filterValue
+                      )?.value || ''
+                    }
+                    onChange={(e) => {
+                      const selectedValue = e.target.value;
+                      const selectedResponsible = responsibles.find(
+                        (responsible) => responsible.value === selectedValue
+                      );
+                      handleFilterChange(
+                        index,
+                        'filterValue',
+                        selectedResponsible ? selectedResponsible.label : ''
+                      );
+                    }}
+                  >
+                    <option value="0">Escolher responsável</option>
+                    {responsibles.map((responsible, index) => (
+                      <option value={responsible?.value} key={index}>
+                        {responsible?.label}
+                      </option>
+                    ))}
+                  </Select>
+                ) : filter.filterType === 'deadline' ? (
+                  <Input
+                    maxW="400px"
+                    type="tel"
+                    inputMode="numeric"
+                    onKeyPress={(e) => {
+                      if (!/\d/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
+                    name={`filterValue-${index}`}
+                    placeholder="Buscar"
+                    value={filter.filterValue}
+                    onChange={(e) =>
+                      handleFilterChange(index, 'filterValue', e.target.value)
+                    }
+                    pattern="\d*"
+                    borderColor="gray.500"
+                    rightIcon={
+                      <Icon
+                        color="gray.500"
+                        fontSize="20px"
+                        as={IoSearchSharp}
+                      />
+                    }
+                  />
+                ) : (
+                  <Input
+                    maxW="400px"
+                    type="text"
+                    name={`filterValue-${index}`}
+                    placeholder="Buscar"
+                    value={filter.filterValue}
+                    onChange={(e) =>
+                      handleFilterChange(index, 'filterValue', e.target.value)
+                    }
+                    borderColor="gray.500"
+                    rightIcon={
+                      <Icon
+                        color="gray.500"
+                        fontSize="20px"
+                        as={IoSearchSharp}
+                      />
+                    }
+                  />
+                )}
+              </Flex>
+            ))}
+
+            <Button onClick={addFilter} w="200px" mt="4">
+              Adicionar Filtro
+            </Button>
           </Flex>
 
           <PDFDownloadLink
