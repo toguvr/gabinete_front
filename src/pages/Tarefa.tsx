@@ -40,8 +40,25 @@ export default function Tarefa() {
   const auth = useAuth();
   const { office } = useAuth();
   const [filterField, setFilterField] = useState('');
+  const [filters, setFilters] = useState([
+    { filterType: 'title', filterValue: '' },
+  ]);
   const [errors, setErrors] = useState({} as StateProps);
   const [selectFilter, setSelectFilter] = useState('title');
+
+  const addFilter = () => {
+    setFilters([...filters, { filterType: 'title', filterValue: '' }]);
+  };
+
+  const handleFilterChange = (
+    index: number,
+    field: 'filterType' | 'filterValue',
+    value: string
+  ) => {
+    const newFilters = [...filters];
+    newFilters[index][field] = value;
+    setFilters(newFilters);
+  };
 
   async function getOfficeList() {
     setTaskList([] as TaskPropsDTO[]);
@@ -73,31 +90,34 @@ export default function Tarefa() {
     }
   }
 
-  const filterTasks = (tasks: any, filterType: any, filterValue: any) => {
-    if (!filterValue) return tasks;
-
+  const filterTasks = (tasks: any) => {
     return tasks.filter((task: any) => {
-      switch (filterType) {
-        case 'id':
-          return task.id
-            .toString()
-            .toLowerCase()
-            .includes(filterValue.toLowerCase());
-        case 'title':
-          return task.title.toLowerCase().includes(filterValue.toLowerCase());
-        case 'status':
-          return task.status.toLowerCase().includes(filterValue.toLowerCase());
-        case 'priority':
-          return task.priority
-            .toLowerCase()
-            .includes(filterValue.toLowerCase());
-        case 'voter':
-          return task.voter?.name
-            .toLowerCase()
-            .includes(filterValue.toLowerCase());
-        default:
-          return true;
-      }
+      return filters.every(({ filterType, filterValue }) => {
+        if (!filterValue) return true;
+        switch (filterType) {
+          case 'id':
+            return task.id
+              .toString()
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
+          case 'title':
+            return task.title.toLowerCase().includes(filterValue.toLowerCase());
+          case 'status':
+            return task.status
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
+          case 'priority':
+            return task.priority
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
+          case 'voter':
+            return task.voter?.name
+              .toLowerCase()
+              .includes(filterValue.toLowerCase());
+          default:
+            return true;
+        }
+      });
     });
   };
 
@@ -190,76 +210,70 @@ export default function Tarefa() {
           Filtrar por:
         </Text>
 
-        <Flex height="40px" maxW="600px">
-          <Flex flex={1} gap={['12px', '24px']}>
-            <Select
-              w="220px"
-              borderColor="gray.500"
-              name="filterType"
-              value={selectFilter}
-              onChange={(e) => {
-                setSelectFilter(e.target.value);
-              }}
-            >
-              {taskPage.map((task) => {
-                return (
+        <Flex direction="column" gap={4}>
+          {filters.map((filter, index) => (
+            <Flex key={index} gap={2}>
+              <Select
+                w="220px"
+                value={filter.filterType}
+                onChange={(e) =>
+                  handleFilterChange(index, 'filterType', e.target.value)
+                }
+              >
+                {taskPage.map((task) => (
                   <option key={task?.key} value={task?.value}>
                     {task?.label}
                   </option>
-                );
-              })}
-            </Select>
+                ))}
+              </Select>
 
-            {selectFilter === 'id' ||
-            selectFilter === 'title' ||
-            selectFilter === 'voter' ||
-            selectFilter === 'all' ? (
-              <Input
-                maxW="600px"
-                type="text"
-                name="filterField"
-                placeholder="Buscar"
-                error={errors?.filterField}
-                value={filterField}
-                mb="24px"
-                onChange={(e) => {
-                  setFilterField(e.target.value);
-                }}
-                borderColor="gray.500"
-                rightIcon={
-                  <Icon color="gray.500" fontSize="20px" as={IoSearchSharp} />
-                }
-              />
-            ) : selectFilter === 'priority' ? (
-              <Select
-                borderColor="gray.500"
-                onChange={(e) => {
-                  setFilterField(e.target.value);
-                }}
-                mb="24px"
-                value={filterField}
-                maxW="600px"
-              >
-                <option value="ALTA">Alta</option>
-                <option value="MEDIA">Média</option>
-                <option value="BAIXA">Baixa</option>
-              </Select>
-            ) : (
-              <Select
-                borderColor="gray.500"
-                onChange={(e) => {
-                  setFilterField(e.target.value);
-                }}
-                mb="24px"
-                value={filterField}
-                maxW="600px"
-              >
-                <option value="BACKLOG">Pendente</option>
-                <option value="FAZENDO">Executando</option>
-                <option value="CONCLUIDO">Concluído</option>
-              </Select>
-            )}
-          </Flex>
+              {/* Adjust the input type based on the selected filter type */}
+              {filter.filterType === 'status' ? (
+                <Select
+                  name={`filterValue-${index}`}
+                  value={filter.filterValue}
+                  onChange={(e) =>
+                    handleFilterChange(index, 'filterValue', e.target.value)
+                  }
+                  placeholder="Selecione o status"
+                  maxW="600px"
+                >
+                  <option value="BACKLOG">Pendente</option>
+                  <option value="FAZENDO">Executando</option>
+                  <option value="CONCLUIDO">Concluído</option>
+                </Select>
+              ) : filter.filterType === 'priority' ? (
+                <Select
+                  name={`filterValue-${index}`}
+                  value={filter.filterValue}
+                  onChange={(e) =>
+                    handleFilterChange(index, 'filterValue', e.target.value)
+                  }
+                  placeholder="Selecione a prioridade"
+                  maxW="600px"
+                >
+                  <option value="ALTA">Alta</option>
+                  <option value="MEDIA">Média</option>
+                  <option value="BAIXA">Baixa</option>
+                </Select>
+              ) : (
+                <Input
+                  name={`filterValue-${index}`}
+                  maxW="600px"
+                  type="text"
+                  value={filter.filterValue}
+                  placeholder="Buscar"
+                  onChange={(e) =>
+                    handleFilterChange(index, 'filterValue', e.target.value)
+                  }
+                />
+              )}
+            </Flex>
+          ))}
+
+          <Button onClick={addFilter} w="200px">
+            Adicionar Filtro
+          </Button>
         </Flex>
 
         <TableContainer height="35rem" overflowY="auto" padding={2}>
@@ -304,103 +318,130 @@ export default function Tarefa() {
                 >
                   Prioridade
                 </Th>
+                <Th
+                  textAlign="center"
+                  fontSize={{ base: '10px', md: '12px', lg: '14px' }}
+                  color="gray.600"
+                >
+                  Apoiador
+                </Th>
               </Tr>
             </Thead>
             <Tbody>
               {Array.isArray(taskList) && taskList.length > 0 ? (
-                filterTasks(taskList, selectFilter, filterField).map(
-                  (task: any) => (
-                    <Tr key={task.id} bg="white" cursor={'pointer'}>
-                      <Td
-                        onClick={() => handleSelectTask(task.id)}
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                        textAlign="center"
+                filterTasks(taskList).map((task: any) => (
+                  <Tr key={task.id} bg="white" cursor="pointer">
+                    <Td
+                      onClick={() => handleSelectTask(task.id)}
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                      textAlign="center"
+                      width="20%"
+                    >
+                      {task.id}
+                    </Td>
+
+                    <Td
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                      textAlign="center"
+                      width="20%"
+                      h="56px"
+                    >
+                      <div
+                        style={{ display: 'flex', justifyContent: 'center' }}
                       >
-                        {task.id}
-                      </Td>
-                      <Td
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                        textAlign="center"
-                        h="56px"
+                        <TaskListStatusIcon
+                          buttonId={task.id}
+                          statusChange={statusChange}
+                          status={task.status}
+                        />
+                      </div>
+                    </Td>
+
+                    <Td
+                      onClick={() => handleSelectTask(task.id)}
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                      textAlign="center"
+                      maxWidth="600px"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      whiteSpace="nowrap"
+                    >
+                      {task.title}
+                    </Td>
+
+                    <Td
+                      onClick={() => handleSelectTask(task.id)}
+                      color={
+                        task.priority === 'ALTA'
+                          ? 'red.500'
+                          : task.priority === 'MEDIA'
+                          ? 'yellow.500'
+                          : 'gray.500'
+                      }
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                      textAlign="center"
+                      width="20%"
+                    >
+                      <div
+                        style={{ display: 'flex', justifyContent: 'center' }}
                       >
-                        <div
-                          style={{
-                            alignSelf: 'center',
-                            display: 'flex',
-                            justifyContent: 'center',
-                          }}
+                        <Text
+                          justifyContent="center"
+                          background={
+                            task.priority === 'ALTA'
+                              ? 'red.100'
+                              : task.priority === 'MEDIA'
+                              ? 'yellow.100'
+                              : 'gray.100'
+                          }
+                          borderRadius="4px"
+                          padding="4px"
+                          width="80px"
                         >
-                          <TaskListStatusIcon
-                            buttonId={task.id}
-                            statusChange={statusChange}
-                            status={task.status}
-                          />
-                        </div>
-                      </Td>
-                      <Td
-                        onClick={() => handleSelectTask(task.id)}
-                        color="gray.600"
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                        textAlign="center"
-                      >
-                        {task.title}
-                      </Td>
-                      <Td
-                        onClick={() => handleSelectTask(task.id)}
-                        color={
-                          task.priority === 'ALTA'
-                            ? 'red.500'
-                            : task.priority === 'MEDIA'
-                            ? 'yellow.500'
-                            : 'gray.500'
-                        }
-                        fontSize="14px"
-                        borderBottomWidth="1px"
-                        borderBottomStyle="solid"
-                        borderBottomColor="gray.300"
-                        py="4px"
-                        textAlign="center"
-                      >
-                        <div
-                          style={{ display: 'flex', justifyContent: 'center' }}
-                        >
-                          <Text
-                            justifyContent="center"
-                            background={
-                              task.priority === 'ALTA'
-                                ? 'red.100'
-                                : task.priority === 'MEDIA'
-                                ? 'yellow.100'
-                                : 'gray.100'
-                            }
-                            borderRadius="4px"
-                            padding="4px"
-                            width="80px"
-                          >
-                            {task.priority}
-                          </Text>
-                        </div>
-                      </Td>
-                    </Tr>
-                  )
-                )
+                          {task.priority}
+                        </Text>
+                      </div>
+                    </Td>
+
+                    <Td
+                      onClick={() => handleSelectTask(task.id)}
+                      color="gray.600"
+                      fontSize="14px"
+                      borderBottomWidth="1px"
+                      borderBottomStyle="solid"
+                      borderBottomColor="gray.300"
+                      py="4px"
+                      textAlign="center"
+                      width="20%"
+                    >
+                      {task.voter?.name || 'N/A'}
+                    </Td>
+                  </Tr>
+                ))
               ) : (
                 <Tr>
-                  <Td textAlign="center">Nenhuma tarefa encontrada</Td>
+                  <Td textAlign="center" colSpan={5}>
+                    Nenhuma tarefa encontrada
+                  </Td>
                 </Tr>
               )}
             </Tbody>
