@@ -212,15 +212,19 @@ export default function DemandEdit() {
   }, []);
 
   const handleUploadAttachment = async () => {
-    if (!attachment) return;
+    if (!attachment || !id) return;
 
     setUploadLoading(true);
     try {
       const formData = new FormData();
       formData.append('attachment', attachment);
-      formData.append('taskId', id as string);
+      formData.append('taskId', id);
 
-      await api.post('/task/attachment', formData);
+      await api.post('/task/attachment', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       toast({
         title: 'Arquivo anexado com sucesso',
