@@ -43,6 +43,7 @@ import '../styles/editor.css';
 import { getFormatDate } from '../utils/date';
 import getValidationErrors from '../utils/validationError';
 import axios from 'axios';
+import { FiUpload } from 'react-icons/fi';
 
 export type SelectProps = {
   label: string;
@@ -67,6 +68,9 @@ export default function DemandRegister() {
   const [description, setDescription] = useState('');
   const [voterData, setVoterData] = useState({} as UserDTO);
   const [resource, setResource] = useState(false);
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
   const { id } = useParams();
   const {
     isOpen: isOpenModal,
@@ -173,8 +177,13 @@ export default function DemandRegister() {
     [values]
   );
 
-  const handleRegister = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleRegister = async (e: FormEvent | null): Promise<void> => {
+    if (e) e.preventDefault();
+
+    if (attachment) {
+      handleCreateWithAttachment();
+      return;
+    }
 
     setErrors({});
 
@@ -195,7 +204,9 @@ export default function DemandRegister() {
         description: description,
         responsible_id: responsible,
         date: new Date(),
-        deadline: addHours(new Date(values?.deadline), 12),
+        deadline: values?.deadline
+          ? addHours(new Date(values?.deadline), 12)
+          : null,
         priority,
         voter_id: voterData?.id,
         office_id: office?.id,
@@ -213,28 +224,26 @@ export default function DemandRegister() {
         position: 'top-right',
       });
 
-      return navigate('/demanda');
+      navigate('/demanda');
     } catch (err: any) {
       if (err instanceof Yup.ValidationError) {
         setErrors(getValidationErrors(err));
-
         return;
       }
       if (err.response) {
-        return toast({
+        toast({
           title:
             err.response.data.message ||
             'Ocorreu um erro ao cadastrar a demanda, cheque as credenciais',
-
           status: 'error',
           position: 'top-right',
           duration: 3000,
           isClosable: true,
         });
+        return;
       }
-      return toast({
+      toast({
         title: 'Ocorreu um erro ao cadastrar a demanda, cheque as credenciais',
-
         status: 'error',
         position: 'top-right',
         duration: 3000,
@@ -244,7 +253,7 @@ export default function DemandRegister() {
       setLoading(false);
     }
   };
-  console.log(values, 'values');
+
   const verifyPermission = async () => {
     setErrors({});
     setLoading(true);
@@ -307,6 +316,111 @@ export default function DemandRegister() {
     } catch (err) {
     } finally {
       setLoading(false);
+    }
+  };
+  const handleCreateWithAttachment = async (): Promise<void> => {
+    if (!attachment) return handleRegister(null);
+
+    setLoading(true);
+    try {
+      const schema = Yup.object().shape({
+        title: Yup.string().required('Título obrigatório'),
+      });
+
+      await schema.validate(values, {
+        abortEarly: false,
+      });
+
+      const { title, priority } = values;
+
+      const formData = new FormData();
+      formData.append('attachment', attachment);
+      formData.append('title', title);
+      formData.append('description', description || '');
+      formData.append('responsible_id', responsible);
+      formData.append('date', new Date().toISOString());
+      formData.append('priority', priority || 'BAIXA');
+
+      // Fix the TypeScript error by ensuring these values are strings
+      if (voterData?.id) {
+        formData.append('voter_id', voterData.id);
+      }
+
+      formData.append('office_id', office?.id || '');
+      formData.append('resource', resource.toString());
+
+      if (values?.deadline) {
+        formData.append(
+          'deadline',
+          addHours(new Date(values.deadline), 12).toISOString()
+        );
+      }
+
+      await api.post('/task/attachment', formData);
+
+      toast({
+        title: 'Cadastrado com sucesso',
+        description: 'Você cadastrou uma demanda com anexo.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      });
+
+      navigate('/demanda');
+    } catch (err: any) {
+      if (err instanceof Yup.ValidationError) {
+        setErrors(getValidationErrors(err));
+        return;
+      }
+      if (err.response) {
+        toast({
+          title:
+            err.response.data.message ||
+            'Ocorreu um erro ao cadastrar a demanda, cheque as credenciais',
+          status: 'error',
+          position: 'top-right',
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+      toast({
+        title: 'Ocorreu um erro ao cadastrar a demanda, cheque as credenciais',
+        status: 'error',
+        position: 'top-right',
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setAttachment(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      setAttachment(e.target.files[0]);
     }
   };
 
@@ -694,7 +808,7 @@ export default function DemandRegister() {
         fontSize="20px"
         ml={[0, '28px']}
       >
-        Cadastrar Demanda
+        Cadastrar Demandas
       </Text>
 
       <Flex alignItems="center" justifyContent="center" as="form">
@@ -914,64 +1028,53 @@ export default function DemandRegister() {
               isDisabled={!verify || notVerify}
             />
           </Flex>
-          {/* <FormLabel htmlFor="document" m="0" cursor="pointer">
+          <Box mt={4}>
+            <Text color="gray.500" fontWeight="semibold" mb={4}>
+              Anexos
+            </Text>
+
             <Flex
-              p="12px"
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+              onClick={() => document.getElementById('file-upload')?.click()}
+              p={6}
+              borderWidth={2}
               borderRadius="md"
+              borderStyle="dashed"
+              borderColor={dragActive ? 'blue.400' : 'gray.300'}
+              bg={dragActive ? 'blue.50' : 'transparent'}
               alignItems="center"
-              borderWidth="1px"
-              borderColor="gray.500"
-              justifyContent="space-between"
+              justifyContent="center"
+              flexDirection="column"
+              cursor="pointer"
+              transition="all 0.2s"
+              _hover={{
+                borderColor: 'blue.400',
+                bg: 'blue.50',
+              }}
             >
-              <Flex gap="20px">
-                <Flex
-                  userSelect="none"
-                  w="200px"
-                  alignItems="center"
-                  justifyContent="center"
-                  color="gray.500"
-                  bgColor="transparent"
-                  borderWidth="1px"
-                  borderColor="gray.100"
-                  borderRadius="6px"
-                  fontFamily="Roboto"
-                  fontStyle="normal"
-                  fontSize="16px"
-                  lineHeight="24px"
-                  boxShadow="2px 2px 2px 2px rgba(58, 59, 59, 0.1)"
-                  _hover={{ bg: "gray.50" }}
-                  _active={{
-                    bg: "gray.50",
-                  }}
-                  _focus={{
-                    boxShadow: "0 0 0 3px rgba(60, 62, 63, 0.6)",
-                  }}
-                >
-                  {loading ? <Spinner /> : "Escolher arquivo"}
-                </Flex>
-                <Text fontSize={"14px"} color="gray.500">
-                  {image?.name ? image?.name : "Nenhum arquivo selecionado"}
-                </Text>
-              </Flex>
-              <Icon
-                as={IoCloudUpload}
-                boxSize="24px"
-                color="gray.500"
-                _hover={{ color: "gray.600" }}
-                _active={{
-                  color: "green.700",
-                }}
-              />
-              <Input
-                name="document"
-                onChange={postDocument}
-                display="none"
+              <input
                 type="file"
-                accept="application/pdf"
-                id="document"
+                id="file-upload"
+                onChange={handleChange}
+                style={{ display: 'none' }}
+                disabled={!verify || notVerify}
               />
+              <Icon as={FiUpload} boxSize={6} color="gray.400" mb={2} />
+              <Text color="gray.500" textAlign="center">
+                {dragActive
+                  ? 'Solte o arquivo aqui'
+                  : 'Arraste e solte um arquivo aqui, ou clique para selecionar'}
+              </Text>
+              {attachment && (
+                <Text color="blue.500" mt={2} fontWeight="medium">
+                  Arquivo selecionado: {attachment.name}
+                </Text>
+              )}
             </Flex>
-          </FormLabel> */}
+          </Box>
           <Flex gap="24px">
             <Text color={!verify || notVerify ? 'gray.300' : 'gray.500'}>
               Recurso:

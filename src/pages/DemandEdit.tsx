@@ -144,7 +144,7 @@ export default function DemandEdit() {
       setDescription(response?.data?.description);
       setResponsible(response?.data?.responsible_id);
       setVoterData(response?.data?.voter);
-      setAttachmentUrl(response?.data?.attachment || '');
+      setAttachmentUrl(response?.data?.attachment_url || '');
     } catch (err) {
     } finally {
       setDemandLoading(false);
@@ -220,7 +220,7 @@ export default function DemandEdit() {
       formData.append('attachment', attachment);
       formData.append('taskId', id as string);
 
-      await api.post('/task/attachment', formData);
+      await api.put('/task/attachment', formData);
 
       toast({
         title: 'Arquivo anexado com sucesso',
@@ -511,7 +511,7 @@ export default function DemandEdit() {
                   leftIcon={<Icon as={FiDownload} />}
                   colorScheme="blue"
                 >
-                  Baixar
+                  Abrir
                 </Button>
               </Flex>
             )}
