@@ -474,20 +474,6 @@ export default function DemandEdit() {
               <Text color={'gray.500'}>Sim</Text>
             </HStack>
           </Flex>
-          <Flex
-            w="100%"
-            alignItems="center"
-            justifyContent="center"
-            mt={['40px', '95px']}
-          >
-            <Button
-              onClick={handleUpdateDemanda}
-              width="280px"
-              isDisabled={demandLoading}
-            >
-              {loading ? <Spinner color="white" /> : 'Atualizar'}
-            </Button>
-          </Flex>
           <Box mt={8}>
             <Text color="gray.500" fontWeight="semibold" mb={4}>
               Anexos
@@ -580,6 +566,20 @@ export default function DemandEdit() {
               </Flex>
             )}
           </Box>
+          <Flex
+            w="100%"
+            alignItems="center"
+            justifyContent="center"
+            mt={['40px', '95px']}
+          >
+            <Button
+              onClick={handleUpdateDemanda}
+              width="280px"
+              isDisabled={demandLoading}
+            >
+              {loading ? <Spinner color="white" /> : 'Atualizar'}
+            </Button>
+          </Flex>
         </Stack>
       </Flex>
     </HeaderSideBar>
