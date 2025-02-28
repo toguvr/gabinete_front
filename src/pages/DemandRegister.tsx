@@ -1034,25 +1034,42 @@ export default function DemandRegister() {
             </Text>
 
             <Flex
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-              onClick={() => document.getElementById('file-upload')?.click()}
+              onDragEnter={!verify || notVerify ? undefined : handleDrag}
+              onDragLeave={!verify || notVerify ? undefined : handleDrag}
+              onDragOver={!verify || notVerify ? undefined : handleDrag}
+              onDrop={!verify || notVerify ? undefined : handleDrop}
+              onClick={
+                !verify || notVerify
+                  ? undefined
+                  : () => document.getElementById('file-upload')?.click()
+              }
               p={6}
               borderWidth={2}
               borderRadius="md"
               borderStyle="dashed"
-              borderColor={dragActive ? 'blue.400' : 'gray.300'}
-              bg={dragActive ? 'blue.50' : 'transparent'}
+              borderColor={
+                !verify || notVerify
+                  ? 'gray.200'
+                  : dragActive
+                  ? 'blue.400'
+                  : 'gray.300'
+              }
+              bg={
+                !verify || notVerify
+                  ? 'gray.50'
+                  : dragActive
+                  ? 'blue.50'
+                  : 'transparent'
+              }
               alignItems="center"
               justifyContent="center"
               flexDirection="column"
-              cursor="pointer"
+              cursor={!verify || notVerify ? 'not-allowed' : 'pointer'}
               transition="all 0.2s"
+              opacity={!verify || notVerify ? 0.6 : 1}
               _hover={{
-                borderColor: 'blue.400',
-                bg: 'blue.50',
+                borderColor: !verify || notVerify ? 'gray.200' : 'blue.400',
+                bg: !verify || notVerify ? 'gray.50' : 'blue.50',
               }}
             >
               <input
@@ -1062,14 +1079,26 @@ export default function DemandRegister() {
                 style={{ display: 'none' }}
                 disabled={!verify || notVerify}
               />
-              <Icon as={FiUpload} boxSize={6} color="gray.400" mb={2} />
-              <Text color="gray.500" textAlign="center">
+              <Icon
+                as={FiUpload}
+                boxSize={6}
+                color={!verify || notVerify ? 'gray.300' : 'gray.400'}
+                mb={2}
+              />
+              <Text
+                color={!verify || notVerify ? 'gray.300' : 'gray.500'}
+                textAlign="center"
+              >
                 {dragActive
                   ? 'Solte o arquivo aqui'
                   : 'Arraste e solte um arquivo aqui, ou clique para selecionar'}
               </Text>
               {attachment && (
-                <Text color="blue.500" mt={2} fontWeight="medium">
+                <Text
+                  color={!verify || notVerify ? 'gray.300' : 'blue.500'}
+                  mt={2}
+                  fontWeight="medium"
+                >
                   Arquivo selecionado: {attachment.name}
                 </Text>
               )}

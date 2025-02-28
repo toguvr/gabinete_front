@@ -502,14 +502,23 @@ export default function DemandEdit() {
                 justifyContent="space-between"
                 mb={4}
               >
-                <Text color="gray.600" noOfLines={1}>
-                  Anexo atual
-                </Text>
+                <Flex direction="column" flex={1} mr={4}>
+                  <Text color="gray.500" fontSize="sm" fontWeight="medium">
+                    Anexo:
+                  </Text>
+                  <Text color="gray.600" noOfLines={1}>
+                    {attachmentUrl.split('/').pop()}
+                  </Text>
+                </Flex>
                 <Button
                   onClick={() => window.open(attachmentUrl, '_blank')}
-                  size="sm"
+                  size="xs"
                   leftIcon={<Icon as={FiDownload} />}
                   colorScheme="blue"
+                  variant="outline"
+                  minW="min-content"
+                  w="fit-content"
+                  px={3}
                 >
                   Abrir
                 </Button>
