@@ -9,6 +9,7 @@ import {
   Switch,
   Text,
   useToast,
+  Icon,
 } from '@chakra-ui/react';
 import { addHours } from 'date-fns';
 import { Editor } from 'primereact/editor';
@@ -30,6 +31,7 @@ import { PermissionByIdDTO, StateProps, UserDTO } from '../dtos';
 import api from '../services/api';
 import { getFormatDate } from '../utils/date';
 import getValidationErrors from '../utils/validationError';
+import { FiUpload, FiDownload } from 'react-icons/fi';
 
 export type SelectProps = {
   label: string;
@@ -52,6 +54,10 @@ export default function DemandEdit() {
   const [voterData, setVoterData] = useState({} as UserDTO);
   const [description, setDescription] = useState('');
   const [resource, setResource] = useState(false);
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [attachmentUrl, setAttachmentUrl] = useState<string>('');
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
   const handleResource = () => {
     setResource(!resource);
@@ -138,6 +144,7 @@ export default function DemandEdit() {
       setDescription(response?.data?.description);
       setResponsible(response?.data?.responsible_id);
       setVoterData(response?.data?.voter);
+      setAttachmentUrl(response?.data?.attachment_url || '');
     } catch (err) {
     } finally {
       setDemandLoading(false);
@@ -203,6 +210,68 @@ export default function DemandEdit() {
       }
     }
   }, []);
+
+  const handleUploadAttachment = async () => {
+    if (!attachment) return;
+
+    setUploadLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('attachment', attachment);
+      formData.append('taskId', id as string);
+
+      await api.put('/task/attachment', formData);
+
+      toast({
+        title: 'Arquivo anexado com sucesso',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      });
+
+      // Refresh attachment data
+      getDemandaById();
+      setAttachment(null);
+    } catch (error) {
+      toast({
+        title: 'Erro ao anexar arquivo',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      });
+    } finally {
+      setUploadLoading(false);
+    }
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setAttachment(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      setAttachment(e.target.files[0]);
+    }
+  };
 
   const renderHeader = () => {
     return (
@@ -392,64 +461,6 @@ export default function DemandEdit() {
               isDisabled
             />
           </Flex>
-          {/* <FormLabel htmlFor="document" m="0" cursor="pointer">
-            <Flex
-              p="12px"
-              borderRadius="md"
-              alignItems="center"
-              borderWidth="1px"
-              borderColor="gray.500"
-              justifyContent="space-between"
-            >
-              <Flex gap="20px">
-                <Flex
-                  userSelect="none"
-                  w="200px"
-                  alignItems="center"
-                  justifyContent="center"
-                  color="gray.500"
-                  bgColor="transparent"
-                  borderWidth="1px"
-                  borderColor="gray.100"
-                  borderRadius="6px"
-                  fontFamily="Roboto"
-                  fontStyle="normal"
-                  fontSize="16px"
-                  lineHeight="24px"
-                  boxShadow="2px 2px 2px 2px rgba(58, 59, 59, 0.1)"
-                  _hover={{ bg: "gray.50" }}
-                  _active={{
-                    bg: "gray.50",
-                  }}
-                  _focus={{
-                    boxShadow: "0 0 0 3px rgba(60, 62, 63, 0.6)",
-                  }}
-                >
-                  {loading ? <Spinner /> : "Escolher arquivo"}
-                </Flex>
-                <Text fontSize={"14px"} color="gray.500">
-                  {image?.name ? image?.name : "Nenhum arquivo selecionado"}
-                </Text>
-              </Flex>
-              <Icon
-                as={IoCloudUpload}
-                boxSize="24px"
-                color="gray.500"
-                _hover={{ color: "gray.600" }}
-                _active={{
-                  color: "green.700",
-                }}
-              />
-              <Input
-                name="document"
-                onChange={postDocument}
-                display="none"
-                type="file"
-                accept="application/pdf"
-                id="document"
-              />
-            </Flex>
-          </FormLabel> */}
           <Flex gap="24px">
             <Text color={'gray.500'}>Recurso:</Text>
             <HStack>
@@ -463,6 +474,98 @@ export default function DemandEdit() {
               <Text color={'gray.500'}>Sim</Text>
             </HStack>
           </Flex>
+          <Box mt={8}>
+            <Text color="gray.500" fontWeight="semibold" mb={4}>
+              Anexos
+            </Text>
+
+            {attachmentUrl && (
+              <Flex
+                p={4}
+                borderWidth={1}
+                borderRadius="md"
+                alignItems="center"
+                justifyContent="space-between"
+                mb={4}
+              >
+                <Flex direction="column" flex={1} mr={4}>
+                  <Text color="gray.500" fontSize="sm" fontWeight="medium">
+                    Anexo:
+                  </Text>
+                  <Text color="gray.600" noOfLines={1}>
+                    {attachmentUrl.split('/').pop()}
+                  </Text>
+                </Flex>
+                <Button
+                  onClick={() => window.open(attachmentUrl, '_blank')}
+                  size="xs"
+                  leftIcon={<Icon as={FiDownload} />}
+                  colorScheme="blue"
+                  variant="outline"
+                  minW="min-content"
+                  w="fit-content"
+                  px={3}
+                >
+                  Abrir
+                </Button>
+              </Flex>
+            )}
+
+            <Flex
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+              onClick={() => document.getElementById('file-upload')?.click()}
+              p={6}
+              borderWidth={2}
+              borderRadius="md"
+              borderStyle="dashed"
+              borderColor={dragActive ? 'blue.400' : 'gray.300'}
+              bg={dragActive ? 'blue.50' : 'transparent'}
+              alignItems="center"
+              justifyContent="center"
+              flexDirection="column"
+              cursor="pointer"
+              transition="all 0.2s"
+              _hover={{
+                borderColor: 'blue.400',
+                bg: 'blue.50',
+              }}
+            >
+              <input
+                type="file"
+                id="file-upload"
+                onChange={handleChange}
+                style={{ display: 'none' }}
+              />
+              <Icon as={FiUpload} boxSize={6} color="gray.400" mb={2} />
+              <Text color="gray.500" textAlign="center">
+                {dragActive
+                  ? 'Solte o arquivo aqui'
+                  : 'Arraste e solte um arquivo aqui, ou clique para selecionar'}
+              </Text>
+              {attachment && (
+                <Text color="blue.500" mt={2} fontWeight="medium">
+                  Arquivo selecionado: {attachment.name}
+                </Text>
+              )}
+            </Flex>
+
+            {attachment && (
+              <Flex justify="center" mt={4}>
+                <Button
+                  onClick={handleUploadAttachment}
+                  isLoading={uploadLoading}
+                  loadingText="Enviando..."
+                  colorScheme="blue"
+                  width="200px"
+                >
+                  Enviar Anexo
+                </Button>
+              </Flex>
+            )}
+          </Box>
           <Flex
             w="100%"
             alignItems="center"
