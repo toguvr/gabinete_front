@@ -123,14 +123,8 @@ export default function Voter() {
   const getAllVoters = async () => {
     setExportLoading(true);
     try {
-      const response = await api.get(`/voter/office/${auth.office.id}`, {
-        params: {
-          page: 1,
-          quantity: 10000,
-        },
-      });
-
-      return response.data.items;
+      const response = await api.get(`/voter/office/${auth.office.id}`);
+      return response.data;
     } catch (err) {
       toast({
         title: 'Erro ao exportar os dados',
