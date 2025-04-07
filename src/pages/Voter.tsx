@@ -35,6 +35,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import {
   IoAddCircleSharp,
+  IoDownloadOutline,
   IoLogoWhatsapp,
   IoPencilOutline,
   IoPrintOutline,
@@ -53,10 +54,12 @@ import api from '../services/api';
 import { convertDateFormat } from '../utils/convertDateFormat';
 import { getFormatDate } from '../utils/date';
 import { voterPage } from '../utils/filterTables';
+import * as XLSX from 'xlsx';
 
 export default function Voter() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
   const [filterFieldDateMask, setFilterFieldDateMask] = useState('');
   const toast = useToast();
   const [data, setData] = useState([] as VoterDTO[]);
@@ -116,6 +119,92 @@ export default function Voter() {
       setLoading(false);
     }
   };
+
+  const getAllVoters = async () => {
+    setExportLoading(true);
+    try {
+      const response = await api.get(`/voter/office/${auth.office.id}`);
+      return response.data;
+    } catch (err) {
+      toast({
+        title: 'Erro ao exportar os dados',
+        description: 'Ocorreu um erro ao buscar os dados para exportação',
+        status: 'error',
+        position: 'top-right',
+        duration: 3000,
+        isClosable: true,
+      });
+      return [];
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  const downloadExcel = async () => {
+    const voters = await getAllVoters();
+
+    if (voters.length === 0) return;
+
+    // Definir cabeçalhos traduzidos
+    const headers = {
+      name: 'Nome',
+      reference: 'Referência',
+      cellphone: 'Telefone',
+      birthdate: 'Data de Nascimento',
+      email: 'E-mail',
+      gender: 'Gênero',
+      street: 'Rua',
+      address_number: 'Número',
+      neighborhood: 'Bairro',
+      complement: 'Complemento',
+      city: 'Cidade',
+      state: 'Estado',
+      zip: 'CEP',
+    };
+
+    // Formatar os dados para o Excel
+    const excelData = voters.map((voter: VoterDTO) => {
+      const genderTranslation =
+        voter.gender === 'MALE'
+          ? 'Masculino'
+          : voter.gender === 'FEMALE'
+          ? 'Feminino'
+          : '';
+      const formattedBirthdate = voter.birthdate
+        ? getFormatDate(new Date(voter.birthdate), 'dd/MM/yyyy')
+        : '';
+
+      return {
+        [headers.name]: voter.name || '',
+        [headers.reference]: voter.reference || '',
+        [headers.cellphone]: voter.cellphone || '',
+        [headers.birthdate]: formattedBirthdate,
+        [headers.email]: voter.email || '',
+        [headers.gender]: genderTranslation,
+        [headers.street]: voter.street || '',
+        [headers.address_number]: voter.address_number || '',
+        [headers.neighborhood]: voter.neighborhood || '',
+        [headers.complement]: voter.complement || '',
+        [headers.city]: voter.city || '',
+        [headers.state]: voter.state || '',
+        [headers.zip]: voter.zip || '',
+      };
+    });
+
+    // Criar uma nova pasta de trabalho (workbook) e adicionar os dados
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+    // Adicionar a planilha ao workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Apoiadores');
+
+    // Gerar o arquivo
+    const fileName = `eleitores-${office?.name}-${
+      new Date().toISOString().split('T')[0]
+    }.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
   const handleDateOfBirthChange = (input: any) => {
     const dateRegEx = /^(\d{1,2})(\/)?(\d{1,2})?(\d{0,4})?$/;
     const match = input.match(dateRegEx);
@@ -146,6 +235,11 @@ export default function Voter() {
   useEffect(() => {
     setPage(1);
   }, [debouncedValue]);
+
+  useEffect(() => {
+    setFilterField('');
+    setFilterFieldDateMask('');
+  }, [selectFilter]);
 
   const deleteVoter = async () => {
     setLoading(true);
@@ -287,11 +381,6 @@ export default function Voter() {
       alignSelf: 'center',
     },
   });
-
-  useEffect(() => {
-    setFilterField('');
-    setFilterFieldDateMask('');
-  }, [selectFilter]);
 
   const MyDocument = () => {
     return (
@@ -467,17 +556,28 @@ export default function Voter() {
             )}
           </Flex>
 
-          <PDFDownloadLink
-            document={<MyDocument />}
-            fileName={`eleitores-${office?.name}.pdf`}
-          >
-            <Button
-              w={['160px', '280px']}
-              leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
+          <Flex gap={['12px', '24px']}>
+            <PDFDownloadLink
+              document={<MyDocument />}
+              fileName={`eleitores-${office?.name}.pdf`}
             >
-              Imprimir
+              <Button
+                w={['120px', '150px']}
+                leftIcon={<Icon fontSize="20" as={IoPrintOutline} />}
+              >
+                Imprimir
+              </Button>
+            </PDFDownloadLink>
+
+            <Button
+              w={['120px', '150px']}
+              leftIcon={<Icon fontSize="20" as={IoDownloadOutline} />}
+              onClick={downloadExcel}
+              isLoading={exportLoading}
+            >
+              Exportar
             </Button>
-          </PDFDownloadLink>
+          </Flex>
         </Flex>
         <Box
           overflow="auto"
