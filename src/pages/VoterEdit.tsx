@@ -194,298 +194,314 @@ export default function VoterEdit() {
 
   return (
     <HeaderSideBar backRoute={true}>
-      <Text color="gray.500" fontWeight="semibold" fontSize="20px">
-        Editar Apoiador
-        {voterLoading && <Spinner color={office?.primary_color} />}
-      </Text>
-      <Flex alignItems="center" justifyContent="center" as="form">
-        <Stack spacing={[5, 8]} mt={['24px', '40px']} w="852px">
-          <Flex flexDir={'column'}>
-            <Text color="gray.500" fontWeight="400" margin="0">
-              Telefone*:
-            </Text>
-            <Flex>
-              <PatternFormat
-                customInput={Input}
-                name="ddd"
-                type="text"
-                error={errors?.ddd}
-                value={values?.dddMask}
-                onValueChange={(value) => {
-                  setValues({
-                    ...values,
-                    ddd: value?.value,
-                    dddMask: value?.formattedValue,
-                  });
-                }}
-                placeholder="DDD"
-                w="72px"
-                mr="8px"
-                borderColor="gray.500"
-                format="##"
-                mask="_"
-                disabled={voterLoading}
-              />
-
-              <PatternFormat
-                customInput={Input}
-                format="#####-####"
-                mask="_"
-                name="cellphone"
-                type="tel"
-                error={errors?.cellphone}
-                value={values?.cellphoneMask}
-                onValueChange={(value) => {
-                  setValues({
-                    ...values,
-                    cellphone: value?.value,
-                    cellphoneMask: value?.formattedValue,
-                  });
-                }}
-                placeholder="00000-0000"
-                w={['100%', '180px']}
-                borderColor="gray.500"
-                disabled={voterLoading}
-              />
-            </Flex>
-          </Flex>
-
-          <Input
-            label="Nome*:"
-            placeholder="Nome completo"
-            name="name"
-            type="text"
-            error={errors?.name}
-            value={values?.name}
-            onChange={(e) =>
-              setValues({ ...values, [e.target.name]: e.target.value })
-            }
-            borderColor="gray.500"
-            disabled={voterLoading}
-          />
-          <Input
-            label="Referência:"
-            placeholder="Referência do apoiador"
-            name="reference"
-            type="text"
-            error={errors?.reference}
-            value={values.reference}
-            onChange={(e) =>
-              setValues({ ...values, [e.target.name]: e.target.value })
-            }
-            borderColor="gray.500"
-            disabled={voterLoading}
-          />
-
-          <Input
-            label="E-mail:"
-            placeholder="E-mail"
-            name="email"
-            type="email"
-            error={errors?.email}
-            value={values?.email}
-            onChange={(e) =>
-              setValues({ ...values, [e.target.name]: e.target.value })
-            }
-            borderColor="gray.500"
-            disabled={voterLoading}
-          />
-          <Box>
-            <Flex
-              justifyContent={['flex-start', 'space-between']}
-              alignItems={['flex-start', 'flex-end']}
-              flexDirection={['column', 'row']}
-              gap={[5, '48px']}
-            >
-              <Input
-                label="Data de nascimento:"
-                name="birthdate"
-                type="date"
-                error={errors?.birthdate}
-                value={values?.birthdate}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
-                placeholder="Data de Nascimento"
-                borderColor="gray.500"
-                css={{
-                  '&::-webkit-calendar-picker-indicator': {
-                    color: 'gray.500',
-                  },
-                }}
-                disabled={voterLoading}
-              />
-
-              <Box w="100%">
-                <Text color="gray.500" fontWeight="400" margin="0">
-                  Gênero:
-                </Text>
-                <Select
-                  placeholder="Gênero"
+      <Flex direction="column" h="100%" overflow="hidden">
+        <Text color="gray.500" fontWeight="semibold" fontSize="20px" mb={2}>
+          Editar Apoiador
+          {voterLoading && <Spinner color={office?.primary_color} ml={2} />}
+        </Text>
+        <Flex
+          overflowY="auto"
+          alignItems="flex-start"
+          justifyContent="center"
+          as="form"
+          flex="1"
+          w="100%"
+          px={4}
+        >
+          <Stack
+            spacing={[5, 8]}
+            mt={['24px', '40px']}
+            w="852px"
+            maxW="100%"
+            pb={8}
+          >
+            <Flex flexDir={'column'}>
+              <Text color="gray.500" fontWeight="400" margin="0">
+                Telefone*:
+              </Text>
+              <Flex>
+                <PatternFormat
+                  customInput={Input}
+                  name="ddd"
+                  type="text"
+                  error={errors?.ddd}
+                  value={values?.dddMask}
+                  onValueChange={(value) => {
+                    setValues({
+                      ...values,
+                      ddd: value?.value,
+                      dddMask: value?.formattedValue,
+                    });
+                  }}
+                  placeholder="DDD"
+                  w="72px"
+                  mr="8px"
                   borderColor="gray.500"
-                  bg="gray.50"
-                  _placeholder={{ color: 'gray.500' }}
-                  color="gray.600"
-                  value={values?.gender}
-                  name="gender"
+                  format="##"
+                  mask="_"
+                  disabled={voterLoading}
+                />
+
+                <PatternFormat
+                  customInput={Input}
+                  format="#####-####"
+                  mask="_"
+                  name="cellphone"
+                  type="tel"
+                  error={errors?.cellphone}
+                  value={values?.cellphoneMask}
+                  onValueChange={(value) => {
+                    setValues({
+                      ...values,
+                      cellphone: value?.value,
+                      cellphoneMask: value?.formattedValue,
+                    });
+                  }}
+                  placeholder="00000-0000"
+                  w={['100%', '180px']}
+                  borderColor="gray.500"
+                  disabled={voterLoading}
+                />
+              </Flex>
+            </Flex>
+
+            <Input
+              label="Nome*:"
+              placeholder="Nome completo"
+              name="name"
+              type="text"
+              error={errors?.name}
+              value={values?.name}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+              borderColor="gray.500"
+              disabled={voterLoading}
+            />
+            <Input
+              label="Referência:"
+              placeholder="Referência do apoiador"
+              name="reference"
+              type="text"
+              error={errors?.reference}
+              value={values.reference}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+              borderColor="gray.500"
+              disabled={voterLoading}
+            />
+
+            <Input
+              label="E-mail:"
+              placeholder="E-mail"
+              name="email"
+              type="email"
+              error={errors?.email}
+              value={values?.email}
+              onChange={(e) =>
+                setValues({ ...values, [e.target.name]: e.target.value })
+              }
+              borderColor="gray.500"
+              disabled={voterLoading}
+            />
+            <Box>
+              <Flex
+                justifyContent={['flex-start', 'space-between']}
+                alignItems={['flex-start', 'flex-end']}
+                flexDirection={['column', 'row']}
+                gap={[5, '48px']}
+              >
+                <Input
+                  label="Data de nascimento:"
+                  name="birthdate"
+                  type="date"
+                  error={errors?.birthdate}
+                  value={values?.birthdate}
                   onChange={(e) =>
                     setValues({ ...values, [e.target.name]: e.target.value })
                   }
+                  placeholder="Data de Nascimento"
+                  borderColor="gray.500"
+                  css={{
+                    '&::-webkit-calendar-picker-indicator': {
+                      color: 'gray.500',
+                    },
+                  }}
                   disabled={voterLoading}
-                >
-                  <option value="MALE">Masculino</option>
-                  <option value="FEMALE">Feminino</option>
-                </Select>
-              </Box>
-            </Flex>
-          </Box>
-          <Box>
-            <Flex>
-              <Text color="gray.500" fontWeight="400" margin="0">
-                Endereço:
-              </Text>
-              {cepLoading && (
-                <Spinner color={office?.primary_color} size="sm" />
-              )}
-            </Flex>
-            <Flex
-              mb="24px"
-              justifyContent={['flex-start', 'space-between']}
-              alignItems={['flex-start', 'flex-end']}
-              flexDirection={['column', 'row']}
-              gap={[5, '44px']}
-            >
-              <PatternFormat
-                customInput={Input}
-                type="text"
-                format="#####-###"
-                mask="_"
-                name="zip"
-                error={errors?.zip}
-                value={values?.zipMask}
-                onValueChange={(value) => {
-                  setValues({
-                    ...values,
-                    zip: value?.value,
-                    zipMask: value?.formattedValue,
-                  });
-                }}
-                borderColor="gray.500"
-                onBlur={getCep}
-                w={['100%', '200px']}
-                placeholder="CEP"
-                disabled={voterLoading}
-              />
+                />
 
-              <Input
-                placeholder="Rua"
-                name="street"
-                type="text"
-                error={errors?.street}
-                value={values?.street}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
-                borderColor="gray.500"
-                flex={1}
-                disabled={voterLoading}
-              />
-            </Flex>
-            <Flex
-              mb="24px"
-              justifyContent={['flex-start', 'space-between']}
-              alignItems={['flex-start', 'flex-end']}
-              flexDirection={['column', 'row']}
-              gap={[5, '44px']}
-            >
-              <Input
-                placeholder="Bairro"
-                name="neighborhood"
-                type="text"
-                error={errors?.neighborhood}
-                value={values?.neighborhood}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
-                borderColor="gray.500"
-                flex={1}
-                disabled={voterLoading}
-              />
-              <Input
-                name="address_number"
-                type="number"
-                error={errors?.address_number}
-                value={values?.address_number}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
-                placeholder="Numero"
-                w={['100%', '200px']}
-                borderColor="gray.500"
-                disabled={voterLoading}
-              />
-            </Flex>
-            <Flex
-              mb="24px"
-              justifyContent={['flex-start', 'space-between']}
-              alignItems={['flex-start', 'flex-end']}
-              flexDirection={['column', 'row']}
-              gap={[5, '44px']}
-            >
-              <Input
-                placeholder="Complemento"
-                name="complement"
-                type="text"
-                error={errors?.complement}
-                value={values?.complement}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
-                borderColor="gray.500"
-                disabled={voterLoading}
-              />
-              <Input
-                placeholder="Cidade"
-                name="city"
-                type="text"
-                error={errors?.city}
-                value={values?.city}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
-                borderColor="gray.500"
-                disabled={voterLoading}
-              />
-              <Input
-                placeholder="UF"
-                name="state"
-                type="text"
-                error={errors?.state}
-                value={values?.state}
-                onChange={(e) =>
-                  setValues({ ...values, [e.target.name]: e.target.value })
-                }
-                borderColor="gray.500"
-                disabled={voterLoading}
-              />
-            </Flex>
-          </Box>
+                <Box w="100%">
+                  <Text color="gray.500" fontWeight="400" margin="0">
+                    Gênero:
+                  </Text>
+                  <Select
+                    placeholder="Gênero"
+                    borderColor="gray.500"
+                    bg="gray.50"
+                    _placeholder={{ color: 'gray.500' }}
+                    color="gray.600"
+                    value={values?.gender}
+                    name="gender"
+                    onChange={(e) =>
+                      setValues({ ...values, [e.target.name]: e.target.value })
+                    }
+                    disabled={voterLoading}
+                  >
+                    <option value="MALE">Masculino</option>
+                    <option value="FEMALE">Feminino</option>
+                  </Select>
+                </Box>
+              </Flex>
+            </Box>
+            <Box>
+              <Flex>
+                <Text color="gray.500" fontWeight="400" margin="0">
+                  Endereço:
+                </Text>
+                {cepLoading && (
+                  <Spinner color={office?.primary_color} size="sm" />
+                )}
+              </Flex>
+              <Flex
+                mb="24px"
+                justifyContent={['flex-start', 'space-between']}
+                alignItems={['flex-start', 'flex-end']}
+                flexDirection={['column', 'row']}
+                gap={[5, '44px']}
+              >
+                <PatternFormat
+                  customInput={Input}
+                  type="text"
+                  format="#####-###"
+                  mask="_"
+                  name="zip"
+                  error={errors?.zip}
+                  value={values?.zipMask}
+                  onValueChange={(value) => {
+                    setValues({
+                      ...values,
+                      zip: value?.value,
+                      zipMask: value?.formattedValue,
+                    });
+                  }}
+                  borderColor="gray.500"
+                  onBlur={getCep}
+                  w={['100%', '200px']}
+                  placeholder="CEP"
+                  disabled={voterLoading}
+                />
 
-          <Flex
-            w="100%"
-            alignItems="center"
-            justifyContent="center"
-            mt={['40px', '95px']}
-          >
-            <Button
-              onClick={handleUpdateVoter}
-              w="280px"
-              isDisabled={voterLoading}
+                <Input
+                  placeholder="Rua"
+                  name="street"
+                  type="text"
+                  error={errors?.street}
+                  value={values?.street}
+                  onChange={(e) =>
+                    setValues({ ...values, [e.target.name]: e.target.value })
+                  }
+                  borderColor="gray.500"
+                  flex={1}
+                  disabled={voterLoading}
+                />
+              </Flex>
+              <Flex
+                mb="24px"
+                justifyContent={['flex-start', 'space-between']}
+                alignItems={['flex-start', 'flex-end']}
+                flexDirection={['column', 'row']}
+                gap={[5, '44px']}
+              >
+                <Input
+                  placeholder="Bairro"
+                  name="neighborhood"
+                  type="text"
+                  error={errors?.neighborhood}
+                  value={values?.neighborhood}
+                  onChange={(e) =>
+                    setValues({ ...values, [e.target.name]: e.target.value })
+                  }
+                  borderColor="gray.500"
+                  flex={1}
+                  disabled={voterLoading}
+                />
+                <Input
+                  name="address_number"
+                  type="number"
+                  error={errors?.address_number}
+                  value={values?.address_number}
+                  onChange={(e) =>
+                    setValues({ ...values, [e.target.name]: e.target.value })
+                  }
+                  placeholder="Numero"
+                  w={['100%', '200px']}
+                  borderColor="gray.500"
+                  disabled={voterLoading}
+                />
+              </Flex>
+              <Flex
+                mb="24px"
+                justifyContent={['flex-start', 'space-between']}
+                alignItems={['flex-start', 'flex-end']}
+                flexDirection={['column', 'row']}
+                gap={[5, '44px']}
+              >
+                <Input
+                  placeholder="Complemento"
+                  name="complement"
+                  type="text"
+                  error={errors?.complement}
+                  value={values?.complement}
+                  onChange={(e) =>
+                    setValues({ ...values, [e.target.name]: e.target.value })
+                  }
+                  borderColor="gray.500"
+                  disabled={voterLoading}
+                />
+                <Input
+                  placeholder="Cidade"
+                  name="city"
+                  type="text"
+                  error={errors?.city}
+                  value={values?.city}
+                  onChange={(e) =>
+                    setValues({ ...values, [e.target.name]: e.target.value })
+                  }
+                  borderColor="gray.500"
+                  disabled={voterLoading}
+                />
+                <Input
+                  placeholder="UF"
+                  name="state"
+                  type="text"
+                  error={errors?.state}
+                  value={values?.state}
+                  onChange={(e) =>
+                    setValues({ ...values, [e.target.name]: e.target.value })
+                  }
+                  borderColor="gray.500"
+                  disabled={voterLoading}
+                />
+              </Flex>
+            </Box>
+
+            <Flex
+              w="100%"
+              alignItems="center"
+              justifyContent="center"
+              mt={['40px', '95px']}
             >
-              {loading ? <Spinner color="white" /> : 'Atualizar'}
-            </Button>
-          </Flex>
-        </Stack>
+              <Button
+                onClick={handleUpdateVoter}
+                w="280px"
+                isDisabled={voterLoading}
+              >
+                {loading ? <Spinner color="white" /> : 'Atualizar'}
+              </Button>
+            </Flex>
+          </Stack>
+        </Flex>
       </Flex>
     </HeaderSideBar>
   );
