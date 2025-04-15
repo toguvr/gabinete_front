@@ -6,6 +6,7 @@ import {
   Stack,
   Text,
   useToast,
+  Icon,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { FormEvent, useEffect, useState } from 'react';
@@ -20,6 +21,7 @@ import { StateProps } from '../dtos';
 import api from '../services/api';
 import { getFormatDate } from '../utils/date';
 import getValidationErrors from '../utils/validationError';
+import { FiUpload, FiDownload } from 'react-icons/fi';
 
 export default function VoterEdit() {
   const { id } = useParams();
@@ -31,6 +33,10 @@ export default function VoterEdit() {
   const toast = useToast();
   const { office } = useAuth();
   const navigate = useNavigate();
+  const [attachment, setAttachment] = useState<File | null>(null);
+  const [attachmentUrl, setAttachmentUrl] = useState<string>('');
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
   const handleUpdateVoter = async (e: FormEvent) => {
     e.preventDefault();
@@ -66,24 +72,48 @@ export default function VoterEdit() {
         cellphone,
       } = values;
 
-      const body = {
-        name,
-        cellphone: `${ddd ?? ''}${cellphone ?? ''}`,
-        email,
-        office_id: office?.id,
-        address_number,
-        birthdate,
-        city,
-        gender,
-        neighborhood,
-        reference,
-        complement,
-        state,
-        street,
-        zip,
-        voter_id: id,
-      };
-      await api.put('/voter', body);
+      // Handle the case where we're updating with an attachment
+      if (attachment) {
+        const formData = new FormData();
+        formData.append('attachment', attachment);
+        formData.append('name', name);
+        formData.append('cellphone', `${ddd ?? ''}${cellphone ?? ''}`);
+        if (email) formData.append('email', email);
+        formData.append('office_id', office?.id || '');
+        if (address_number)
+          formData.append('address_number', address_number.toString());
+        if (birthdate) formData.append('birthdate', birthdate);
+        if (city) formData.append('city', city);
+        if (gender) formData.append('gender', gender);
+        if (neighborhood) formData.append('neighborhood', neighborhood);
+        if (reference) formData.append('reference', reference);
+        if (complement) formData.append('complement', complement);
+        if (state) formData.append('state', state);
+        if (street) formData.append('street', street);
+        if (zip) formData.append('zip', zip);
+        formData.append('voter_id', id as string);
+
+        await api.put('/voter/attachment', formData);
+      } else {
+        const body = {
+          name,
+          cellphone: `${ddd ?? ''}${cellphone ?? ''}`,
+          email,
+          office_id: office?.id,
+          address_number,
+          birthdate,
+          city,
+          gender,
+          neighborhood,
+          reference,
+          complement,
+          state,
+          street,
+          zip,
+          voter_id: id,
+        };
+        await api.put('/voter', body);
+      }
 
       toast({
         title: 'Apoiador atualizado com sucesso',
@@ -182,9 +212,72 @@ export default function VoterEdit() {
         zipMask: response?.data?.zip,
         voter_id: response?.data?.id,
       });
+      setAttachmentUrl(response?.data?.attachment_url || '');
     } catch (err) {
     } finally {
       setVoterLoading(false);
+    }
+  };
+
+  const handleUploadAttachment = async () => {
+    if (!attachment) return;
+
+    setUploadLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('attachment', attachment);
+      formData.append('voterId', id as string);
+
+      await api.put('/voter/attachment/update', formData);
+
+      toast({
+        title: 'Arquivo anexado com sucesso',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      });
+
+      // Refresh attachment data
+      getVoterById();
+      setAttachment(null);
+    } catch (error) {
+      toast({
+        title: 'Erro ao anexar arquivo',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      });
+    } finally {
+      setUploadLoading(false);
+    }
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setAttachment(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      setAttachment(e.target.files[0]);
     }
   };
 
@@ -484,6 +577,120 @@ export default function VoterEdit() {
                   disabled={voterLoading}
                 />
               </Flex>
+            </Box>
+
+            <Box
+              mt={8}
+              borderWidth={1}
+              borderRadius="md"
+              p={5}
+              borderColor="blue.200"
+              bg="blue.50"
+            >
+              <Text color="gray.700" fontWeight="semibold" mb={4} fontSize="lg">
+                Anexos
+              </Text>
+
+              {attachmentUrl && (
+                <Flex
+                  p={4}
+                  borderWidth={1}
+                  borderRadius="md"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  mb={4}
+                  bg="white"
+                >
+                  <Flex direction="column" flex={1} mr={4}>
+                    <Text color="gray.500" fontSize="sm" fontWeight="medium">
+                      Anexo:
+                    </Text>
+                    <Text color="gray.600" noOfLines={1}>
+                      {attachmentUrl.split('/').pop()}
+                    </Text>
+                  </Flex>
+                  <Button
+                    onClick={() => window.open(attachmentUrl, '_blank')}
+                    size="sm"
+                    leftIcon={<Icon as={FiDownload} />}
+                    colorScheme="blue"
+                    variant="outline"
+                    minW="min-content"
+                    w="fit-content"
+                    px={3}
+                  >
+                    Abrir
+                  </Button>
+                </Flex>
+              )}
+
+              <Flex
+                onDragEnter={voterLoading ? undefined : handleDrag}
+                onDragLeave={voterLoading ? undefined : handleDrag}
+                onDragOver={voterLoading ? undefined : handleDrag}
+                onDrop={voterLoading ? undefined : handleDrop}
+                onClick={
+                  voterLoading
+                    ? undefined
+                    : () => document.getElementById('file-upload')?.click()
+                }
+                p={6}
+                borderWidth={2}
+                borderRadius="md"
+                borderStyle="dashed"
+                borderColor={
+                  voterLoading
+                    ? 'gray.200'
+                    : dragActive
+                    ? 'blue.400'
+                    : 'gray.300'
+                }
+                bg={voterLoading ? 'gray.50' : dragActive ? 'blue.50' : 'white'}
+                alignItems="center"
+                justifyContent="center"
+                flexDirection="column"
+                cursor={voterLoading ? 'not-allowed' : 'pointer'}
+                transition="all 0.2s"
+                opacity={voterLoading ? 0.6 : 1}
+                _hover={{
+                  borderColor: voterLoading ? 'gray.200' : 'blue.400',
+                  bg: voterLoading ? 'gray.50' : 'blue.50',
+                }}
+                minH="120px"
+              >
+                <input
+                  type="file"
+                  id="file-upload"
+                  onChange={handleChange}
+                  style={{ display: 'none' }}
+                  disabled={voterLoading}
+                />
+                <Icon as={FiUpload} boxSize={8} color="blue.500" mb={3} />
+                <Text color="gray.600" textAlign="center" fontWeight="medium">
+                  {dragActive
+                    ? 'Solte o arquivo aqui'
+                    : 'Arraste e solte um arquivo aqui, ou clique para selecionar'}
+                </Text>
+                {attachment && (
+                  <Text color="blue.500" mt={3} fontWeight="bold">
+                    Arquivo selecionado: {attachment.name}
+                  </Text>
+                )}
+              </Flex>
+
+              {attachment && (
+                <Flex justify="center" mt={4}>
+                  <Button
+                    onClick={handleUploadAttachment}
+                    isLoading={uploadLoading}
+                    loadingText="Enviando..."
+                    colorScheme="blue"
+                    width="200px"
+                  >
+                    Enviar Anexo
+                  </Button>
+                </Flex>
+              )}
             </Box>
 
             <Flex
