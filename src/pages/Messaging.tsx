@@ -30,6 +30,13 @@ import { convertDateFormat } from '../utils/convertDateFormat';
 import { messagingPage } from '../utils/filterTables';
 import Button from '../components/Form/Button';
 
+type MessagingData = {
+  name: string;
+  email: string;
+  cellphone: string;
+  id: string;
+};
+
 export default function Messaging() {
   const toast = useToast();
   const [values, setValues] = useState({
@@ -41,7 +48,9 @@ export default function Messaging() {
   });
   const [imageFiles, setImageFiles] = useState<FileList | null>(null);
   const [base64Images, setBase64Images] = useState<string>();
-  const [phonesToSendMessage, setPhonesToSendMessage] = useState<string[]>([]);
+  const [phonesToSendMessage, setPhonesToSendMessage] = useState<
+    MessagingData[]
+  >([]);
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -110,21 +119,9 @@ export default function Messaging() {
     setIsSubmitting(true);
 
     try {
-      const formData = new FormData();
-      formData.append('phones', JSON.stringify(phonesToSendMessage));
-
-      if (values.message) {
-        formData.append('message', values.message);
-      }
-
-      if (base64Images) {
-        formData.append('image', base64Images);
-      }
-
-      await api.post(`/whatsapp/redirect/${office.id}/bulk`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      await api.post(`/whatsapp/bulk`, {
+        voters: phonesToSendMessage,
+        message: values.message,
       });
 
       setValues({ ...values, message: '', voterMessages: [] });
@@ -154,8 +151,8 @@ export default function Messaging() {
     }
   };
 
-  const fetchAllVoterPhones = async (): Promise<string[]> => {
-    let allPhones: string[] = [];
+  const fetchAllVoterPhones = async (): Promise<MessagingData[]> => {
+    let allPhones: MessagingData[] = [];
 
     try {
       const response = await api.get<{ items: VoterDTO[]; totalPages: number }>(
@@ -172,7 +169,12 @@ export default function Messaging() {
         }
       );
 
-      allPhones = response.data.items.map((voter: VoterDTO) => voter.cellphone);
+      allPhones = response.data.items.map((voter: VoterDTO) => ({
+        cellphone: voter.cellphone,
+        name: voter.name,
+        email: voter.email,
+        id: voter.id,
+      }));
     } catch (error) {
       console.error('Error fetching voter phones:', error);
     }
@@ -216,19 +218,27 @@ export default function Messaging() {
     setFilterField(input);
   };
 
-  const handleCheckboxChange = (cellphone: string, isChecked: boolean) => {
-    let updatedPhonesToSendMessage = [...phonesToSendMessage];
+  const handleCheckboxChange = (voter: VoterDTO, isChecked: boolean) => {
+    console.log('handle entra', voter, isChecked);
+    setPhonesToSendMessage((prev) => {
+      const exists = prev.some((p) => p.id === voter.id);
 
-    if (isChecked && !phonesToSendMessage.includes(cellphone)) {
-      updatedPhonesToSendMessage.push(cellphone);
-    } else if (!isChecked) {
-      updatedPhonesToSendMessage = updatedPhonesToSendMessage.filter(
-        (phone) => phone !== cellphone
-      );
-    }
+      if (isChecked && !exists) {
+        const entry: MessagingData = {
+          id: voter.id,
+          name: voter.name,
+          email: voter.email,
+          cellphone: voter.cellphone,
+        };
+        return [...prev, entry];
+      }
 
-    setPhonesToSendMessage(updatedPhonesToSendMessage);
-    setIsAllChecked(updatedPhonesToSendMessage.length === data.length);
+      if (!isChecked && exists) {
+        return prev.filter((p) => p.id !== voter.id);
+      }
+
+      return prev;
+    });
   };
 
   useEffect(() => {
@@ -434,6 +444,10 @@ export default function Messaging() {
             <Tbody>
               {data.length > 0 ? (
                 data.map((voter) => {
+                  console.log(
+                    'existe marcado: ',
+                    phonesToSendMessage.some((item) => item?.id === voter?.id)
+                  );
                   return (
                     <Tr key={voter.id} whiteSpace="nowrap">
                       <Td
@@ -445,15 +459,15 @@ export default function Messaging() {
                         py="4px"
                       >
                         <Checkbox
-                          isChecked={phonesToSendMessage.includes(
-                            voter.cellphone
+                          isChecked={phonesToSendMessage.some(
+                            (item) => item?.id === voter?.id
                           )}
-                          onChange={(e) =>
-                            handleCheckboxChange(
-                              voter.cellphone,
+                          onChange={(e) => {
+                            return handleCheckboxChange(
+                              voter,
                               e.target.checked
-                            )
-                          }
+                            );
+                          }}
                         />
                       </Td>
                       <Td
