@@ -30,6 +30,7 @@ import SignUpOffice from '../pages/SignUpOffice';
 import NotOffice from '../pages/NotOffice';
 import nossogabinete from '../assets/nossogabinete.png';
 import Messaging from '../pages/Messaging';
+import VoterSelfRegister from '../pages/VoterSelfRegister';
 
 interface PrivateRoutesProps {
   isPrivate: boolean;
@@ -170,6 +171,7 @@ export default function AppRoutes() {
           <Route path="/cadastrar-proprietario" element={<SignUpOwner />} />
         </Route>
         <Route path="/redefinir-senha" element={<RedefinePassword />} />
+        <Route path="/cadastro/:officeId" element={<VoterSelfRegister />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
