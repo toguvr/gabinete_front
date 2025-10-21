@@ -12,9 +12,9 @@ import {
   Heading,
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { FormEvent, useCallback, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { PatternFormat } from 'react-number-format';
-import { useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import * as Yup from 'yup';
 import Button from '../components/Form/Button';
 import Input from '../components/Form/Input';
@@ -32,9 +32,40 @@ export default function VoterSelfRegister() {
   const [success, setSuccess] = useState(false);
   const toast = useToast();
   const { officeId } = useParams();
-
+  const location = useLocation();
   const isKnownOffice = officeId === MUNIR_NETO_OFFICE_ID;
   const officeName = isKnownOffice ? 'Gabinete Deputado Munir Neto' : '';
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const nameParam = params.get('name');
+    const cellphoneParam = params.get('cellphone');
+
+    if (nameParam || cellphoneParam) {
+      let ddd = '';
+      let cellphone = '';
+      let cellphoneMask = '';
+
+      if (cellphoneParam) {
+        const digits = cellphoneParam.replace(/\D/g, '');
+        ddd = digits.slice(0, 2);
+        cellphone = digits.slice(2);
+        cellphoneMask =
+          cellphone.length === 9
+            ? `${cellphone.slice(0, 5)}-${cellphone.slice(5)}`
+            : `${cellphone.slice(0, 4)}-${cellphone.slice(4)}`;
+      }
+
+      setValues((prev) => ({
+        ...prev,
+        name: nameParam || prev.name,
+        ddd,
+        dddMask: ddd,
+        cellphone,
+        cellphoneMask,
+      }));
+    }
+  }, [location.search]);
 
   const handleRegister = useCallback(
     async (e: FormEvent) => {
