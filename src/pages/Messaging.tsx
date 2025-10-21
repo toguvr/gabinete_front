@@ -219,7 +219,6 @@ export default function Messaging() {
   };
 
   const handleCheckboxChange = (voter: VoterDTO, isChecked: boolean) => {
-    console.log('handle entra', voter, isChecked);
     setPhonesToSendMessage((prev) => {
       const exists = prev.some((p) => p.id === voter.id);
 
@@ -444,10 +443,6 @@ export default function Messaging() {
             <Tbody>
               {data.length > 0 ? (
                 data.map((voter) => {
-                  console.log(
-                    'existe marcado: ',
-                    phonesToSendMessage.some((item) => item?.id === voter?.id)
-                  );
                   return (
                     <Tr key={voter.id} whiteSpace="nowrap">
                       <Td

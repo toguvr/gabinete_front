@@ -10,14 +10,24 @@ interface ChakraButtonProps extends ButtonProps {
   color?: string;
 }
 
-export default function Button({ children, width, bgColor, color, ...rest }: ChakraButtonProps) {
+export default function Button({
+  children,
+  width,
+  bgColor,
+  color,
+  ...rest
+}: ChakraButtonProps) {
   const { office } = useAuth();
   const officeColor = office?.primary_color;
   const opacity = 0.9;
 
-  const rgbColor = convert.hex.rgb(officeColor);
-  const transparentRgbColor = rgbColor.concat(opacity * 1);
-  const rgbaColor = `rgba(${transparentRgbColor.join(',')})`;
+  let rgbaColor: string | undefined;
+
+  if (officeColor) {
+    const rgbColor = convert.hex.rgb(officeColor);
+    const transparentRgbColor = rgbColor.concat(opacity * 1);
+    rgbaColor = `rgba(${transparentRgbColor.join(',')})`;
+  }
 
   return (
     <ChakraButton
