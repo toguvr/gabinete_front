@@ -22,7 +22,7 @@ import { StateProps } from '../dtos';
 import getValidationErrors from '../utils/validationError';
 import { IoCheckmarkCircle } from 'react-icons/io5';
 
-const MUNIR_NETO_OFFICE_ID = 'e513a65a-41b5-4602-ac58-693fb449bddd';
+const MUNIR_NETO_OFFICE_ID = '3bcc2bae-15ec-438f-a710-c9a60cc58e0d';
 
 export default function VoterSelfRegister() {
   const [values, setValues] = useState({} as StateProps);
