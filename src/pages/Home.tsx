@@ -583,7 +583,10 @@ export default function Home() {
                 )}
               </Flex>
             </Flex>
-            <Flex w="full" h={{ base: '80%', md: 'full' }}>
+            <Flex
+              w="full"
+              h={{ base: '430px', md: 'fit-content', lg: '430px' }}
+            >
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={chartData}
