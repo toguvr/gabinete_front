@@ -124,7 +124,7 @@ export default function Messaging() {
         message: values.message,
       });
 
-      setValues({ ...values, message: '', voterMessages: [] });
+      setValues({ ...values, voterMessages: [] });
       setPhonesToSendMessage([]);
       setImageFiles(null);
       setIsAllChecked(false);
@@ -187,7 +187,13 @@ export default function Messaging() {
 
     if (isChecked) {
       setLoading(true);
-      const allPhones = await fetchAllVoterPhones();
+      // const allPhones = await fetchAllVoterPhones();
+      const allPhones = data.map((item) => ({
+        name: item.name,
+        email: item.email,
+        cellphone: item.cellphone,
+        id: item.id,
+      }));
       setPhonesToSendMessage(allPhones);
       setLoading(false);
     } else {
@@ -256,7 +262,7 @@ export default function Messaging() {
 
   return (
     <HeaderSideBar>
-      <Flex direction="column" h="100%">
+      <Flex direction="column">
         <Flex
           justifyContent={'space-between'}
           gap={['20px', '0']}
@@ -387,7 +393,13 @@ export default function Messaging() {
             style={{ display: 'none' }}
           />
           <label htmlFor="file-upload">
-            <Button as="span" colorScheme="blue" size="sm">
+            <Button
+              as="span"
+              colorScheme="blue"
+              color={office?.primary_color}
+              bgColor="white"
+              size="sm"
+            >
               Carregar Arquivo
             </Button>
           </label>
@@ -415,7 +427,7 @@ export default function Messaging() {
               borderRadius: '8px',
             },
           }}
-          h={'100%'}
+          h={'500px'}
         >
           <Table>
             <Thead

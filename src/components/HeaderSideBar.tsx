@@ -126,7 +126,7 @@ export default function SidebarWithHeader({
         </DrawerContent>
       </Drawer>
       <MobileNav onOpen={onOpen} backRoute={backRoute} />
-      <Box ml={{ base: 0, md: 60 }} p="26px" bg="gray.100" h={screenHeight}>
+      <Box ml={{ base: 0, md: 60 }} p="26px" bg="gray.100">
         <Box h={'100%'} bgColor="white" borderRadius="8px" px="24px" py="40px">
           {children}
         </Box>
