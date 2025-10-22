@@ -102,16 +102,30 @@ export default function Messaging() {
   };
 
   const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const file = e.target.files;
-      setSelectedFile(String(file[0].name));
+    if (!e.target.files || e.target.files.length === 0) return;
 
-      if (file.length === 0) {
-        return;
-      }
+    const file = e.target.files[0];
+    setSelectedFile(file.name);
 
-      setBase64Images(file[0] as any);
-    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      setBase64Images(base64String);
+    };
+
+    reader.onerror = (error) => {
+      console.error('Erro ao converter imagem para Base64:', error);
+      toast({
+        title: 'Erro ao processar imagem',
+        description: 'Não foi possível converter a imagem para Base64.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+        position: 'top-right',
+      });
+    };
   };
 
   const handleSendMessage = async (e: FormEvent) => {
@@ -122,6 +136,7 @@ export default function Messaging() {
       await api.post(`/whatsapp/bulk`, {
         voters: phonesToSendMessage,
         message: values.message,
+        image: base64Images,
       });
 
       setValues({ ...values, voterMessages: [] });
@@ -361,6 +376,9 @@ export default function Messaging() {
                 setValues({ ...values, message: '', voterMessages: [] });
                 setPhonesToSendMessage([]);
                 setIsAllChecked(false);
+                setBase64Images(undefined);
+                setImageFiles(null);
+                setSelectedFile('');
               }}
               isDisabled={
                 phonesToSendMessage.length === 0 && values.message === ''
@@ -407,7 +425,16 @@ export default function Messaging() {
             <Text fontSize="sm" mt={2}>
               {selectedFile}
             </Text>
-          )}{' '}
+          )}
+          {base64Images && (
+            <Box mt={2}>
+              <img
+                src={base64Images}
+                alt="Preview"
+                style={{ maxWidth: '200px', borderRadius: '8px' }}
+              />
+            </Box>
+          )}
         </Box>
 
         <Box
