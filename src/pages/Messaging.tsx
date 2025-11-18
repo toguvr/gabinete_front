@@ -393,6 +393,9 @@ export default function Messaging() {
           <Text mb="8px" color="gray.500">
             Mensagem
           </Text>
+           <Text mb="2px" color="gray.500" fontSize="12px" >
+            {'Você pode usar {{nome}} para inserir o nome do destinatário na mensagem.'}
+          </Text>
           <Textarea
             value={values.message}
             onChange={(e) => setValues({ ...values, message: e.target.value })}
