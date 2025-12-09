@@ -15,6 +15,12 @@ import {
   Thead,
   Tr,
   useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
 } from '@chakra-ui/react';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { IoLogoWhatsapp, IoSearchSharp } from 'react-icons/io5';
@@ -66,9 +72,47 @@ export default function Messaging() {
 
   const perPage = 20;
 
+  // Estado para o modal de QR Code
+  const [isQrCodeModalOpen, setIsQrCodeModalOpen] = useState(false);
+  const [qrCodeResponse, setQrCodeResponse] = useState<string>('');
+  const [qrCodeValue, setQrCodeValue] = useState<string>(''); // guarda o value para montar o QR
+  const [isQrLoading, setIsQrLoading] = useState(false);
+
+  const openQrCodeModal = () => setIsQrCodeModalOpen(true);
+  const closeQrCodeModal = () => setIsQrCodeModalOpen(false);
+
+  // GET /whatsapp/qrcode e exibir no modal (QR + JSON)
+  const getWhatsappQrCode = async () => {
+    try {
+      setIsQrLoading(true);
+      const response = await api.get('/whatsapp/qrcode');
+
+      const objectResponse = JSON.parse(response.data);
+
+      // a API já retorna { value: "2@..." }
+      const value = objectResponse?.value || '';
+
+      setQrCodeValue(value);
+
+      // se quiser mostrar o objeto bruto no <pre>, ok:
+      setQrCodeResponse(JSON.stringify(response.data, null, 2));
+
+      openQrCodeModal();
+    } catch (error) {
+      toast({
+        title: 'Erro ao gerar QR Code',
+        status: 'error',
+        position: 'top-right',
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsQrLoading(false);
+    }
+  };
+
   const getVoterList = async (currentPage = 1) => {
     setData([] as VoterDTO[]);
-
     setLoading(true);
     try {
       const filterMapping = {
@@ -202,7 +246,6 @@ export default function Messaging() {
 
     if (isChecked) {
       setLoading(true);
-      // const allPhones = await fetchAllVoterPhones();
       const allPhones = data.map((item) => ({
         name: item.name,
         email: item.email,
@@ -218,6 +261,7 @@ export default function Messaging() {
 
   const handleDateOfBirthChange = (input: any) => {
     const dateRegEx = /^(\d{1,2})(\/)?(\d{1,2})?(\d{0,4})?$/;
+
     const match = input.match(dateRegEx);
 
     if (match) {
@@ -294,10 +338,27 @@ export default function Messaging() {
               <Spinner color={office?.primary_color} ml="4" size="sm" />
             )}
           </Text>
-          <Button onClick={handleSendMessage} w={['160px', '280px']}>
-            {isSubmitting ? <Spinner color="white" /> : 'Enviar mensagem'}
-          </Button>
+
+          <Flex gap="12px">
+            {/* Botão Gerar QR Code à esquerda de "Enviar mensagem" */}
+            <Button
+              w={['140px', '180px']}
+              borderColor={office?.primary_color}
+              _hover={{
+                opacity: '80%',
+              }}
+              onClick={getWhatsappQrCode}
+              isDisabled={isQrLoading}
+            >
+              {isQrLoading ? <Spinner size="sm" /> : 'Gerar QR Code'}
+            </Button>
+
+            <Button onClick={handleSendMessage} w={['160px', '280px']}>
+              {isSubmitting ? <Spinner color="white" /> : 'Enviar mensagem'}
+            </Button>
+          </Flex>
         </Flex>
+
         <Text mt="36px" color="gray.500">
           Filtrar por:
         </Text>
@@ -393,8 +454,10 @@ export default function Messaging() {
           <Text mb="8px" color="gray.500">
             Mensagem
           </Text>
-           <Text mb="2px" color="gray.500" fontSize="12px" >
-            {'Você pode usar {{nome}} para inserir o nome do destinatário na mensagem.'}
+          <Text mb="2px" color="gray.500" fontSize="12px">
+            {
+              'Você pode usar {{nome}} para inserir o nome do destinatário na mensagem.'
+            }
           </Text>
           <Textarea
             value={values.message}
@@ -527,7 +590,7 @@ export default function Messaging() {
                       >
                         {voter?.cellphone ? (
                           <Link
-                            target="_blank"
+                            target="__blank"
                             to={`https://wa.me/55${voter?.cellphone}`}
                             rel="noopener noreferrer"
                           >
@@ -562,21 +625,34 @@ export default function Messaging() {
                         >
                           {voter?.zip
                             ? `${voter?.street ? voter?.street + ',' : ''}
-                              ${
-                                voter?.address_number
-                                  ? voter?.address_number + ','
-                                  : ''
-                              }
-                              ${
-                                voter?.neighborhood
-                                  ? voter?.neighborhood + ','
-                                  : ''
-                              }
-                              ${
-                                voter?.complement ? voter?.complement + ',' : ''
-                              }
-                              ${voter?.city ? voter?.city + ',' : ''}
-                              ${voter?.state ? voter?.state + ',' : ''}`
+                                                      ${
+                                                        voter?.address_number
+                                                          ? voter?.address_number +
+                                                            ','
+                                                          : ''
+                                                      }
+                                                      ${
+                                                        voter?.neighborhood
+                                                          ? voter?.neighborhood +
+                                                            ','
+                                                          : ''
+                                                      }
+                                                      ${
+                                                        voter?.complement
+                                                          ? voter?.complement +
+                                                            ','
+                                                          : ''
+                                                      }
+                                                      ${
+                                                        voter?.city
+                                                          ? voter?.city + ','
+                                                          : ''
+                                                      }
+                                                      ${
+                                                        voter?.state
+                                                          ? voter?.state + ','
+                                                          : ''
+                                                      }`
                             : '-'}
                         </Td>
                       ) : (
@@ -619,6 +695,28 @@ export default function Messaging() {
           />
         </Flex>
       </Flex>
+
+      {/* Modal do QR Code: primeiro o QR code, abaixo o JSON */}
+      <Modal isOpen={isQrCodeModalOpen} onClose={closeQrCodeModal} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Resposta do QR Code</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {/* QR Code (se houver valor) */}
+            {qrCodeValue && (
+              <Flex justifyContent="center" mb={4}>
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+                    qrCodeValue
+                  )}`}
+                  alt="QR Code"
+                />
+              </Flex>
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </HeaderSideBar>
   );
 }
