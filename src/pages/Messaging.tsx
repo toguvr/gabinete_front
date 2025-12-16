@@ -94,7 +94,7 @@ export default function Messaging() {
       const value = objectResponse?.value || '';
 
       setQrCodeValue(value);
-      setWhatsappConnected(value?.connected || false);
+      setWhatsappConnected(objectResponse?.connected || false);
 
       // se quiser mostrar o objeto bruto no <pre>, ok:
       setQrCodeResponse(JSON.stringify(response.data, null, 2));
@@ -211,6 +211,7 @@ export default function Messaging() {
       setIsSubmitting(false);
     }
   };
+            console.log('whatsappConnected', whatsappConnected)
 
   const fetchAllVoterPhones = async (): Promise<MessagingData[]> => {
     let allPhones: MessagingData[] = [];
