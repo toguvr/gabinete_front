@@ -58,6 +58,7 @@ export default function Messaging() {
     MessagingData[]
   >([]);
   const [isAllChecked, setIsAllChecked] = useState(false);
+  const [whatsappConnected, setWhatsappConnected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [filterFieldDateMask, setFilterFieldDateMask] = useState('');
@@ -93,6 +94,7 @@ export default function Messaging() {
       const value = objectResponse?.value || '';
 
       setQrCodeValue(value);
+      setWhatsappConnected(value?.connected || false);
 
       // se quiser mostrar o objeto bruto no <pre>, ok:
       setQrCodeResponse(JSON.stringify(response.data, null, 2));
@@ -703,6 +705,11 @@ export default function Messaging() {
           <ModalHeader>Resposta do QR Code</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            {whatsappConnected&&    <Text mb="2px" color="green.500" fontSize="12px">
+            
+             Whatsapp já está conectado!
+            
+          </Text>}
             {/* QR Code (se houver valor) */}
             {qrCodeValue && (
               <Flex justifyContent="center" mb={4}>
