@@ -1,5 +1,14 @@
-import { Flex, Grid, Icon, IconButton, Text } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import {
+  Flex,
+  Grid,
+  Icon,
+  IconButton,
+  Text,
+  Textarea,
+  FormControl,
+  FormLabel,
+} from '@chakra-ui/react';
+import { useEffect, useMemo, useState } from 'react';
 import { AiOutlineUsergroupAdd } from 'react-icons/ai';
 import { IoLogoWhatsapp, IoWarningOutline } from 'react-icons/io5';
 import { MdHowToReg, MdOutlineChecklist } from 'react-icons/md';
@@ -43,6 +52,23 @@ export default function Home() {
   );
   const [voterBirthDates, setVoterBirthDates] = useState([] as VoterDTO[]);
 
+  const defaultBirthdayTemplate = useMemo(() => {
+    const ownerPosition = office?.owner_position
+      ? ` ${office.owner_position}`
+      : '';
+    const officeName = office?.name ? ` ${office.name}` : '';
+    return `Olá, {{nome}}! Aqui é do Gabinete do${ownerPosition}${officeName}. Gostaria de desejar um feliz aniversário!`;
+  }, [office?.name, office?.owner_position]);
+
+  // IMPORTANTE: chave SEMPRE com office.id (sem fallback)
+  // Formato pedido: "texto-aniversario-officeId"
+  const birthdayTemplateStorageKey = useMemo(() => {
+    return office?.id ? `texto-aniversario-${office.id}` : '';
+  }, [office?.id]);
+
+  const [birthdayMessageTemplate, setBirthdayMessageTemplate] =
+    useState<string>('');
+
   async function getResumeOffice() {
     try {
       const response = await api.get(`/dashboard/resume-office/${office?.id}`);
@@ -80,6 +106,7 @@ export default function Home() {
       setHoverData(data.activePayload[0].payload);
     }
   };
+
   const CustomizedLabel: React.FC<LabelProps> = ({ x, y, value }) => {
     if (typeof x !== 'number' || typeof y !== 'number' || value === undefined) {
       return null;
@@ -130,6 +157,32 @@ export default function Home() {
     } catch (error) {}
   }
 
+  function normalizePhone(phone?: string | null) {
+    return (phone ?? '').replace(/\D/g, '');
+  }
+
+  function buildBirthdayMessage(personName: string) {
+    const template = birthdayMessageTemplate?.trim()
+      ? birthdayMessageTemplate
+      : defaultBirthdayTemplate;
+
+    return template.replace(/\{\{nome\}\}/g, personName);
+  }
+
+  function buildWhatsAppLink(
+    phone?: string | null,
+    personName?: string | null
+  ) {
+    const cleaned = normalizePhone(phone);
+    if (!cleaned) return '';
+
+    const name = (personName ?? '').trim();
+    const message = buildBirthdayMessage(name);
+    const encoded = encodeURIComponent(message);
+
+    return `https://wa.me/55${cleaned}?text=${encoded}`;
+  }
+
   useEffect(() => {
     if (office?.id) {
       getResumeOffice();
@@ -137,7 +190,39 @@ export default function Home() {
       getChartData();
     }
   }, [office?.id]);
-  useEffect(() => {}, []);
+
+  // CARREGAR DO LOCALSTORAGE (sem expiração) - SOMENTE quando existir office.id
+  useEffect(() => {
+    if (!office?.id || !birthdayTemplateStorageKey) return;
+
+    try {
+      const saved = localStorage.getItem(birthdayTemplateStorageKey);
+
+      if (saved && saved.trim()) {
+        setBirthdayMessageTemplate(saved);
+        return;
+      }
+
+      setBirthdayMessageTemplate(defaultBirthdayTemplate);
+    } catch (e) {
+      setBirthdayMessageTemplate(defaultBirthdayTemplate);
+    }
+  }, [office?.id, birthdayTemplateStorageKey, defaultBirthdayTemplate]);
+
+  // SALVAR NO LOCALSTORAGE (sem expiração) - SOMENTE quando existir office.id
+  useEffect(() => {
+    if (!office?.id || !birthdayTemplateStorageKey) return;
+
+    try {
+      // Evita gravar vazio sem querer; se quiser permitir vazio, remova esse if.
+      if (birthdayMessageTemplate?.trim()) {
+        localStorage.setItem(
+          birthdayTemplateStorageKey,
+          birthdayMessageTemplate
+        );
+      }
+    } catch (e) {}
+  }, [office?.id, birthdayTemplateStorageKey, birthdayMessageTemplate]);
 
   return (
     <HeaderSideBar>
@@ -199,6 +284,7 @@ export default function Home() {
               {resumeOffice.role}
             </Text>
           </Flex>
+
           <Flex
             position="relative"
             background="white"
@@ -241,6 +327,7 @@ export default function Home() {
               {resumeOffice.user}
             </Text>
           </Flex>
+
           <Flex
             position="relative"
             background="white"
@@ -283,6 +370,7 @@ export default function Home() {
               {resumeOffice.voter}
             </Text>
           </Flex>
+
           <Flex
             position="relative"
             background="white"
@@ -365,6 +453,24 @@ export default function Home() {
                 </Text>
               </Flex>
 
+              {/* TEMPLATE (ADMIN) - SALVO NO LOCALSTORAGE POR office.id */}
+              <Flex px={{ base: '16px', md: '24px' }} pb="12px">
+                <FormControl>
+                  <FormLabel color="#718096" fontSize="14px" mb="6px">
+                    Mensagem do WhatsApp (use <b>{`{{nome}}`}</b> para o nome)
+                  </FormLabel>
+                  <Textarea
+                    value={birthdayMessageTemplate}
+                    onChange={(e) => setBirthdayMessageTemplate(e.target.value)}
+                    placeholder={defaultBirthdayTemplate}
+                    color="#2D3648"
+                    fontSize="14px"
+                    resize="vertical"
+                    minH="110px"
+                  />
+                </FormControl>
+              </Flex>
+
               {permissionBirthDates.length === 0 &&
                 voterBirthDates.length === 0 && (
                   <Flex
@@ -386,47 +492,70 @@ export default function Home() {
                   </Flex>
                 )}
 
-              {/* Map over permissionBirthDates */}
               {permissionBirthDates &&
-                permissionBirthDates.map((permission) => (
-                  <Flex
-                    key={permission.id}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    padding={{ base: '0 16px', md: '0 24px' }}
-                    width="100%"
-                  >
-                    <Icon color="#718096" fontSize="24" as={RiTeamLine} />
-                    <Text
-                      textAlign="center"
-                      lineHeight="20px"
-                      fontWeight="400"
-                      fontSize="16px"
-                      color="#718096"
+                permissionBirthDates.map((permission) => {
+                  const waLink = buildWhatsAppLink(
+                    permission?.user?.cellphone,
+                    permission?.user?.name
+                  );
+
+                  return (
+                    <Flex
+                      key={permission.id}
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      padding={{ base: '0 16px', md: '0 24px' }}
+                      width="100%"
                     >
-                      {permission?.user?.name}{' '}
-                    </Text>
-                    <Link
-                      target="_blank"
-                      to={`https://wa.me/55${permission?.user?.cellphone}`}
-                      rel="noopener noreferrer"
-                    >
-                      <IconButton
-                        aria-label="Open alert"
-                        variant="unstyled"
-                        icon={
-                          <Icon
-                            cursor="pointer"
-                            fontSize="24px"
-                            as={IoLogoWhatsapp}
-                            color="#718096"
+                      <Icon color="#718096" fontSize="24" as={RiTeamLine} />
+                      <Text
+                        textAlign="center"
+                        lineHeight="20px"
+                        fontWeight="400"
+                        fontSize="16px"
+                        color="#718096"
+                      >
+                        {permission?.user?.name}{' '}
+                      </Text>
+
+                      {waLink ? (
+                        <Link
+                          target="_blank"
+                          to={waLink}
+                          rel="noopener noreferrer"
+                        >
+                          <IconButton
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            icon={
+                              <Icon
+                                cursor="pointer"
+                                fontSize="24px"
+                                as={IoLogoWhatsapp}
+                                color="#718096"
+                              />
+                            }
                           />
-                        }
-                      />
-                    </Link>
-                  </Flex>
-                ))}
+                        </Link>
+                      ) : (
+                        <IconButton
+                          aria-label="Open alert"
+                          variant="unstyled"
+                          isDisabled
+                          icon={
+                            <Icon
+                              cursor="not-allowed"
+                              fontSize="24px"
+                              as={IoLogoWhatsapp}
+                              color="#CBD5E0"
+                            />
+                          }
+                        />
+                      )}
+                    </Flex>
+                  );
+                })}
 
               {voterBirthDates &&
                 voterBirthDates
@@ -439,77 +568,100 @@ export default function Home() {
                     }
                     return dateA.getDate() - dateB.getDate();
                   })
-                  .map((voter) => (
-                    <Flex
-                      key={voter.id}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      padding={{ base: '0 16px', md: '0 24px' }}
-                      width="100%"
-                    >
-                      <Icon
-                        color="#718096"
-                        fontSize="24"
-                        as={SiMicrosoftteams}
-                      />
+                  .map((voter) => {
+                    const waLink = buildWhatsAppLink(
+                      voter?.cellphone,
+                      voter?.name
+                    );
 
-                      <Flex direction="column" alignItems="center">
-                        <Text
-                          textAlign="center"
-                          lineHeight="20px"
-                          fontWeight="400"
-                          fontSize="16px"
+                    return (
+                      <Flex
+                        key={voter.id}
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        padding={{ base: '0 16px', md: '0 24px' }}
+                        width="100%"
+                      >
+                        <Icon
                           color="#718096"
-                        >
-                          {voter?.name}
-                        </Text>
+                          fontSize="24"
+                          as={SiMicrosoftteams}
+                        />
 
-                        <Flex alignItems="center">
+                        <Flex direction="column" alignItems="center">
                           <Text
                             textAlign="center"
-                            lineHeight="12px"
+                            lineHeight="20px"
                             fontWeight="400"
-                            fontSize="12px"
-                            color={
-                              !isSameDayAsToday(voter?.birthdate)
-                                ? 'yellow.400'
-                                : '#718096'
-                            }
+                            fontSize="16px"
+                            color="#718096"
                           >
-                            {formatWeekdayToBrazilian(voter?.birthdate)}
+                            {voter?.name}
                           </Text>
 
-                          {!isSameDayAsToday(voter?.birthdate) && (
-                            <Icon
-                              as={IoWarningOutline}
-                              color="orange.400"
-                              marginLeft="8px"
-                            />
-                          )}
-                        </Flex>
-                      </Flex>
+                          <Flex alignItems="center">
+                            <Text
+                              textAlign="center"
+                              lineHeight="12px"
+                              fontWeight="400"
+                              fontSize="12px"
+                              color={
+                                !isSameDayAsToday(voter?.birthdate)
+                                  ? 'yellow.400'
+                                  : '#718096'
+                              }
+                            >
+                              {formatWeekdayToBrazilian(voter?.birthdate)}
+                            </Text>
 
-                      <Link
-                        target="_blank"
-                        to={`https://wa.me/55${voter?.cellphone}/?text=Olá, ${voter?.name}! Aqui é do Gabinete do ${office.owner_position} ${office?.name}. Gostaria de desejar um feliz aniversário!`}
-                        rel="noopener noreferrer"
-                      >
-                        <IconButton
-                          aria-label="Open alert"
-                          variant="unstyled"
-                          icon={
-                            <Icon
-                              cursor="pointer"
-                              fontSize="24px"
-                              as={IoLogoWhatsapp}
-                              color="#718096"
+                            {!isSameDayAsToday(voter?.birthdate) && (
+                              <Icon
+                                as={IoWarningOutline}
+                                color="orange.400"
+                                marginLeft="8px"
+                              />
+                            )}
+                          </Flex>
+                        </Flex>
+
+                        {waLink ? (
+                          <Link
+                            target="_blank"
+                            to={waLink}
+                            rel="noopener noreferrer"
+                          >
+                            <IconButton
+                              aria-label="Open alert"
+                              variant="unstyled"
+                              icon={
+                                <Icon
+                                  cursor="pointer"
+                                  fontSize="24px"
+                                  as={IoLogoWhatsapp}
+                                  color="#718096"
+                                />
+                              }
                             />
-                          }
-                        />
-                      </Link>
-                    </Flex>
-                  ))}
+                          </Link>
+                        ) : (
+                          <IconButton
+                            aria-label="Open alert"
+                            variant="unstyled"
+                            isDisabled
+                            icon={
+                              <Icon
+                                cursor="not-allowed"
+                                fontSize="24px"
+                                as={IoLogoWhatsapp}
+                                color="#CBD5E0"
+                              />
+                            }
+                          />
+                        )}
+                      </Flex>
+                    );
+                  })}
             </Flex>
           </Flex>
 
@@ -537,8 +689,8 @@ export default function Home() {
                 Evolução do Gabinete
               </Text>
             </Flex>
+
             <Flex
-              // direction={{ base: 'column', md: 'row' }}
               direction="row"
               justifyContent="space-between"
               alignItems="center"
@@ -583,6 +735,7 @@ export default function Home() {
                 )}
               </Flex>
             </Flex>
+
             <Flex
               w="full"
               h={{ base: '430px', md: 'fit-content', lg: '430px' }}
